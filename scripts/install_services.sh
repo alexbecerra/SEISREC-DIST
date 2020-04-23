@@ -169,7 +169,7 @@ if [ -n "$install" ]; then
 # Let the user know what versions are installed
 printf "Installing services...\n"
 
-if [ -d "$repodir/SEISREC/unit/" ]; then
+if [ ! -d "$repodir/SEISREC/unit/" ]; then
     printf "No unit executable directory! Aborting...\n"
     exit 1
 fi
