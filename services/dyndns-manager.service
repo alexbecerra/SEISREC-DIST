@@ -1,0 +1,17 @@
+[Unit]
+Description=DYNAMIC DNS update service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+EnvironmentFile=/home/pi/SEISREC/parameter
+User=pi
+ExecStart=$repo_root/SEISREC/unit/unit_dyndns-manager -host $dyn_host -u $dyn_user -p $dyn_pass
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=1
+
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=New NTP service
+Requires=neom8.service gpsd.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/init.d/ntp start
+ExecStop=/etc/init.d/ntp stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

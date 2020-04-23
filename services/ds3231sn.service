@@ -1,0 +1,16 @@
+[Unit]
+Description=DS3231 RTC service
+After=multi-user.target
+Before=db2file.service
+Requires=ntp2.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/home/pi/SEISREC/parameter
+User=root
+ExecStart=$repo_root/SEISREC/unit/unit_ds3231sn -l -h $rtc_snooze_h -m $rtc_snooze_m -s $rtc_snooze_s
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=1
+
+[Install]
+WantedBy=multi-user.target
