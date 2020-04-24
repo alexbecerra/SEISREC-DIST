@@ -197,6 +197,11 @@ for f in $justservices; do
   fi
 done
 
+if ! sudo systemctl daemon-reload; then
+
+printf "Error reloading services! Aborting!...\n"
+exit 1
+fi
 # enable after all services have been installed
 
 for f in $justservices; do
