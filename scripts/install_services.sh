@@ -123,10 +123,10 @@ if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
   else
-    services=$(ls "$repodir/SEISREC/services/")
+    services=$(ls "$repodir/SEISREC-DIST/services/")
   fi
 else
-  services=$(ls "$repodir/SEISREC/services/")
+  services=$(ls "$repodir/SEISREC-DIST/services/")
 fi
 
 if [ -n "$debug" ]; then
@@ -169,7 +169,7 @@ if [ -n "$install" ]; then
 # Let the user know what versions are installed
 printf "Installing services...\n"
 
-if [ ! -d "$repodir/SEISREC/unit/" ]; then
+if [ ! -d "$repodir/SEISREC-DIST/unit/" ]; then
     printf "No unit executable directory! Aborting...\n"
     exit 1
 fi
@@ -180,13 +180,13 @@ for f in $services; do
   if [ ! -f "/etc/systemd/system/$f" ]; then
     # Install only if corresponding unit executable exists
     unitname=$(printf "%s" "$f" | sed -e "s/.service//")
-    if [ -z "$(ls "$repodir/SEISREC/unit/" | grep "$unitname")" ]; then
+    if [ -z "$(ls "$repodir/SEISREC-DIST/unit/" | grep "$unitname")" ]; then
       printf "No corresponding unit executable for %s!!\n" "$f"
     fi
 
     printf "Installing %s...\n" "$f"
     # Create symlink to service in /etc/systemd/system/
-      if ! sudo ln -s "$repodir/SEISREC/services/$f" "/etc/systemd/system/"; then
+      if ! sudo ln -s "$repodir/SEISREC-DIST/services/$f" "/etc/systemd/system/"; then
         printf "Error creating symlink for %s! Skipping...\n" "$f"
         continue
       fi
