@@ -183,7 +183,7 @@ for f in $justservices; do
     if [ -n "$(ls "$repodir/SEISREC/unit/" | grep "$unitname")" ]; then
       printf "Installing %s...\n" "$f"
       # Create symlink to service in /etc/systemd/system/
-      if ! sudo ln -s "$repodir/SEISREC/build/services/$f" "/etc/systemd/system/"; then
+      if ! sudo ln -s "$repodir/SEISREC/services/$f" "/etc/systemd/system/"; then
         printf "Error creating symlink for %s! Skipping...\n" "$f"
         continue
       fi
