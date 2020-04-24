@@ -152,7 +152,7 @@ done
 if [ -n "$re" ]; then
   printf "Removing installed service files...\n"
   for f in $services; do
-    if [ -e "/etc/systemd/system/$f" ]; then
+    if [ -h "/etc/systemd/system/$f" ]; then
       printf "Removing %s...\n" "$f"
       if ! sudo rm "/etc/systemd/system/$f"; then
         printf "Error removing %s!\n" "$f"
