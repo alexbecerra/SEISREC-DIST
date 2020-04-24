@@ -190,22 +190,29 @@ for f in $justservices; do
         printf "Error creating symlink for %s! Skipping...\n" "$f"
         continue
       fi
-    # Enable service with systemctl
-    if ! sudo systemctl enable "$f"; then
-      printf "Error installing %s! Skipping...\n" "$f"
-      continue
-    fi
   else
     # if already installed, notify and abort
     printf "%s already installed! Use -r for removal. Aborting...\n" "$f"
     exit 1
   fi
+done
 
+# enable after all services have been installed
+
+for f in $justservices; do
+  if ! sudo systemctl enable "$f"; then
+      printf "Error enabling %s! Skipping...\n" "$f"
+      continue
+  fi
+done
+
+for f in $justservices; do
   if ! sudo systemctl start "$f"; then
       printf "Error starting %s! Skipping...\n" "$f"
       continue
   fi
 done
+
 fi
 
 printf "Service unit installation successful!\n"
