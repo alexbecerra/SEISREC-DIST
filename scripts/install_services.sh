@@ -175,7 +175,7 @@ if [ ! -d "$repodir/SEISREC/unit/" ]; then
 fi
 
 # Install services
-for f in $justservices; do
+for f in $services; do
   # if symlink exists => service already installed
   if [ ! -f "/etc/systemd/system/$f" ]; then
     # Install only if corresponding unit executable exists
