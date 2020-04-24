@@ -8,7 +8,7 @@ Requires=ntp2.service
 Type=oneshot
 EnvironmentFile=/home/pi/SEISREC/parameter
 User=root
-ExecStart=$repo_root/SEISREC/unit/unit_ds3231sn -l -h $rtc_snooze_h -m $rtc_snooze_m -s $rtc_snooze_s
+ExecStart=/home/pi/SEISREC/unit/unit_ds3231sn -l -h $rtc_snooze_h -m $rtc_snooze_m -s $rtc_snooze_s
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=1
 

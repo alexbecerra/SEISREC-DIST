@@ -9,7 +9,7 @@ Type=notify
 Restart=always
 RestartSec=5
 EnvironmentFile=/home/pi/SEISREC/parameter
-ExecStart=/usr/bin/taskset -ca $sys_acc_core $repo_root/SEISREC/unit/unit_adxl355 -r $acc_range -s $adxl_sps -n $sta_name -w $sta_net -p $acc_db_pass -e $adxl_extclk -y $adxl_syncopt -m $adxl_mode
+ExecStart=/usr/bin/taskset -ca $sys_acc_core /home/pi/SEISREC/unit/unit_adxl355 -r $acc_range -s $adxl_sps -n $sta_name -w $sta_net -p $acc_db_pass -e $adxl_extclk -y $adxl_syncopt -m $adxl_mode
 CPUSchedulingPolicy=rr
 CPUSchedulingPriority=99
 
