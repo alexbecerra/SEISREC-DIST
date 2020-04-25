@@ -4,9 +4,9 @@ Before=adxl355.service gpsd.service
 
 [Service]
 Type=notify
-EnvironmentFile=/home/pi/SEISREC-DIST/parameter
+EnvironmentFile=/home/pi/SEISREC/parameter
 User=root
-ExecStart=/home/pi/SEISREC-DIST/unit/unit_neom8 -f $gnss_freq -u -c
+ExecStart=/home/pi/SEISREC/unit/unit_neom8 -f $gnss_freq -u -c
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=1
 

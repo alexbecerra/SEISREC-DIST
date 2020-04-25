@@ -6,9 +6,9 @@ After=multi-user.target
 Type=simple
 Restart=always
 RestartSec=5
-EnvironmentFile=/home/pi/SEISREC-DIST/parameter
+EnvironmentFile=/home/pi/SEISREC/parameter
 User=pi
-ExecStart=/home/pi/SEISREC-DIST/unit/unit_dyndns-manager -host $dyn_host -u $dyn_user -p $dyn_pass
+ExecStart=/home/pi/SEISREC/unit/unit_dyndns-manager -host $dyn_host -u $dyn_user -p $dyn_pass
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=1
 
