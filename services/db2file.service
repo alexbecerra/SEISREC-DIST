@@ -7,9 +7,9 @@ Requires=adxl355.service
 Type=simple
 Restart=always
 RestartSec=5
-EnvironmentFile=/home/pi/SEISREC/parameter
+EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=pi
-ExecStart=/home/pi/SEISREC/unit/unit_db2file -host $file_db_host -p $file_db_port -db $file_db_name -L $file_pipeline -w $file_db_pass -path $file_path -sps $adxl_sps -f $file_max_qty
+ExecStart=/home/pi/SEISREC-DIST/unit/unit_db2file -host $file_db_host -p $file_db_port -db $file_db_name -L $file_pipeline -w $file_db_pass -path $file_path -sps $adxl_sps -f $file_max_qty
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=15
 
