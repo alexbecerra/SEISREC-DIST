@@ -68,3 +68,23 @@ fi
 
 ~/SEISREC/build/bin/param-edit -pth ~/SEISREC/
 
+# if symlink to SEISREC-config doesn't exist, create it
+if [ ! -h "$repodir/SEISREC-DIST/SEISREC-config" ]; then
+  printf "Creating symlinks to SEISREC-config...\n"
+  ln -s "$repodir/SEISREC-DIST/scripts/SEISREC-config.sh" "$repodir/SEISREC-DIST/SEISREC-config"
+fi
+
+# Check if ~/SEISREC is in PATH, if not, add it to PATH
+inBashrc=$(cat "$HOME/.bashrc" | grep 'SEISREC-DIST')
+inPath=$(printf "%s" "$PATH" | grep 'SEISREC-DIST')
+if [ -z "$inBashrc" ]; then
+  if [ -z "$inPath" ]; then
+    # Add it permanently to path
+    printf "Adding ./SEISREC-DIST to PATH...\n"
+    printf 'inPath=$(printf "$PATH"|grep "SEISREC-DIST")\n' >>~/.bashrc
+    printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
+    printf 'then\n' >>~/.bashrc
+    printf '  export PATH="~/SEISREC-DIST:$PATH"\n' >>~/.bashrc
+    printf 'fi\n' >>~/.bashrc
+  fi
+fi
