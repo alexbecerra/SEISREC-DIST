@@ -13,8 +13,13 @@ function print_help() {
   printf "\n"
   exit 0
 }
-configure_station () {
 
+configure_station () {
+  print_help
+}
+
+update_station_software () {
+  print_help
 }
 
 start_stop_services() {
@@ -146,8 +151,8 @@ while [ -z "$done" ]; do
           start_stop_services
           break
           ;;
-        "Help")
-          print_help
+        "Update Station Software")
+          update_station_software
           ;;
         "Back")
           done="yes"
