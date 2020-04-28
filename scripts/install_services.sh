@@ -11,13 +11,17 @@ install=""
 re=""
 debug=""
 fileList=""
+disable=""
+startstop=""
 # Parse options
-function print_help {
+function print_help() {
   printf "Usage: install_services.sh [options] <mode>\n"
   printf "    [-h]                  Display this help message.\n"
   printf "    [-f]                  File listing services to be built/installed\n"
   printf "    [-d]                  Debug Flag  \n"
   printf "\nModes:\n"
+  printf "  START: start all services.\n"
+  printf "  STOP: stop all services.\n"
   printf "  DISABLE: stop and disable all services.\n"
   printf "  CLEAN: stop, disable and remove all links.\n"
   printf "  INSTALL: stop, disable, remove all links and install and reenable.\n"
@@ -47,22 +51,38 @@ unset PARAM
 while [ -n "$1" ]; do
   PARAM="${1,,}"
   if [ -n "$debug" ]; then
-      printf "PARAM = %s\n" "$PARAM"
+    printf "PARAM = %s\n" "$PARAM"
+  fi
+  if [ -z "$PARAM" ]; then
+    print_help
   fi
   case $PARAM in
+  # START: start all services
+  start)
+    startstop="start"
+    break
+    ;;
+    # STOP: stop all services
+  stop)
+    startstop="stop"
+    break
+    ;;
   # DISABLE: stop and disable all services
   disable)
+    startstop="stop"
     disable="yes"
     break
     ;;
   # CLEAN: stop, disable and remove all links
   clean)
+    startstop="stop"
     disable="yes"
     re="yes"
     break
     ;;
   # INSTALL: stop, disable, remove all links and install the built versions then, enable them
   install)
+    startstop="stop"
     disable="yes"
     re="yes"
     install="yes"
@@ -77,10 +97,6 @@ while [ -n "$1" ]; do
 done
 unset PARAM
 
-if [ -z "$disable" ]; then
-    print_help
-fi
-
 if [ -z "$repodir" ]; then
   repodir="$HOME"
 fi
@@ -89,7 +105,7 @@ fi
 printf "install_services.sh - SEISREC services install utility\n"
 
 # Print warning, this should be optional
-printf "This script will stop all running SEISREC services. Continue? [Y]es/[N]o "
+printf "This script will modify running SEISREC services. Continue? [Y]es/[N]o "
 # Get answers
 answered=""
 while [ -z "$answered" ]; do
@@ -116,7 +132,6 @@ else
 fi
 answered=""
 
-
 # List all services & timers in the services directory
 printf "Getting service list...\n"
 if [ -n "$fileList" ]; then
@@ -134,19 +149,24 @@ if [ -n "$debug" ]; then
 fi
 
 justservices=$(printf "%s " "$services" | grep ".*.service")
-for s in $justservices; do
-  temp=$(systemctl list-units --type=service | grep -o $s)
-  if [ "$s" == "$temp" ]; then
-    printf "Stopping & disabling %s...\n" "$s"
-    if ! sudo systemctl stop "$s"; then
-      printf "Error stopping %s!\n" "$s"
+
+if [ -n "$startstop" ]; then
+  for s in $justservices; do
+    printf "%sing %s\n" "$startstop" "$s"
+    if ! sudo systemctl "$startstop" "$s"; then
+      printf "Error %sing %s\n" "$startstop" "$s"
     fi
+  done
+fi
+
+if [ -n "$disable" ]; then
+  for s in $justservices; do
+    printf "Disabling %s...\n" "$s"
     if ! sudo systemctl disable "$s"; then
       printf "Error disabling %s!\n" "$s"
     fi
-  fi
-  unset temp
-done
+  done
+fi
 
 # If -r option is used, remove services
 if [ -n "$re" ]; then
@@ -166,59 +186,58 @@ if [ -n "$re" ]; then
 fi
 
 if [ -n "$install" ]; then
-# Let the user know what versions are installed
-printf "Installing services...\n"
+  # Let the user know what versions are installed
+  printf "Installing services...\n"
 
-if [ ! -d "$repodir/SEISREC-DIST/unit/" ]; then
+  if [ ! -d "$repodir/SEISREC-DIST/unit/" ]; then
     printf "No unit executable directory! Aborting...\n"
     exit 1
-fi
+  fi
 
-# Install services
-for f in $services; do
-  # if symlink exists => service already installed
-  if [ ! -f "/etc/systemd/system/$f" ]; then
-    # Install only if corresponding unit executable exists
-    unitname=$(printf "%s" "$f" | sed -e "s/.service//")
-    if [ -z "$(ls "$repodir/SEISREC-DIST/unit/" | grep "$unitname")" ]; then
-      printf "No corresponding unit executable for %s!!\n" "$f"
-    fi
+  # Install services
+  for f in $services; do
+    # if symlink exists => service already installed
+    if [ ! -f "/etc/systemd/system/$f" ]; then
+      # Install only if corresponding unit executable exists
+      unitname=$(printf "%s" "$f" | sed -e "s/.service//")
+      if [ -z "$(ls "$repodir/SEISREC-DIST/unit/" | grep "$unitname")" ]; then
+        printf "No corresponding unit executable for %s!!\n" "$f"
+      fi
 
-    printf "Installing %s...\n" "$f"
-    # Create symlink to service in /etc/systemd/system/
+      printf "Installing %s...\n" "$f"
+      # Create symlink to service in /etc/systemd/system/
       if ! sudo ln -s "$repodir/SEISREC-DIST/services/$f" "/etc/systemd/system/"; then
         printf "Error creating symlink for %s! Skipping...\n" "$f"
         continue
       fi
-  else
-    # if already installed, notify and abort
-    printf "%s already installed! Use -r for removal. Aborting...\n" "$f"
+    else
+      # if already installed, notify and abort
+      printf "%s already installed! Use -r for removal. Aborting...\n" "$f"
+      exit 1
+    fi
+  done
+
+  if ! sudo systemctl daemon-reload; then
+
+    printf "Error reloading services! Aborting!...\n"
     exit 1
   fi
-done
+  # enable after all services have been installed
 
-if ! sudo systemctl daemon-reload; then
-
-printf "Error reloading services! Aborting!...\n"
-exit 1
-fi
-# enable after all services have been installed
-
-for f in $justservices; do
-  if ! sudo systemctl enable "$f"; then
+  for f in $justservices; do
+    if ! sudo systemctl enable "$f"; then
       printf "Error enabling %s! Skipping...\n" "$f"
       continue
-  fi
-done
+    fi
+  done
 
-for f in $justservices; do
-  if ! sudo systemctl start "$f"; then
+  for f in $justservices; do
+    if ! sudo systemctl start "$f"; then
       printf "Error starting %s! Skipping...\n" "$f"
       continue
-  fi
-done
+    fi
+  done
 
 fi
 
 printf "Service unit installation successful!\n"
-
