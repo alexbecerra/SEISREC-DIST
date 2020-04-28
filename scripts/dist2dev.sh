@@ -4,7 +4,7 @@ if [ -z "$repodir" ]; then
     repodir=$(sudo find -P "$HOME" -name "SEISREC-DIST")
     if [ -z "$repodir" ]; then
       printf "Error finding repo directory!\n"
-      exit 1
+      repodir="$HOME"
     fi
 fi
 
