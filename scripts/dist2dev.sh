@@ -13,10 +13,4 @@ if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
   exit 1
 fi
 
-cd "$HOME/SEISREC-DIST/SEISREC-DEV"
-
-if ! git checkout --track origin/repos_refactor; then
-  printf "Error switching branches!\n"
-fi
-
 cd $currdir
