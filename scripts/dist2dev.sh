@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$repodir" ]; then
-    repodir=$(sudo find -P "$HOME" -name "SEISREC-DIST")
+    repodir=$(find -P / -name "SEISREC-DIST" -print 2>/dev/null)
     if [ -z "$repodir" ]; then
       printf "Error finding repo directory!\n"
       repodir="$HOME"
@@ -9,7 +9,7 @@ if [ -z "$repodir" ]; then
 fi
 
 currdir=$(pwd)
-printf "cd'ing into %s" "$repodir"
+printf "cd'ing into %s\n" "$repodir"
 
 if ! cd "$repodir"; then
   printf "Error cd'ing into ./SEISREC-DEV!\n"
@@ -22,7 +22,7 @@ if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
   exit 1
 fi
 
-printf "cd'ing cd'ing back into %s!\n" "$currdir"
+printf "cd'ing back into %s!\n" "$currdir"
 if ! cd $currdir; then
   printf "Error cd'ing back into %s!\n" "$currdir"
   exit 1
