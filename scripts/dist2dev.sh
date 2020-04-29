@@ -9,8 +9,8 @@ if [ -z "$repodir" ]; then
 fi
 
 currdir=$(pwd)
-printf "cd'ing into %s\n" "$repodir"
 
+printf "cd'ing into %s\n" "$repodir"
 if ! cd "$repodir"; then
   printf "Error cd'ing into ./SEISREC-DEV!\n"
   exit 1

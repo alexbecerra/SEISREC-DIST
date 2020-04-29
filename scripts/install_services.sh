@@ -18,13 +18,13 @@ function print_help() {
   printf "Usage: install_services.sh [options] <mode>\n"
   printf "    [-h]                  Display this help message.\n"
   printf "    [-f]                  File listing services to be built/installed\n"
-  printf "    [-d]                  Debug Flag  \n"
+  printf "    [-d]                  Debug flag\n"
   printf "\nModes:\n"
   printf "  START: start all services.\n"
   printf "  STOP: stop all services.\n"
   printf "  DISABLE: stop and disable all services.\n"
   printf "  CLEAN: stop, disable and remove all links.\n"
-  printf "  INSTALL: stop, disable, remove all links and install and reenable.\n"
+  printf "  INSTALL: stop, disable, remove all links, install and reenable all services.\n"
   exit 0
 }
 while getopts ":hfd" opt; do
@@ -106,7 +106,7 @@ printf "install_services.sh - SEISREC services install utility\n"
 
 # Print warning, this should be optional
 printf "This script will modify running SEISREC services. Continue? [Y]es/[N]o "
-# Get answers
+# Get answer
 answered=""
 while [ -z "$answered" ]; do
   if ! read -r continue; then
