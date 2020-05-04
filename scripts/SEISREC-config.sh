@@ -29,7 +29,7 @@ clean_up () {
 }
 
 configure_station() {
-  "$repodir/SEISREC-DIST/util/util_paramedit" "$repodir/SEISREC-DIST/"
+  "$repodir/SEISREC-DIST/util/util_paramedit" "-pth $repodir/SEISREC-DIST/"
 }
 
 update_station_software() {

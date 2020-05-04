@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir="$HOME/SEISREC/build/TEST/"
+dir="$HOME/SEISREC-DIST/TEST"
 
 echo " "
 echo "Comenzando pruebas de placa ACC355"
