@@ -297,12 +297,13 @@ while [ -z "$done" ]; do
             break
             ;;
           "Manage Unit Services")
-            enabled_services=$(systemctl list-unit-files | grep enabled)
+            enabled_services=$(systemctl list-unit-files)
             services=$(ls "$repodir/SEISREC-DIST/services")
-            printf "\nEnabled Services:\n"
+            printf "\nService status:\n"
             for s in $services; do
-              if [ -z "$(printf "%s" "$enabled_services" | grep "$s")" ]; then
-                  printf "%s\n" "$s"
+              servcheck=$(printf "%s" "$enabled_services" | grep "$s")
+              if [ -z "$servcheck" ]; then
+                  printf "%s\n" "$servcheck"
               fi
             done
             manage_services
