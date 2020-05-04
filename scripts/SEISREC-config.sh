@@ -289,7 +289,7 @@ while [ -z "$done" ]; do
       done=""
       while [ -z "$done" ]; do
         printf "\n"
-        options=("Configure Station Parameters" "Manage Unit Services" "Help" "Back")
+        options=("Configure Station Parameters" "Manage Unit Services" "Run Station Tests" "Update Station Software" "Help" "Back")
         select opt in "${options[@]}"; do
           case $opt in
           "Configure Station Parameters")
@@ -301,7 +301,13 @@ while [ -z "$done" ]; do
             services=$(ls "$repodir/SEISREC-DIST/services")
             printf "\nService status:\n"
             for s in $services; do
+              if [ -n "$debug" ]; then
+                printf "s = %s\n" "$s"
+              fi
               servcheck=$(printf "%s" "$enabled_services" | grep "$s")
+              if [ -n "$debug" ]; then
+                printf "servcheck = %s\n" "$servcheck"
+              fi
               if [ -z "$servcheck" ]; then
                   printf "%s\n" "$servcheck"
               fi
@@ -309,8 +315,13 @@ while [ -z "$done" ]; do
             manage_services
             break
             ;;
+          "Run Station Tests")
+            "$repodir/SEISREC-DIST/scripts/SEISREC-TEST.sh"
+            break
+            ;;
           "Update Station Software")
             update_station_software
+            break
             ;;
           "Back")
             done="yes"
