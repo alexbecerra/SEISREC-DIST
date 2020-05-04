@@ -5,17 +5,10 @@ choice=""
 done=""
 cfgeverywhere=""
 
-function print_help() {
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-}
-
-clean_up () {
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function clean_up () {
   local file
   file="$1"
   if [ -f "$file" ]; then
@@ -28,13 +21,47 @@ clean_up () {
   fi
 }
 
-configure_station() {
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+function ctrl_c() {
+  local tempfiles
+  tempfiles=$(ls | grep ".*.tmp")
+  for t in $tempfiles; do
+    clean_up "$t"
+  done
+}
+
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function print_help() {
+  printf "\n"
+  printf "\n"
+  printf "\n"
+  printf "\n"
+  printf "\n"
+  printf "\n"
+  printf "\n"
+}
+
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function configure_station() {
   local opts
   opts=("-pth" "$repodir/SEISREC-DIST/")
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
 }
 
-update_station_software() {
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function update_station_software() {
   printf "Under Construction!\n"
   printf "\n"
   printf "This function should update the SEISREC-DIST software!\n"
@@ -44,7 +71,10 @@ update_station_software() {
   printf "\n"
 }
 
-select_several_menu() {
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function select_several_menu() {
   local menu_opts_file
   local menu_prompt
   local menu_selections
@@ -137,7 +167,6 @@ select_several_menu() {
           if [ -n "$debug" ]; then
             printf "Bye bye!\n"
           fi
-          exit 0
         else
           printf "\n[C]ontinue [R]eselect [A]bort ? "
         fi
@@ -150,7 +179,10 @@ select_several_menu() {
   fi
 }
 
-manage_services() {
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function manage_services() {
   local PS3
   local options
   local opt
@@ -160,13 +192,13 @@ manage_services() {
   local answered
 
   while [ -z "$answered" ]; do
-  if [ ! -f "selected_services_file" ]; then
-    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "selected_services_file"
+  if [ ! -f "selected_services_file.tmp" ]; then
+    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "selected_services_file.tmp"
   fi
 
   local list
-  if [ -f "selected_services_file" ]; then
-    list=$(cat "selected_services_file")
+  if [ -f "selected_services_file.tmp" ]; then
+    list=$(cat "selected_services_file.tmp")
     printf "\nSelected services for management: "
     for l in $list; do
       printf "%s " "$l"
@@ -179,39 +211,39 @@ manage_services() {
     case $opt in
     "Start")
       choice="Start"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
       break
       ;;
     "Stop")
       choice="Stop"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
       break
       ;;
     "Disable")
       choice="Disable"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
       break
       ;;
     "Clean")
       choice="Clean"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
       break
       ;;
     "Install")
       choice="Install"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
       break
       ;;
     "Select Services")
-      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "available_services"
-      select_several_menu "Select services:" "available_services" "selected_services_file"
+      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "available_services.tmp"
+      select_several_menu "Select services:" "available_services.tmp" "selected_services_file.tmp"
       break
       ;;
     "Back")
     answered="yes"
       printf "Cleaning up & exiting...\n"
-      clean_up "available_services"
-      clean_up "selected_services_file"
+      clean_up "available_services.tmp"
+      clean_up "selected_services_file.tmp"
       if [ -n "$debug" ]; then
         printf "Bye bye!\n"
       fi
@@ -223,6 +255,17 @@ manage_services() {
 done
 }
 
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
+function get_station_info() {
+  printf "asdf\n"
+}
+
+
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
 # Parse options
 while getopts "dh" opt; do
   case ${opt} in
@@ -253,14 +296,21 @@ if [ -n "$debug" ]; then
   printf "repodir = %s\n" "$repodir"
 fi
 
+#=================================================================================================================================
+# CLEAN UP FUNCTION
+#=================================================================================================================================
 while [ -z "$done" ]; do
   printf "\n"
   PS3='Selection: '
-  options=("Configure Station" "Station Setup" "Help" "Quit")
+  options=("Configure Station" "Station Info" "Station Setup" "Help" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
     "Configure Station")
       choice="Configure Station"
+      break
+      ;;
+    "Station Info")
+      choice="Station Info"
       break
       ;;
     "Station Setup")
@@ -283,10 +333,17 @@ while [ -z "$done" ]; do
     printf "choice = %s\n" "$choice"
   fi
 
+#=================================================================================================================================
+# CLEAN UP FUNCTION
+#=================================================================================================================================
   case $choice in
+  #-------------------------------------------------------------------------------------------------------------------------------
+  # CLEAN UP FUNCTION
+  #-------------------------------------------------------------------------------------------------------------------------------
   "Configure Station")
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
+      break
     else
       done=""
       while [ -z "$done" ]; do
@@ -336,15 +393,23 @@ while [ -z "$done" ]; do
       done=""
     fi
     ;;
-
+  #-------------------------------------------------------------------------------------------------------------------------------
+  # CLEAN UP FUNCTION
+  #-------------------------------------------------------------------------------------------------------------------------------
+  "Station Info")
+    get_station_info
+    ;;
+  #-------------------------------------------------------------------------------------------------------------------------------
+  # CLEAN UP FUNCTION
+  #-------------------------------------------------------------------------------------------------------------------------------
   "Station Setup")
     if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "Station appears to be already set up.\n"
-      if ! read -r -p "Configure station from scratch? [Yes/No]" continue; then
+      if ! read -r -p "Configure station from scratch? [Yes/No] " continue; then
         printf "Error reading STDIN! Aborting...\n"
         exit 1
       elif [[ "$continue" =~ [yY].* ]]; then
-        if ! read -r -p "This will overwrite current station configuration! Continue? [Yes/No]" continue; then
+        if ! read -r -p "This will overwrite current station configuration! Are you sure? [Yes/No] " continue; then
           printf "Error reading STDIN! Aborting...\n"
           exit 1
         elif [[ "$continue" =~ [yY].* ]]; then
@@ -403,8 +468,6 @@ while [ -z "$done" ]; do
     fi
     ;;
   esac
-
-
 done
 printf "Good bye!\n"
 exit 0
