@@ -13,161 +13,212 @@ function print_help() {
   printf "\n"
   printf "\n"
   printf "\n"
-  exit 0
+}
+
+clean_up () {
+  local file
+  file="$1"
+  if [ -f "$file" ]; then
+    if [ -n "$debug" ]; then
+      printf "Removing %s\n" "$file"
+    fi
+    if ! rm "$file"; then
+      printf "Error removing %s\n" "$file"
+    fi
+  fi
 }
 
 configure_station() {
-  print_help
+  printf "Under Construction!\n"
 }
 
 update_station_software() {
-  print_help
+  printf "Under Construction!\n"
+  printf "\n"
+  printf "This function should update the SEISREC-DIST software!\n"
+  printf "Maybe Check what versions are available and then select\n"
+  printf "for download from repository\n"
+  printf "\n"
+  printf "\n"
 }
 
-create_menu() {
-  unset menu_opts
-  unset menu_prompt
-  unset answered
+select_several_menu() {
+  local menu_opts_file
+  local menu_prompt
+  local menu_selections
+  local answered
+  local optionnames
+  local selected_names
+  local selected_names_file
 
   menu_prompt="$1"
-  menu_opts="$2"
+  menu_opts_file="$2"
+  selected_names_file="$3"
 
-  printf "\n%s\n" "$"
+  clean_up "$selected_names_file"
+
+  optionnames=()
+  if [ -f "$menu_opts_file" ]; then
+    for n in $(cat "$menu_opts_file"); do
+      optionnames+=( "$n" )
+    done
+  else
+    printf "Menu options file not found!\n"
+    exit 1
+  fi
+
   while [ -z "$answered" ]; do
-        servicenames=()
-        for s in $justservices; do
-          sname=$(printf "%s" "$s" | sed -e "s/.service//")
-          servicenames+=("$sname")
+    printf "\n"
+    indx=1
+    for n in "${optionnames[@]}"; do
+      printf " [%i]\t%s\n" "${indx}" "$n"
+      indx=$((indx + 1))
+    done
+    printf " [0]\tSelect All \n"
+
+    local ans
+
+    read -r -p "$menu_prompt" ans
+    for m in $ans; do
+      if [[ "$m" =~ ^[0-9]$ ]]; then
+        if [ -n "$debug" ]; then
+          printf "%s input accepted\n" "$m"
+        fi
+        menu_selections+=("$((m - 1))")
+      else
+        if [ -n "$debug" ]; then
+          printf "%s input rejected\n" "$m"
+        fi
+      fi
+    done
+
+    for n in "${menu_selections[@]}"; do
+      if [ "$n" -eq -1 ]; then
+        menu_selections=()
+        indx=1
+        for s in "${optionnames[@]}"; do
+          menu_selections+=("$((indx - 1))")
+          indx=$((indx + 1))
         done
+        break
+      fi
+    done
 
-        while [ -z "$answered" ]; do
-          printf "\nAvailable services:\n"
-          indx=1
-          for n in "${servicenames[@]}"; do
-            printf " [%i]\t%s\n" "${indx}" "$n"
-            indx=$((indx + 1))
-          done
-          printf " [0]\tAll services \n"
+    selected_names=()
+    printf "\nOption Selected: "
+    for n in "${menu_selections[@]}"; do
+      selected_names+=( "$n" )
+      printf "%s " "${optionnames[$((n))]}"
+    done
 
-          service=""
-          printf "Please select services: "
-          read -r service
-          for m in $service; do
-            if [[ "$m" =~ ^[0-9]$ ]]; then
-              if [ -n "$debug" ]; then
-                printf "%s input accepted\n" "$m"
-              fi
-              servicesToManage+=("$((m - 1))")
-            else
-              if [ -n "$debug" ]; then
-                printf "%s input rejected\n" "$m"
-              fi
-            fi
-          done
-
-          for n in "${servicesToManage[@]}"; do
-            if [ "$n" -eq -1 ]; then
-              servicesToManage=()
-              indx=1
-              for s in "${servicenames[@]}"; do
-                servicesToManage+=("$((indx - 1))")
-                indx=$((indx + 1))
-              done
-              break
-            fi
-          done
-
-          printf "\nServices selected: "
-          for n in "${servicesToManage[@]}"; do
-            printf "%s " "${servicenames[$((n))]}"
-          done
-
-          #---------------------------------------------------------------
-          # CONFIG CONFIRMATION
-          #---------------------------------------------------------------
-          printf "\nSelecting: [C]ontinue [R]eselect [A]bort ? "
-          if ! read -r continue; then
-            printf "Error reading STDIN! Aborting...\n"
-            exit 1
-          elif [[ "$continue" =~ [cC].* ]]; then
-            answered="yes"
-            if [ -f "$repodir/SEISREC-DIST/service.build.list" ]; then
-              if [ -n "$debug" ]; then
-                printf "Removing service.build.list\n"
-              fi
-              if ! rm "$repodir/SEISREC-DIST/service.build.list"; then
-                printf "Error removing service.build.list!\n"
-              fi
-            else
-              if [ -n "$debug" ]; then
-                printf "Creating service.build.list\n"
-              fi
-              if ! touch "$repodir/SEISREC-DIST/service.build.list"; then
-                printf "Error creating service.build.list!\n"
-              fi
-            fi
-
-            for n in "${servicesToManage[@]}"; do
-              if [ -n "$debug" ]; then
-                printf "Appending %s to service.build.list\n" "${servicenames[$((n))]}"
-              fi
-              printf "%s\n" "${servicenames[$((n))]}.service" >>"$repodir/SEISREC-DIST/service.build.list"
-            done
-
-            break
-          elif [[ "$continue" =~ [rR].* ]]; then
-            printf "Reselecting...\n"
-          elif [[ "$continue" =~ [aA].* ]]; then
-            answered="abort"
-            printf "Cleaning up & exiting...\n"
-            if [ -f "$repodir/SEISREC-DIST/service.build.list" ]; then
-              if [ -n "$debug" ]; then
-                printf "Removing service.build.list\n"
-              fi
-              if ! rm "$repodir/SEISREC-DIST/service.build.list"; then
-                printf "Error removing service.build.list!\n"
-              fi
-            fi
-            if [ -n "$debug" ]; then
-              printf "Bye bye!\n"
-            fi
-          else
-            printf "\n[C]ontinue [R]eselect [A]bort ? "
+    #---------------------------------------------------------------
+    # CONFIG CONFIRMATION
+    #---------------------------------------------------------------
+    printf "\n[C]ontinue [R]eselect [A]bort ? "
+      if ! read -r continue; then
+        printf "Error reading STDIN! Aborting...\n"
+        exit 1
+      elif [[ "$continue" =~ [cC].* ]]; then
+        answered="yes"
+        if [ ! -f "$selected_names_file" ]; then
+          touch "$selected_names_file"
+        fi
+        for n in "${selected_names[@]}"; do
+          printf "%s\n" "${optionnames[$((n))]}" >> "$selected_names_file"
+        done
+        break
+      elif [[ "$continue" =~ [rR].* ]]; then
+        printf "Reselecting...\n"
+      elif [[ "$continue" =~ [aA].* ]]; then
+          printf "Cleaning up & exiting...\n"
+          clean_up "$menu_opts_file"
+          if [ -n "$debug" ]; then
+            printf "Bye bye!\n"
           fi
-        done
-        break
-        ;;
-      "Back")
-        choise="back"
-        break
-        ;;
-      *) printf "invalid option %s\n" "$REPLY" ;;
-      esac
+          exit 0
+        else
+          printf "\n[C]ontinue [R]eselect [A]bort ? "
+        fi
+  done
 
-
-    if [ -n "$debug" ]; then
-      printf "choise = %s\n" "$choise"
-      debugflag="-d"
+  if [ -f "$menu_opts_file" ]; then
+    if ! rm "$menu_opts_file"; then
+        printf "Error removing aux files!\n"
     fi
+  fi
+}
 
-    install_services_args=( "$debugflag" "$choise" )
+manage_services() {
+  local PS3
+  local options
+  local opt
+  local choice
+  local REPLY
+  local menu_prompt
+  local answered
 
-    if [ -n "$choise" ]; then
-      if [ -f "$repodir/SEISREC-DIST/service.build.list" ]; then
-        install_services_args+=( "-f $\"$repodir/SEISREC-DIST/service.build.list\"" )
+  while [ -z "$answered" ]; do
+  if [ ! -f "selected_services_file" ]; then
+    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "selected_services_file"
+  fi
+
+  local list
+  if [ -f "selected_services_file" ]; then
+    list=$(cat "selected_services_file")
+    printf "\nSelected services for management: "
+    for l in $list; do
+      printf "%s " "$l"
+    done
+    printf "\n"
+  fi
+  PS3='Selection: '
+  options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
+  select opt in "${options[@]}"; do
+    case $opt in
+    "Start")
+      choice="Start"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      break
+      ;;
+    "Stop")
+      choice="Stop"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      break
+      ;;
+    "Disable")
+      choice="Disable"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      break
+      ;;
+    "Clean")
+      choice="Clean"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      break
+      ;;
+    "Install")
+      choice="Install"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file"
+      break
+      ;;
+    "Select Services")
+      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "available_services"
+      select_several_menu "Select services:" "available_services" "selected_services_file"
+      break
+      ;;
+    "Back")
+    answered="yes"
+      printf "Cleaning up & exiting...\n"
+      clean_up "available_services"
+      clean_up "selected_services_file"
+      if [ -n "$debug" ]; then
+        printf "Bye bye!\n"
       fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${install_services_args[@]}"
-    fi
-
-    if [ -f "$repodir/SEISREC-DIST/service.build.list" ]; then
-      printf "Removing service.build.list...\n"
-      if ! rm "$repodir/SEISREC-DIST/service.build.list"; then
-        printf "Error removing service.build.list!\n"
-      fi
-    fi
+      break
+      ;;
+    *) printf "invalid option %s\n" "$REPLY" ;;
+    esac
+  done
 done
-choise=""
-exit 0
 }
 
 # Parse options
@@ -207,15 +258,16 @@ while [ -z "$done" ]; do
   select opt in "${options[@]}"; do
     case $opt in
     "Configure Station")
-      choice="${options[0]}"
+      choice="Configure Station"
       break
       ;;
     "Station Setup")
-      choice="${options[1]}"
+      choice="Station Setup"
       break
       ;;
     "Help")
       print_help
+      break
       ;;
     "Quit")
       printf "Good bye!\n"
@@ -245,7 +297,15 @@ while [ -z "$done" ]; do
             break
             ;;
           "Manage Unit Services")
-            start_stop_services
+            enabled_services=$(systemctl list-unit-files | grep enabled)
+            services=$(ls "$repodir/SEISREC-DIST/services")
+            printf "\nEnabled Services:\n"
+            for s in $services; do
+              if [ -z "$(printf "%s" "$enabled_services" | grep "$s")" ]; then
+                  printf "%s\n" "$s"
+              fi
+            done
+            manage_services
             break
             ;;
           "Update Station Software")
@@ -264,8 +324,46 @@ while [ -z "$done" ]; do
     ;;
 
   "Station Setup")
+    if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
+      printf "Station appears to be already set up.\n"
+      if ! read -r -p "Configure station from scratch? [Yes/No]" continue; then
+        printf "Error reading STDIN! Aborting...\n"
+        exit 1
+      elif [[ "$continue" =~ [yY].* ]]; then
+        if ! read -r -p "This will overwrite current station configuration! Continue? [Yes/No]" continue; then
+          printf "Error reading STDIN! Aborting...\n"
+          exit 1
+        elif [[ "$continue" =~ [yY].* ]]; then
+          clean_up "$repodir/SEISREC-DIST/parameter"
+        elif [[ "$continue" =~ [nN].* ]]; then
+          break
+        fi
+      elif [[ "$continue" =~ [nN].* ]]; then
+        break
+      fi
+    fi
 
-    "$repodir/SEISREC-DIST/scripts/install_services.sh INSTALL"
+    printf "Installing services...\n"
+    if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "INSTALL"; then
+      printf "Error installing services! Please fix problems before retrying!\n"
+      exit 1
+    fi
+
+    printf "Setting up station parameters...\n"
+    if ! "$repodir/SEISREC-DIST/util/util_paramedit"; then
+      printf "Error setting up station parameters! Please fix problems before retrying!\n"
+      exit 1
+    fi
+
+
+    if ! read -r -p "Install SEISREC-config? [Yes/No]" continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [yY].* ]]; then
+      cfgeverywhere="yes"
+    elif [[ "$continue" =~ [nN].* ]]; then
+      cfgeverywhere=""
+    fi
 
     if [ -n "$cfgeverywhere" ]; then
       # if symlink to SEISREC-config doesn't exist, create it
@@ -291,6 +389,8 @@ while [ -z "$done" ]; do
     fi
     ;;
   esac
+
+
 done
 printf "Good bye!\n"
 exit 0
