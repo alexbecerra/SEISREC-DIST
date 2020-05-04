@@ -29,7 +29,7 @@ clean_up () {
 }
 
 configure_station() {
-  printf "Under Construction!\n"
+  "$repodir/SEISREC-DIST/util/util_paramedit" "$repodir/SEISREC-DIST/"
 }
 
 update_station_software() {
@@ -308,7 +308,7 @@ while [ -z "$done" ]; do
               if [ -n "$debug" ]; then
                 printf "servcheck = %s\n" "$servcheck"
               fi
-              if [ -z "$servcheck" ]; then
+              if [ -n "$servcheck" ]; then
                   printf "%s\n" "$servcheck"
               fi
             done
