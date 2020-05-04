@@ -5,6 +5,7 @@ choice=""
 done=""
 cfgeverywhere=""
 
+workdir="$repodir/SEISREC-DIST"
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
@@ -29,11 +30,15 @@ function clean_up () {
 trap ctrl_c INT
 
 function ctrl_c() {
+  if [ -n "$debug" ]; then
+    printf "SIG-INT DETECTED!\n"
+  fi
   local tempfiles
-  tempfiles=$(ls | grep ".*.tmp")
+  tempfiles=$(ls "$workdir" | grep ".*.tmp")
   for t in $tempfiles; do
     clean_up "$t"
   done
+  exit 1
 }
 
 ##################################################################################################################################
@@ -192,13 +197,13 @@ function manage_services() {
   local answered
 
   while [ -z "$answered" ]; do
-  if [ ! -f "selected_services_file.tmp" ]; then
-    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "selected_services_file.tmp"
+  if [ ! -f "$workdir/selected_services_file.tmp" ]; then
+    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "$workdir/selected_services_file.tmp"
   fi
 
   local list
-  if [ -f "selected_services_file.tmp" ]; then
-    list=$(cat "selected_services_file.tmp")
+  if [ -f "$workdir/selected_services_file.tmp" ]; then
+    list=$(cat "$workdir/selected_services_file.tmp")
     printf "\nSelected services for management: "
     for l in $list; do
       printf "%s " "$l"
@@ -211,39 +216,39 @@ function manage_services() {
     case $opt in
     "Start")
       choice="Start"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Stop")
       choice="Stop"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Disable")
       choice="Disable"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Clean")
       choice="Clean"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Install")
       choice="Install"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "selected_services_file.tmp"
+      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Select Services")
-      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "available_services.tmp"
-      select_several_menu "Select services:" "available_services.tmp" "selected_services_file.tmp"
+      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "$workdir/available_services.tmp"
+      select_several_menu "Select services:" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
       break
       ;;
     "Back")
     answered="yes"
       printf "Cleaning up & exiting...\n"
-      clean_up "available_services.tmp"
-      clean_up "selected_services_file.tmp"
+      clean_up "$workdir/available_services.tmp"
+      clean_up "$workdir/selected_services_file.tmp"
       if [ -n "$debug" ]; then
         printf "Bye bye!\n"
       fi
