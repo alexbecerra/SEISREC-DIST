@@ -29,7 +29,9 @@ clean_up () {
 }
 
 configure_station() {
-  "$repodir/SEISREC-DIST/util/util_paramedit" "-pth $repodir/SEISREC-DIST/"
+  local opts
+  opts=("-pth" "$repodir/SEISREC-DIST/")
+  "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
 }
 
 update_station_software() {
