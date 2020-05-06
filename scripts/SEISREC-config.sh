@@ -316,7 +316,9 @@ function manage_services() {
         fi
         break
         ;;
-      *) printf "invalid option %s\n" "$REPLY" ;;
+      *) printf "invalid option %s\n" "$REPLY"
+        break
+        ;;
       esac
     done
   done
@@ -419,7 +421,7 @@ if [ -z "$repodir" ]; then
 fi
 
 workdir="$repodir/SEISREC-DIST"
-5
+
 if [ -n "$debug" ]; then
   printf "repodir = %s\n" "$repodir"
 fi
@@ -454,7 +456,9 @@ while [ -z "$done" ]; do
       printf "Good bye!\n"
       exit 0
       ;;
-    *) printf "invalid option %s\n" "$REPLY" ;;
+    *) printf "invalid option %s\n" "$REPLY"
+      break
+      ;;
     esac
   done
 
@@ -494,7 +498,9 @@ while [ -z "$done" ]; do
             done="yes"
             break
             ;;
-          *) printf "invalid option %s\n" "$REPLY" ;;
+          *) printf "invalid option %s\n" "$REPLY"
+            break
+            ;;
           esac
         done
       done
@@ -525,7 +531,9 @@ while [ -z "$done" ]; do
           done="yes"
           break
           ;;
-        *) printf "invalid option %s\n" "$REPLY" ;;
+        *) printf "invalid option %s\n" "$REPLY"
+          break
+          ;;
         esac
       done
     done
@@ -590,7 +598,9 @@ while [ -z "$done" ]; do
           done="yes"
           break
           ;;
-        *) printf "invalid option %s\n" "$REPLY" ;;
+        *) printf "invalid option %s\n" "$REPLY"
+          break
+          ;;
         esac
       done
     done
