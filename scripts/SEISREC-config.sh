@@ -7,6 +7,8 @@ cfgeverywhere=""
 
 if [ -z "$repodir" ]; then
   repodir="$HOME"
+  printf "repodir = %s\n" "$repodir"
+  any_key
 fi
 
 workdir="$repodir/SEISREC-DIST"
@@ -101,7 +103,7 @@ function print_help() {
 # CONFIGURE STATION PARAMS
 # ################################################################################################################################
 function configure_station() {
-  local opts
+  #local opts
   opts=("-pth" "$repodir/SEISREC-DIST/")
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
