@@ -106,7 +106,7 @@ function configure_station() {
   #local opts
   opts=("-pth" "$repodir/SEISREC-DIST/")
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
-  "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
+  "$repodir/SEISREC-DIST/util/util_paramedit -pth  \"$repodir/SEISREC-DIST/\"
 }
 
 ##################################################################################################################################
@@ -564,6 +564,7 @@ while [ -z "$done" ]; do
           fi
         done
       fi
+      print_title "STATION SOFTWARE & UPDATE - SEISREC_config.sh"
 
       options=("SEISREC version & update" "Station Setup" "Back")
       select opt in "${options[@]}"; do
