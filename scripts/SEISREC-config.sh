@@ -473,6 +473,7 @@ while [ -z "$done" ]; do
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
+      any_key
     else
       while [ -z "$done" ]; do
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
