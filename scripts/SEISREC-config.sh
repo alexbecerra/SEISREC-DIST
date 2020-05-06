@@ -470,11 +470,10 @@ while [ -z "$done" ]; do
   # CLEAN UP FUNCTION
   #-------------------------------------------------------------------------------------------------------------------------------
   "Configure Station Software")
+    done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
-      break
     else
-      done=""
       while [ -z "$done" ]; do
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
         options=("Configure Station Parameters" "Manage Unit Services" "Help" "Back")
