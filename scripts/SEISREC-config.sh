@@ -5,6 +5,12 @@ choice=""
 done=""
 cfgeverywhere=""
 
+if [ -z "$repodir" ]; then
+  repodir="$HOME"
+fi
+
+workdir="$repodir/SEISREC-DIST"
+
 function print_banner() {
   printf "                                                                             \n"
   printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"
@@ -415,12 +421,6 @@ print_title
 print_banner
 printf "\n"
 any_key
-
-if [ -z "$repodir" ]; then
-  repodir="$HOME"
-fi
-
-workdir="$repodir/SEISREC-DIST"
 
 if [ -n "$debug" ]; then
   printf "repodir = %s\n" "$repodir"
