@@ -57,6 +57,12 @@ function clean_up() {
     fi
   fi
 }
+##################################################################################################################################
+# CLEAN UP AFTER SIG-INT
+# ################################################################################################################################
+function any_key () {
+  read -n 1 -r -s -p $'Press enter to continue...\n'
+}
 
 ##################################################################################################################################
 # CLEAN UP AFTER SIG-INT
@@ -148,7 +154,7 @@ function select_several_menu() {
 
     local ans
 
-    read -r -p "$Select" ans
+    read -r -p "Select Options: " ans
     for m in $ans; do
       if [[ "$m" =~ ^[0-9]$ ]]; then
         if [ -n "$debug" ]; then
@@ -268,26 +274,31 @@ function manage_services() {
       "Start")
         choice="Start"
         "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        any_key
         break
         ;;
       "Stop")
         choice="Stop"
         "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        any_key
         break
         ;;
       "Disable")
         choice="Disable"
         "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        any_key
         break
         ;;
       "Clean")
         choice="Clean"
         "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        any_key
         break
         ;;
       "Install")
         choice="Install"
         "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        any_key
         break
         ;;
       "Select Services")
@@ -401,7 +412,7 @@ shift $((OPTIND - 1))
 print_title
 print_banner
 printf "\n"
-read -n 1 -r -s -p $'Press enter to continue...\n'
+any_key
 
 if [ -z "$repodir" ]; then
   repodir="$HOME"
@@ -471,12 +482,12 @@ while [ -z "$done" ]; do
           case $opt in
           "Configure Station Parameters")
             configure_station
-            read -n 1 -r -s -p $'Press enter to continue...\n'
+            any_key
             break
             ;;
           "Manage Unit Services")
             manage_services
-            read -n 1 -r -s -p $'Press enter to continue...\n'
+            any_key
             break
             ;;
           "Back")
@@ -502,12 +513,12 @@ while [ -z "$done" ]; do
         case $opt in
         "Run Station Tests")
           "$repodir/SEISREC-DIST/scripts/SEISREC-TEST.sh"
-          read -n 1 -r -s -p $'Press enter to continue...\n'
+          any_key
           break
           ;;
         "Detailed Software Info")
           get_software_info
-          read -n 1 -r -s -p $'Press enter to continue...\n'
+          any_key
           break
           ;;
         "Back")
@@ -549,7 +560,7 @@ while [ -z "$done" ]; do
         case $opt in
         "SEISREC version & update")
           update_station_software
-          read -n 1 -r -s -p $'Press enter to continue...\n'
+          any_key
           break
           ;;
         "Station Setup")
@@ -572,7 +583,7 @@ while [ -z "$done" ]; do
             fi
           fi
           setup_station
-          read -n 1 -r -s -p $'Press enter to continue...\n'
+          any_key
           break
           ;;
         "Back")
