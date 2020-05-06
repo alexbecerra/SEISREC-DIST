@@ -36,9 +36,11 @@ function under_construction() {
 # PRINT TITLE FUNCTION
 # ################################################################################################################################
 function print_title() {
-  if ! cls; then
-    if ! clear; then
-      printf "D'OH"
+  if [ -z "$debug" ]; then
+    if ! cls >/dev/null 2>&1; then
+      if ! clear >/dev/null 2>&1; then
+        printf "D'OH"
+      fi
     fi
   fi
   if [ -n "$1" ]; then
@@ -60,7 +62,7 @@ function clean_up() {
     if [ -n "$debug" ]; then
       printf "Removing %s\n" "$file"
     fi
-    if ! rm "$file"; then
+    if ! rm "$file" >/dev/null 2>&1; then
       printf "Error removing %s\n" "$file"
     fi
   fi
@@ -68,7 +70,7 @@ function clean_up() {
 ##################################################################################################################################
 # CLEAN UP AFTER SIG-INT
 # ################################################################################################################################
-function any_key () {
+function any_key() {
   read -n 1 -r -s -p $'Press enter to continue...\n'
 }
 
@@ -84,11 +86,13 @@ function ctrl_c() {
     printf "SIG-INT DETECTED!\n"
   fi
   local tempfiles
-  tempfiles=$(ls "$workdir" | grep ".*.tmp")
-  for t in $tempfiles; do
-    clean_up "$t"
-  done
-  exit 1
+  if [ -d "$workdir" ]; then
+    tempfiles=$(ls "$workdir" | grep ".*.tmp")
+    for t in $tempfiles; do
+      clean_up "$t"
+    done
+    exit 1
+  fi
 }
 
 ##################################################################################################################################
@@ -106,7 +110,7 @@ function configure_station() {
   #local opts
   opts=("-pth" "$repodir/SEISREC-DIST/")
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
-  "$repodir/SEISREC-DIST/util/util_paramedit -pth  \"$repodir/SEISREC-DIST/\"
+  "$repodir/SEISREC-DIST/util/util_paramedit -pth  \"$repodir/SEISREC-DIST/\""
 }
 
 ##################################################################################################################################
@@ -324,7 +328,8 @@ function manage_services() {
         fi
         break
         ;;
-      *) printf "invalid option %s\n" "$REPLY"
+      *)
+        printf "invalid option %s\n" "$REPLY"
         break
         ;;
       esac
@@ -458,7 +463,8 @@ while [ -z "$done" ]; do
       printf "Good bye!\n"
       exit 0
       ;;
-    *) printf "invalid option %s\n" "$REPLY"
+    *)
+      printf "invalid option %s\n" "$REPLY"
       break
       ;;
     esac
@@ -500,7 +506,8 @@ while [ -z "$done" ]; do
             done="yes"
             break
             ;;
-          *) printf "invalid option %s\n" "$REPLY"
+          *)
+            printf "invalid option %s\n" "$REPLY"
             break
             ;;
           esac
@@ -533,7 +540,8 @@ while [ -z "$done" ]; do
           done="yes"
           break
           ;;
-        *) printf "invalid option %s\n" "$REPLY"
+        *)
+          printf "invalid option %s\n" "$REPLY"
           break
           ;;
         esac
@@ -601,7 +609,8 @@ while [ -z "$done" ]; do
           done="yes"
           break
           ;;
-        *) printf "invalid option %s\n" "$REPLY"
+        *)
+          printf "invalid option %s\n" "$REPLY"
           break
           ;;
         esac
