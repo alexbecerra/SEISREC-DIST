@@ -8,3 +8,5 @@ sudo "$dir/TEST_ACC355"
 echo " "
 echo "Comenzando pruebas de placa TIMING"
 sudo "$dir/TEST_TIMING"
+
+                                                                              ,--.

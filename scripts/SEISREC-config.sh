@@ -5,11 +5,47 @@ choice=""
 done=""
 cfgeverywhere=""
 
-workdir="$repodir/SEISREC-DIST"
+function print_banner() {
+  printf "                                                                             \n"
+  printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"
+  printf "██╔════╝██╔════╝██║    ██║      ██╔════╝██╔════╝████╗  ██║\n"
+  printf "█████╗  █████╗  ██║ █╗ ██║█████╗██║     ███████╗██╔██╗ ██║\n"
+  printf "██╔══╝  ██╔══╝  ██║███╗██║╚════╝██║     ╚════██║██║╚██╗██║\n"
+  printf "███████╗███████╗╚███╔███╔╝      ╚██████╗███████║██║ ╚████║\n"
+  printf "╚══════╝╚══════╝ ╚══╝╚══╝        ╚═════╝╚══════╝╚═╝  ╚═══╝\n"
+}
+
+function under_construction() {
+  printf "\n"
+  printf "  #######################################\n"
+  printf "  #                                     #\n"
+  printf "  #           UNDER CONSTRUCTION        #\n"
+  printf "  #                                     #\n"
+  printf "  #######################################\n"
+  printf "\n"
+}
+##################################################################################################################################
+# PRINT TITLE FUNCTION
+# ################################################################################################################################
+function print_title() {
+  if ! cls; then
+    if ! clear; then
+      printf "D'OH"
+    fi
+  fi
+  if [ -n "$1" ]; then
+    while [ -n "$1" ]; do
+      printf "%s" "$1"
+      shift
+    done
+    printf "\n\n"
+  fi
+}
+
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
-function clean_up () {
+function clean_up() {
   local file
   file="$1"
   if [ -f "$file" ]; then
@@ -23,7 +59,7 @@ function clean_up () {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# CLEAN UP AFTER SIG-INT
 # ################################################################################################################################
 
 # trap ctrl-c and call ctrl_c()
@@ -42,29 +78,25 @@ function ctrl_c() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# PRINT HELP SECTION
 # ################################################################################################################################
 function print_help() {
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
-  printf "\n"
+  print_title "HELP - SEISREC-config.sh"
+  under_construction
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# CONFIGURE STATION PARAMS
 # ################################################################################################################################
 function configure_station() {
   local opts
   opts=("-pth" "$repodir/SEISREC-DIST/")
+  print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# UPDATE SYSTEM SOFTWARE
 # ################################################################################################################################
 function update_station_software() {
   printf "Under Construction!\n"
@@ -77,18 +109,18 @@ function update_station_software() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# MENU FUNCTION
 # ################################################################################################################################
 function select_several_menu() {
   local menu_opts_file
-  local menu_prompt
+  local menu_title
   local menu_selections
   local answered
   local optionnames
   local selected_names
   local selected_names_file
 
-  menu_prompt="$1"
+  menu_title="$1"
   menu_opts_file="$2"
   selected_names_file="$3"
 
@@ -97,7 +129,7 @@ function select_several_menu() {
   optionnames=()
   if [ -f "$menu_opts_file" ]; then
     for n in $(cat "$menu_opts_file"); do
-      optionnames+=( "$n" )
+      optionnames+=("$n")
     done
   else
     printf "Menu options file not found!\n"
@@ -105,6 +137,7 @@ function select_several_menu() {
   fi
 
   while [ -z "$answered" ]; do
+    print_title "$menu_title"
     printf "\n"
     indx=1
     for n in "${optionnames[@]}"; do
@@ -115,7 +148,7 @@ function select_several_menu() {
 
     local ans
 
-    read -r -p "$menu_prompt" ans
+    read -r -p "$Select" ans
     for m in $ans; do
       if [[ "$m" =~ ^[0-9]$ ]]; then
         if [ -n "$debug" ]; then
@@ -144,7 +177,7 @@ function select_several_menu() {
     selected_names=()
     printf "\nOption Selected: "
     for n in "${menu_selections[@]}"; do
-      selected_names+=( "$n" )
+      selected_names+=("$n")
       printf "%s " "${optionnames[$((n))]}"
     done
 
@@ -152,40 +185,40 @@ function select_several_menu() {
     # CONFIG CONFIRMATION
     #---------------------------------------------------------------
     printf "\n[C]ontinue [R]eselect [A]bort ? "
-      if ! read -r continue; then
-        printf "Error reading STDIN! Aborting...\n"
-        exit 1
-      elif [[ "$continue" =~ [cC].* ]]; then
-        answered="yes"
-        if [ ! -f "$selected_names_file" ]; then
-          touch "$selected_names_file"
-        fi
-        for n in "${selected_names[@]}"; do
-          printf "%s\n" "${optionnames[$((n))]}" >> "$selected_names_file"
-        done
-        break
-      elif [[ "$continue" =~ [rR].* ]]; then
-        printf "Reselecting...\n"
-      elif [[ "$continue" =~ [aA].* ]]; then
-          printf "Cleaning up & exiting...\n"
-          clean_up "$menu_opts_file"
-          if [ -n "$debug" ]; then
-            printf "Bye bye!\n"
-          fi
-        else
-          printf "\n[C]ontinue [R]eselect [A]bort ? "
-        fi
+    if ! read -r continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [cC].* ]]; then
+      answered="yes"
+      if [ ! -f "$selected_names_file" ]; then
+        touch "$selected_names_file"
+      fi
+      for n in "${selected_names[@]}"; do
+        printf "%s\n" "${optionnames[$((n))]}" >>"$selected_names_file"
+      done
+      break
+    elif [[ "$continue" =~ [rR].* ]]; then
+      printf "Reselecting...\n"
+    elif [[ "$continue" =~ [aA].* ]]; then
+      printf "Cleaning up & exiting...\n"
+      clean_up "$menu_opts_file"
+      if [ -n "$debug" ]; then
+        printf "Bye bye!\n"
+      fi
+    else
+      printf "\n[C]ontinue [R]eselect [A]bort ? "
+    fi
   done
 
   if [ -f "$menu_opts_file" ]; then
     if ! rm "$menu_opts_file"; then
-        printf "Error removing aux files!\n"
+      printf "Error removing aux files!\n"
     fi
   fi
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# MANAGE SERVICES
 # ################################################################################################################################
 function manage_services() {
   local PS3
@@ -193,80 +226,154 @@ function manage_services() {
   local opt
   local choice
   local REPLY
-  local menu_prompt
+  local menu_title
   local answered
 
   while [ -z "$answered" ]; do
-  if [ ! -f "$workdir/selected_services_file.tmp" ]; then
-    printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >> "$workdir/selected_services_file.tmp"
-  fi
+    print_title "MANAGE SERVICES - SEISREC_config.sh"
 
-  local list
-  if [ -f "$workdir/selected_services_file.tmp" ]; then
-    list=$(cat "$workdir/selected_services_file.tmp")
-    printf "\nSelected services for management: "
-    for l in $list; do
-      printf "%s " "$l"
-    done
-    printf "\n"
-  fi
-  PS3='Selection: '
-  options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
-  select opt in "${options[@]}"; do
-    case $opt in
-    "Start")
-      choice="Start"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Stop")
-      choice="Stop"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Disable")
-      choice="Disable"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Clean")
-      choice="Clean"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Install")
-      choice="Install"
-      "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Select Services")
-      printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >> "$workdir/available_services.tmp"
-      select_several_menu "Select services:" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
-      break
-      ;;
-    "Back")
-    answered="yes"
-      printf "Cleaning up & exiting...\n"
-      clean_up "$workdir/available_services.tmp"
-      clean_up "$workdir/selected_services_file.tmp"
+    enabled_services=$(systemctl list-unit-files)
+    services=$(ls "$repodir/SEISREC-DIST/services")
+    printf "\nService status:\n"
+    for s in $services; do
       if [ -n "$debug" ]; then
-        printf "Bye bye!\n"
+        printf "s = %s\n" "$s"
       fi
-      break
-      ;;
-    *) printf "invalid option %s\n" "$REPLY" ;;
-    esac
+      servcheck=$(printf "%s" "$enabled_services" | grep "$s")
+      if [ -n "$debug" ]; then
+        printf "servcheck = %s\n" "$servcheck"
+      fi
+      if [ -n "$servcheck" ]; then
+        printf "%s\n" "$servcheck"
+      fi
+    done
+
+    if [ ! -f "$workdir/selected_services_file.tmp" ]; then
+      printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >>"$workdir/selected_services_file.tmp"
+    fi
+
+    local list
+    if [ -f "$workdir/selected_services_file.tmp" ]; then
+      list=$(cat "$workdir/selected_services_file.tmp")
+      printf "\nSelected services for management: "
+      for l in $list; do
+        printf "%s " "$l"
+      done
+      printf "\n"
+    fi
+    PS3='Selection: '
+    options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
+    select opt in "${options[@]}"; do
+      case $opt in
+      "Start")
+        choice="Start"
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Stop")
+        choice="Stop"
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Disable")
+        choice="Disable"
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Clean")
+        choice="Clean"
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Install")
+        choice="Install"
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Select Services")
+        printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >>"$workdir/available_services.tmp"
+        select_several_menu "SELECT SERVICES - SEISREC-config.sh" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Back")
+        answered="yes"
+        printf "Cleaning up & exiting...\n"
+        clean_up "$workdir/available_services.tmp"
+        clean_up "$workdir/selected_services_file.tmp"
+        if [ -n "$debug" ]; then
+          printf "Bye bye!\n"
+        fi
+        break
+        ;;
+      *) printf "invalid option %s\n" "$REPLY" ;;
+      esac
+    done
   done
-done
 }
 
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
-function get_station_info() {
-  printf "asdf\n"
+function get_software_info() {
+  print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
+  under_construction
 }
 
+##################################################################################################################################
+# STATION SETUP FUNCTION
+# ################################################################################################################################
+function setup_station() {
+  print_title "STATION SETUP - SEISREC-config.sh"
+
+  printf "Preparing setup...\n"
+
+  printf "Checking for updates...\n"
+  update_station_software
+
+  printf "Setting up station parameters...\n"
+  if ! "$repodir/SEISREC-DIST/util/util_paramedit"; then
+    printf "Error setting up station parameters! Please fix problems before retrying!\n"
+    exit 1
+  fi
+
+  printf "Installing services...\n"
+  if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "INSTALL"; then
+    printf "Error installing services! Please fix problems before retrying!\n"
+    exit 1
+  fi
+
+  if ! read -r -p "Install SEISREC-config? [Yes/No]" continue; then
+    printf "Error reading STDIN! Aborting...\n"
+    exit 1
+  elif [[ "$continue" =~ [yY].* ]]; then
+    cfgeverywhere="yes"
+  elif [[ "$continue" =~ [nN].* ]]; then
+    cfgeverywhere=""
+  fi
+
+  if [ -n "$cfgeverywhere" ]; then
+    # if symlink to SEISREC-config doesn't exist, create it
+    if [ ! -h "$repodir/SEISREC-DIST/SEISREC-config" ]; then
+      printf "Creating symlinks to SEISREC-config...\n"
+      ln -s "$repodir/SEISREC-DIST/scripts/SEISREC-config.sh" "$repodir/SEISREC-DIST/SEISREC-config"
+    fi
+
+    # Check if ~/SEISREC is in PATH, if not, add it to PATH
+    inBashrc=$(cat "$HOME/.bashrc" | grep 'SEISREC-DIST')
+    inPath=$(printf "%s" "$PATH" | grep 'SEISREC-DIST')
+    if [ -z "$inBashrc" ]; then
+      if [ -z "$inPath" ]; then
+        # Add it permanently to path
+        printf "Adding ./SEISREC-DIST to PATH...\n"
+        printf 'inPath=$(printf "$PATH"|grep "SEISREC-DIST")\n' >>~/.bashrc
+        printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
+        printf 'then\n' >>~/.bashrc
+        printf '  export PATH="~/SEISREC-DIST:$PATH"\n' >>~/.bashrc
+        printf 'fi\n' >>~/.bashrc
+      fi
+    fi
+  fi
+}
 
 ##################################################################################################################################
 # CLEAN UP FUNCTION
@@ -291,12 +398,17 @@ while getopts "dh" opt; do
 done
 shift $((OPTIND - 1))
 
-printf "SEISREC_config.sh - SEISREC configuration & setup utility\n"
+print_title
+print_banner
+printf "\n"
+read -n 1 -r -s -p $'Press enter to continue...\n'
 
 if [ -z "$repodir" ]; then
   repodir="$HOME"
 fi
 
+workdir="$repodir/SEISREC-DIST"
+5
 if [ -n "$debug" ]; then
   printf "repodir = %s\n" "$repodir"
 fi
@@ -304,22 +416,23 @@ fi
 #=================================================================================================================================
 # CLEAN UP FUNCTION
 #=================================================================================================================================
+
 while [ -z "$done" ]; do
-  printf "\n"
+  print_title "MAIN MENU - SEISREC_config"
   PS3='Selection: '
-  options=("Configure Station" "Station Info" "Station Setup" "Help" "Quit")
+  options=("Configure Station Software" "Station Info & Tests" "Software Setup & Update" "Help" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
-    "Configure Station")
-      choice="Configure Station"
+    "Configure Station Software")
+      choice="Configure Station Software"
       break
       ;;
-    "Station Info")
-      choice="Station Info"
+    "Station Info & Tests")
+      choice="Station Info & Tests"
       break
       ;;
-    "Station Setup")
-      choice="Station Setup"
+    "Software Setup & Update")
+      choice="Software Setup & Update"
       break
       ;;
     "Help")
@@ -338,53 +451,32 @@ while [ -z "$done" ]; do
     printf "choice = %s\n" "$choice"
   fi
 
-#=================================================================================================================================
-# CLEAN UP FUNCTION
-#=================================================================================================================================
+  #=================================================================================================================================
+  # CLEAN UP FUNCTION
+  #=================================================================================================================================
   case $choice in
   #-------------------------------------------------------------------------------------------------------------------------------
   # CLEAN UP FUNCTION
   #-------------------------------------------------------------------------------------------------------------------------------
-  "Configure Station")
+  "Configure Station Software")
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
       break
     else
       done=""
       while [ -z "$done" ]; do
-        printf "\n"
-        options=("Configure Station Parameters" "Manage Unit Services" "Run Station Tests" "Update Station Software" "Help" "Back")
+        print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
+        options=("Configure Station Parameters" "Manage Unit Services" "Help" "Back")
         select opt in "${options[@]}"; do
           case $opt in
           "Configure Station Parameters")
             configure_station
+            read -n 1 -r -s -p $'Press enter to continue...\n'
             break
             ;;
           "Manage Unit Services")
-            enabled_services=$(systemctl list-unit-files)
-            services=$(ls "$repodir/SEISREC-DIST/services")
-            printf "\nService status:\n"
-            for s in $services; do
-              if [ -n "$debug" ]; then
-                printf "s = %s\n" "$s"
-              fi
-              servcheck=$(printf "%s" "$enabled_services" | grep "$s")
-              if [ -n "$debug" ]; then
-                printf "servcheck = %s\n" "$servcheck"
-              fi
-              if [ -n "$servcheck" ]; then
-                  printf "%s\n" "$servcheck"
-              fi
-            done
             manage_services
-            break
-            ;;
-          "Run Station Tests")
-            "$repodir/SEISREC-DIST/scripts/SEISREC-TEST.sh"
-            break
-            ;;
-          "Update Station Software")
-            update_station_software
+            read -n 1 -r -s -p $'Press enter to continue...\n'
             break
             ;;
           "Back")
@@ -398,79 +490,100 @@ while [ -z "$done" ]; do
       done=""
     fi
     ;;
-  #-------------------------------------------------------------------------------------------------------------------------------
-  # CLEAN UP FUNCTION
-  #-------------------------------------------------------------------------------------------------------------------------------
-  "Station Info")
-    get_station_info
-    ;;
-  #-------------------------------------------------------------------------------------------------------------------------------
-  # CLEAN UP FUNCTION
-  #-------------------------------------------------------------------------------------------------------------------------------
-  "Station Setup")
-    if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
-      printf "Station appears to be already set up.\n"
-      if ! read -r -p "Configure station from scratch? [Yes/No] " continue; then
-        printf "Error reading STDIN! Aborting...\n"
-        exit 1
-      elif [[ "$continue" =~ [yY].* ]]; then
-        if ! read -r -p "This will overwrite current station configuration! Are you sure? [Yes/No] " continue; then
-          printf "Error reading STDIN! Aborting...\n"
-          exit 1
-        elif [[ "$continue" =~ [yY].* ]]; then
-          clean_up "$repodir/SEISREC-DIST/parameter"
-        elif [[ "$continue" =~ [nN].* ]]; then
+    #-------------------------------------------------------------------------------------------------------------------------------
+    # CLEAN UP FUNCTION
+    #-------------------------------------------------------------------------------------------------------------------------------
+  "Station Info & Tests")
+    done=""
+    while [ -z "$done" ]; do
+      print_title "STATION INFO - SEISREC_config.sh"
+      options=("Run Station Tests" "Detailed Software Info" "Back")
+      select opt in "${options[@]}"; do
+        case $opt in
+        "Run Station Tests")
+          "$repodir/SEISREC-DIST/scripts/SEISREC-TEST.sh"
+          read -n 1 -r -s -p $'Press enter to continue...\n'
           break
-        fi
-      elif [[ "$continue" =~ [nN].* ]]; then
-        break
+          ;;
+        "Detailed Software Info")
+          get_software_info
+          read -n 1 -r -s -p $'Press enter to continue...\n'
+          break
+          ;;
+        "Back")
+          done="yes"
+          break
+          ;;
+        *) printf "invalid option %s\n" "$REPLY" ;;
+        esac
+      done
+    done
+    done=""
+    ;;
+    #-------------------------------------------------------------------------------------------------------------------------------
+    # CLEAN UP FUNCTION
+    #-------------------------------------------------------------------------------------------------------------------------------
+  "Software Setup & Update")
+    done=""
+    while [ -z "$done" ]; do
+      continue=""
+      print_title "STATION SOFTWARE & UPDATE - SEISREC_config.sh"
+      if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
+        printf "Station is not set up.\n"
+        while [ -z "$continue" ]; do
+          if ! read -r -p "Proceed with station setup? [Yes/Skip] " continue; then
+            printf "Error reading STDIN! Aborting...\n"
+            exit 1
+          elif [[ "$continue" =~ [yY].* ]]; then
+            setup_station
+          elif [[ "$continue" =~ [sS].* ]]; then
+            break
+          else
+            continue=""
+          fi
+        done
       fi
-    fi
 
-    printf "Installing services...\n"
-    if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "INSTALL"; then
-      printf "Error installing services! Please fix problems before retrying!\n"
-      exit 1
-    fi
-
-    printf "Setting up station parameters...\n"
-    if ! "$repodir/SEISREC-DIST/util/util_paramedit"; then
-      printf "Error setting up station parameters! Please fix problems before retrying!\n"
-      exit 1
-    fi
-
-
-    if ! read -r -p "Install SEISREC-config? [Yes/No]" continue; then
-      printf "Error reading STDIN! Aborting...\n"
-      exit 1
-    elif [[ "$continue" =~ [yY].* ]]; then
-      cfgeverywhere="yes"
-    elif [[ "$continue" =~ [nN].* ]]; then
-      cfgeverywhere=""
-    fi
-
-    if [ -n "$cfgeverywhere" ]; then
-      # if symlink to SEISREC-config doesn't exist, create it
-      if [ ! -h "$repodir/SEISREC-DIST/SEISREC-config" ]; then
-        printf "Creating symlinks to SEISREC-config...\n"
-        ln -s "$repodir/SEISREC-DIST/scripts/SEISREC-config.sh" "$repodir/SEISREC-DIST/SEISREC-config"
-      fi
-
-      # Check if ~/SEISREC is in PATH, if not, add it to PATH
-      inBashrc=$(cat "$HOME/.bashrc" | grep 'SEISREC-DIST')
-      inPath=$(printf "%s" "$PATH" | grep 'SEISREC-DIST')
-      if [ -z "$inBashrc" ]; then
-        if [ -z "$inPath" ]; then
-          # Add it permanently to path
-          printf "Adding ./SEISREC-DIST to PATH...\n"
-          printf 'inPath=$(printf "$PATH"|grep "SEISREC-DIST")\n' >>~/.bashrc
-          printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
-          printf 'then\n' >>~/.bashrc
-          printf '  export PATH="~/SEISREC-DIST:$PATH"\n' >>~/.bashrc
-          printf 'fi\n' >>~/.bashrc
-        fi
-      fi
-    fi
+      options=("SEISREC version & update" "Station Setup" "Back")
+      select opt in "${options[@]}"; do
+        case $opt in
+        "SEISREC version & update")
+          update_station_software
+          read -n 1 -r -s -p $'Press enter to continue...\n'
+          break
+          ;;
+        "Station Setup")
+          if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
+            printf "Station appears to be already set up.\n"
+            if ! read -r -p "Configure station from scratch? [Yes/No] " continue; then
+              printf "Error reading STDIN! Aborting...\n"
+              exit 1
+            elif [[ "$continue" =~ [yY].* ]]; then
+              if ! read -r -p "This will overwrite current station configuration! Are you sure? [Yes/No] " continue; then
+                printf "Error reading STDIN! Aborting...\n"
+                exit 1
+              elif [[ "$continue" =~ [yY].* ]]; then
+                clean_up "$repodir/SEISREC-DIST/parameter"
+              elif [[ "$continue" =~ [nN].* ]]; then
+                break
+              fi
+            elif [[ "$continue" =~ [nN].* ]]; then
+              break
+            fi
+          fi
+          setup_station
+          read -n 1 -r -s -p $'Press enter to continue...\n'
+          break
+          ;;
+        "Back")
+          done="yes"
+          break
+          ;;
+        *) printf "invalid option %s\n" "$REPLY" ;;
+        esac
+      done
+    done
+    done=""
     ;;
   esac
 done
