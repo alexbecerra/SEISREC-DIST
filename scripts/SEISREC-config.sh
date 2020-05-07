@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -x
 debug=''
 choice=""
 done=""
@@ -357,10 +356,7 @@ function setup_station() {
   update_station_software
 
   printf "Setting up station parameters...\n"
-  if ! "$repodir/SEISREC-DIST/util/util_paramedit"; then
-    printf "Error setting up station parameters! Please fix problems before retrying!\n"
-    exit 1
-  fi
+  configure_station
 
   printf "Installing services...\n"
   if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "INSTALL"; then
