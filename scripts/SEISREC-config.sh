@@ -102,6 +102,12 @@ function print_help() {
 function configure_station() {
   local opts
   opts=( -pth "$repodir/SEISREC-DIST/")
+  if [ -n "$debug" ]; then
+    for o in "${opts[@]}"; do
+      printf "%s " "$o"
+    done
+    printf "\n"
+  fi
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
 }
