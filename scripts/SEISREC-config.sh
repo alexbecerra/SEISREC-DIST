@@ -99,10 +99,10 @@ function print_help() {
 # CONFIGURE STATION PARAMS
 # ################################################################################################################################
 function configure_station() {
-  #local opts
-  opts=("-pth" "$repodir/SEISREC-DIST/")
+  local opts
+  opts=( -pth "$repodir/SEISREC-DIST/")
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
-  "$repodir/SEISREC-DIST/util/util_paramedit -pth  \"$repodir/SEISREC-DIST/\""
+  "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
 }
 
 ##################################################################################################################################
