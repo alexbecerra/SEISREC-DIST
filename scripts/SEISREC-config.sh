@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 debug=''
 choice=""
 done=""
@@ -401,7 +402,6 @@ if [ -z "$repodir" ]; then
   if [ -n "$debug" ]; then
     printf "repodir = %s\n" "$repodir"
   fi
-  any_key
 fi
 
 workdir="$repodir/SEISREC-DIST"
