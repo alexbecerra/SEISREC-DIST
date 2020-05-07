@@ -100,9 +100,10 @@ function print_help() {
 # CONFIGURE STATION PARAMS
 # ################################################################################################################################
 function configure_station() {
-  local opts
-  opts=( -pth "$repodir/SEISREC-DIST/")
+  local opts=()
+  opts+=( -pth "$repodir/SEISREC-DIST/")
   if [ -n "$debug" ]; then
+    printf "opts = "
     for o in "${opts[@]}"; do
       printf "%s " "$o"
     done
