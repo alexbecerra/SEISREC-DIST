@@ -398,7 +398,9 @@ function setup_station() {
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$HOME"
-  printf "repodir = %s\n" "$repodir"
+  if [ -n "$debug" ]; then
+    printf "repodir = %s\n" "$repodir"
+  fi
   any_key
 fi
 
