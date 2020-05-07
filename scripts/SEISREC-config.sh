@@ -5,14 +5,6 @@ choice=""
 done=""
 cfgeverywhere=""
 
-if [ -z "$repodir" ]; then
-  repodir="$HOME"
-  printf "repodir = %s\n" "$repodir"
-  any_key
-fi
-
-workdir="$repodir/SEISREC-DIST"
-
 function print_banner() {
   printf "                                                                             \n"
   printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"
@@ -404,6 +396,14 @@ function setup_station() {
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
+if [ -z "$repodir" ]; then
+  repodir="$HOME"
+  printf "repodir = %s\n" "$repodir"
+  any_key
+fi
+
+workdir="$repodir/SEISREC-DIST"
+
 # Parse options
 while getopts "dh" opt; do
   case ${opt} in
