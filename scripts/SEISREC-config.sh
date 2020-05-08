@@ -227,15 +227,16 @@ function dist2dev() {
   print_title "$sta_type TO $other_sta_type - SEISREC_config"
   local opts=()
   if [ -n "$debug" ]; then
-    opts+=( "-d" )
+    opts+=( -d )
   fi
   opts+=("$other_sta_type")
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
 }
 
 function SEISREC-build() {
+  local opts=()
   if [ -n "$debug" ]; then
-    opts+=( "-d" )
+    opts+=( -d )
   fi
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
 }
