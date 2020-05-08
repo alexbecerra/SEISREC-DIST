@@ -1,7 +1,7 @@
 #!/bin/bash
 # TODO: Complete script
 
-debug="yes"
+debug=""
 
 convert_to=""
 if [ -z "$repodir" ]; then
@@ -17,6 +17,25 @@ function print_help() {
   printf "       DEV:  Convert to development version \n"
   exit 0
 }
+# Parse options
+while getopts "dh" opt; do
+  case ${opt} in
+  d)
+    debug="yes"
+    ;;
+  h)
+    printf "Usage: dist2dev.sh [options]"
+    printf "    [-h]                  Display this help message & exit.\n"
+    printf "    [-d]                  Enable debug messages.\n"
+    exit 0
+    ;;
+  \?)
+    printf "Invalid Option: -%s" "$OPTARG" 1>&2
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
 
 while [ -n "$1" ]; do
   PARAM="${1,,}"

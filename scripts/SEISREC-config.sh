@@ -15,7 +15,6 @@ if [ -z "$repodir" ]; then
 fi
 workdir="$repodir/SEISREC-DIST"
 
-
 source "$workdir/scripts/script_utils.sh"
 
 ##################################################################################################################################
@@ -32,7 +31,7 @@ function print_help() {
 # ################################################################################################################################
 function configure_station() {
   local opts=()
-  opts+=( -pth "$repodir/SEISREC-DIST/")
+  opts+=(-pth "$repodir/SEISREC-DIST/")
   if [ -n "$debug" ]; then
     printf "opts = "
     for o in "${opts[@]}"; do
@@ -225,8 +224,13 @@ function setup_station() {
 # CLEAN UP FUNCTION
 # ################################################################################################################################
 function dist2dev() {
-    print_title "$sta_type TO $other_sta_type - SEISREC_config"
-    "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "$other_sta_type"
+  print_title "$sta_type TO $other_sta_type - SEISREC_config"
+  local opts=()
+  opts+=("$other_sta_type")
+  if [ -n "$debug" ]; then
+    opts+=( "-d" )
+  fi
+  "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
 }
 
 #*********************************************************************************************************************************
@@ -269,7 +273,7 @@ fi
 while [ -z "$done" ]; do
   print_title "MAIN MENU - SEISREC_config"
   PS3='Selection: '
-  options=(  "Software Setup & Update" "Station Info & Tests" "Advanced Options"  "Help" "Quit")
+  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Help" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
     "Advanced Options")
