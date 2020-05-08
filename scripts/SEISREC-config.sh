@@ -328,8 +328,8 @@ while [ -z "$done" ]; do
         printf "SEISREC-DEV directory present, but has wrong repository!\n"
       fi
     else
-      sta_type="DEV"
-      other_sta_type="DIST"
+      sta_type="DIST"
+      other_sta_type="DEV"
     fi
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
