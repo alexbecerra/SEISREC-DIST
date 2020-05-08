@@ -315,28 +315,28 @@ while [ -z "$done" ]; do
   # CLEAN UP FUNCTION
   #-------------------------------------------------------------------------------------------------------------------------------
   "Advanced Options")
-    if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
-      currdir=$(pwd)
-      if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
-        printf "Error cd'ing into SEISREC-DEV!\n"
-      fi
-      reponame=$(basename $(git rev-parse --show-toplevel))
-      if [ "$reponame" == "SEISREC-DEV" ]; then
-        sta_type="DEV"
-        other_sta_type="DIST"
-      else
-        printf "SEISREC-DEV directory present, but has wrong repository!\n"
-      fi
-    else
-      sta_type="DIST"
-      other_sta_type="DEV"
-    fi
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
       any_key
     else
       while [ -z "$done" ]; do
+        if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
+          currdir=$(pwd)
+          if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
+            printf "Error cd'ing into SEISREC-DEV!\n"
+          fi
+          reponame=$(basename $(git rev-parse --show-toplevel))
+          if [ "$reponame" == "SEISREC-DEV" ]; then
+            sta_type="DEV"
+            other_sta_type="DIST"
+          else
+            printf "SEISREC-DEV directory present, but has wrong repository!\n"
+          fi
+        else
+          sta_type="DIST"
+          other_sta_type="DEV"
+        fi
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
         options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Help" "Back")
         select opt in "${options[@]}"; do
