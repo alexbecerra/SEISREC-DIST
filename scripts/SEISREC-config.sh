@@ -233,6 +233,13 @@ function dist2dev() {
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
 }
 
+function SEISREC-build() {
+  if [ -n "$debug" ]; then
+    opts+=( "-d" )
+  fi
+  "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/dist2dev.sh" "${opts[@]}"
+}
+
 #*********************************************************************************************************************************
 # MAIN BODY
 #*********************************************************************************************************************************
@@ -338,7 +345,11 @@ while [ -z "$done" ]; do
           other_sta_type="DEV"
         fi
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
-        options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Help" "Back")
+        if [ "$sta_type" == "DEV" ]; then
+          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Build Station Software" "Back")
+        else
+          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Back")
+        fi
         select opt in "${options[@]}"; do
           case $opt in
           "Configure Station Parameters")
@@ -358,6 +369,11 @@ while [ -z "$done" ]; do
             ;;
           "Convert to $other_sta_type")
             dist2dev
+            any_key
+            break
+            ;;
+          "Build Station Software")
+            SEISREC-build
             any_key
             break
             ;;

@@ -111,6 +111,7 @@ case $convert_to in
         exit 1
     fi
   fi
+
   ;;
 "DEV")
   if [ -d "$distdir/SEISREC-DEV" ]; then
@@ -171,10 +172,6 @@ case $convert_to in
   fi
 
   printf "cd'ing back into %s!\n" "$currdir"
-  if ! cd $currdir; then
-    printf "Error cd'ing back into %s!\n" "$currdir"
-    exit 1
-  fi
   ;;
 \?)
   printf "Invalid argument: -%s" "$PARAM" 1>&2
@@ -182,4 +179,8 @@ case $convert_to in
   ;;
 esac
 
+if ! cd $currdir; then
+  printf "Error cd'ing back into %s!\n" "$currdir"
+  exit 1
+fi
 unset PARAM
