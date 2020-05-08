@@ -225,7 +225,7 @@ function setup_station() {
 # CLEAN UP FUNCTION
 # ################################################################################################################################
 function dist2dev() {
-    print_title "%s TO %s - SEISREC_config" "$sta_type" "$other_sta_type"
+    print_title "$sta_type TO $other_sta_type - SEISREC_config"
     "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "$other_sta_type"
 }
 
