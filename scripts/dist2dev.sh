@@ -9,6 +9,8 @@ if [ -z "$repodir" ]; then
 fi
 workdir="$repodir/SEISREC-DIST"
 
+currdir=$(pwd)
+
 source "$workdir/scripts/script_utils.sh"
 
 function print_help() {
@@ -81,10 +83,9 @@ fi
 if [ -n "$debug" ]; then
   printf "distdir = %s\n" "$distdir"
 fi
-
-currdir=$(pwd)
-
-
+if [ -n "$debug" ]; then
+  printf "currdir = %s\n" "$currdir"
+fi
 
 case $convert_to in
 # START: start all services
