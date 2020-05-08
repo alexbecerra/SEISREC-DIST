@@ -1,6 +1,8 @@
 #!/bin/bash
 # TODO: Complete script
 
+debug="yes"
+
 convert_to=""
 if [ -z "$repodir" ]; then
   repodir="$HOME"
