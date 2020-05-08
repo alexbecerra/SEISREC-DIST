@@ -84,34 +84,57 @@ fi
 
 currdir=$(pwd)
 
-if [ -d "$distdir/SEISREC-DEV" ]; then
-  printf "DEV directory already exists..."
-  if ! cd "$distdir/SEISREC-DEV"; then
-    printf "Error cd'ing into ./SEISREC-DEV!\n"
-    exit 1
-  fi
-  reponame=$(basename $(git rev-parse --show-toplevel))
-  if [ "$reponame" == "SEISREC-DEV" ]; then
-    printf "Already converted to DEV! Exiting...\n"
-    exit 1
-  else
-    printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
-    if ! cd ".."; then
-      printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
-      exit 1
-    fi
-    if ! sudo rm -r "SEISREC-DEV"; then
-      printf "Error removing ./SEISREC-DEV! Aborting...\n"
-      exit 1
-    fi
-  fi
-fi
+
 
 case $convert_to in
 # START: start all services
-"DIST") ;;
-
+"DIST")
+  if [ -d "$distdir/SEISREC-DEV" ]; then
+    printf "DEV directory already exists...\n"
+    if ! cd "$distdir/SEISREC-DEV"; then
+      printf "Error cd'ing into ./SEISREC-DEV!\n"
+      exit 1
+    fi
+    reponame=$(basename $(git rev-parse --show-toplevel))
+    if [ "$reponame" == "SEISREC-DEV" ]; then
+      printf "SEISREC-DEV directory present. Deleting...\n"
+    else
+      printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
+    fi
+    if ! cd ".."; then
+        printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
+        exit 1
+      fi
+      printf "Removing SEISREC-DEV...\n"
+      if ! sudo rm -r "SEISREC-DEV"; then
+        printf "Error removing ./SEISREC-DEV! Aborting...\n"
+        exit 1
+    fi
+  fi
+  ;;
 "DEV")
+  if [ -d "$distdir/SEISREC-DEV" ]; then
+    printf "DEV directory already exists...\n"
+    if ! cd "$distdir/SEISREC-DEV"; then
+      printf "Error cd'ing into ./SEISREC-DEV!\n"
+      exit 1
+    fi
+    reponame=$(basename $(git rev-parse --show-toplevel))
+    if [ "$reponame" == "SEISREC-DEV" ]; then
+      printf "Already converted to DEV! Exiting...\n"
+      exit 1
+    else
+      printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
+      if ! cd ".."; then
+        printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
+        exit 1
+      fi
+      if ! sudo rm -r "SEISREC-DEV"; then
+        printf "Error removing ./SEISREC-DEV! Aborting...\n"
+        exit 1
+      fi
+    fi
+  fi
   printf "cd'ing into %s\n" "$distdir"
   if ! cd "$distdir"; then
     printf "Error cd'ing into SEISREC-DIST!\n"
