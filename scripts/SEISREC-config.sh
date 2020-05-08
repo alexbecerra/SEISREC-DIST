@@ -237,7 +237,7 @@ function SEISREC-build() {
   if [ -n "$debug" ]; then
     opts+=( "-d" )
   fi
-  "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/dist2dev.sh" "${opts[@]}"
+  "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
 }
 
 #*********************************************************************************************************************************

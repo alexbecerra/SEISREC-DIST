@@ -101,7 +101,7 @@ case $convert_to in
     else
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
     fi
-    if ! cd ".."; then
+    if ! cd ..; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
         exit 1
       fi
@@ -126,7 +126,7 @@ case $convert_to in
       exit 1
     else
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
-      if ! cd ".."; then
+      if ! cd ..; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
         exit 1
       fi
@@ -154,7 +154,7 @@ case $convert_to in
       exit 1
     else
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
-      if ! cd ".."; then
+      if ! cd .. ; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
         exit 1
       fi
