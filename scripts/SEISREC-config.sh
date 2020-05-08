@@ -76,6 +76,7 @@ function manage_services() {
   local answered
 
   while [ -z "$answered" ]; do
+    choice=""
     print_title "MANAGE SERVICES - SEISREC_config.sh"
 
     enabled_services=$(systemctl list-unit-files)
@@ -107,37 +108,48 @@ function manage_services() {
       done
       printf "\n"
     fi
+
+    local opts=()
+    if [ -n "$debug" ]; then
+      opts+=( -d )
+    fi
+    opts+=( -f "$workdir/selected_services_file.tmp" )
     PS3='Selection: '
     options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
     select opt in "${options[@]}"; do
       case $opt in
       "Start")
         choice="Start"
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        opts+=("$choice")
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
         any_key
         break
         ;;
       "Stop")
         choice="Stop"
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        opts+=("$choice")
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
         any_key
         break
         ;;
       "Disable")
         choice="Disable"
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        opts+=("$choice")
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
         any_key
         break
         ;;
       "Clean")
         choice="Clean"
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        opts+=("$choice")
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
         any_key
         break
         ;;
       "Install")
         choice="Install"
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "$choice" "$workdir/selected_services_file.tmp"
+        opts+=("$choice")
+        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
         any_key
         break
         ;;
