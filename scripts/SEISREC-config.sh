@@ -12,7 +12,9 @@ other_sta_type="DEV"
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  echo "$repodir"
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST\/scripts//")
+  echo "$repodir"
 fi
 
 if [ -n "$repodir" ]; then
