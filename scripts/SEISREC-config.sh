@@ -7,87 +7,16 @@ cfgeverywhere=""
 sta_type="DIST"
 other_sta_type="DEV"
 
-function print_banner() {
-  printf "                                                                             \n"
-  printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"
-  printf "██╔════╝██╔════╝██║    ██║      ██╔════╝██╔════╝████╗  ██║\n"
-  printf "█████╗  █████╗  ██║ █╗ ██║█████╗██║     ███████╗██╔██╗ ██║\n"
-  printf "██╔══╝  ██╔══╝  ██║███╗██║╚════╝██║     ╚════██║██║╚██╗██║\n"
-  printf "███████╗███████╗╚███╔███╔╝      ╚██████╗███████║██║ ╚████║\n"
-  printf "╚══════╝╚══════╝ ╚══╝╚══╝        ╚═════╝╚══════╝╚═╝  ╚═══╝\n"
-}
-
-function under_construction() {
-  printf "\n"
-  printf "  #######################################\n"
-  printf "  #                                     #\n"
-  printf "  #            BAJO CONSTRUCCIÓN        #\n"
-  printf "  #                                     #\n"
-  printf "  #######################################\n"
-  printf "\n"
-}
-##################################################################################################################################
-# PRINT TITLE FUNCTION
-# ################################################################################################################################
-function print_title() {
-  if [ -z "$debug" ]; then
-    if ! cls; then
-      if ! clear; then
-        printf "D'OH"
-      fi
-    fi
-  fi
-  if [ -n "$1" ]; then
-    while [ -n "$1" ]; do
-      printf "%s" "$1"
-      shift
-    done
-    printf "\n\n"
-  fi
-}
-
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
-function clean_up() {
-  local file
-  file="$1"
-  if [ -f "$file" ]; then
-    if [ -n "$debug" ]; then
-      printf "Removing %s\n" "$file"
-    fi
-    if ! rm "$file" >/dev/null 2>&1; then
-      printf "Error removing %s\n" "$file"
-    fi
-  fi
-}
-##################################################################################################################################
-# CLEAN UP AFTER SIG-INT
-# ################################################################################################################################
-function any_key() {
-  read -n 1 -r -s -p $'Presione Enter para continuar...\n'
-}
+if [ -z "$repodir" ]; then
+  repodir="$HOME"
+fi
+workdir="$repodir/SEISREC-DIST"
 
-##################################################################################################################################
-# CLEAN UP AFTER SIG-INT
-# ################################################################################################################################
 
-# trap ctrl-c and call ctrl_c()
-trap ctrl_c INT
-
-function ctrl_c() {
-  if [ -n "$debug" ]; then
-    printf "SIG-INT DETECTED!\n"
-  fi
-  local tempfiles
-  if [ -d "$workdir" ]; then
-    tempfiles=$(ls "$workdir" | grep ".*.tmp")
-    for t in $tempfiles; do
-      clean_up "$t"
-    done
-    exit 1
-  fi
-}
+source "$workdir/scripts/script_utils.sh"
 
 ##################################################################################################################################
 # PRINT HELP SECTION
@@ -128,116 +57,6 @@ function update_station_software() {
   printf "\n"
   printf "\n"
 }
-
-##################################################################################################################################
-# MENU FUNCTION
-# ################################################################################################################################
-function select_several_menu() {
-  local menu_opts_file
-  local menu_title
-  local menu_selections
-  local answered
-  local optionnames
-  local selected_names
-  local selected_names_file
-
-  menu_title="$1"
-  menu_opts_file="$2"
-  selected_names_file="$3"
-
-  clean_up "$selected_names_file"
-
-  optionnames=()
-  if [ -f "$menu_opts_file" ]; then
-    for n in $(cat "$menu_opts_file"); do
-      optionnames+=("$n")
-    done
-  else
-    printf "Menu options file not found!\n"
-    exit 1
-  fi
-
-  while [ -z "$answered" ]; do
-    print_title "$menu_title"
-    printf "\n"
-    indx=1
-    for n in "${optionnames[@]}"; do
-      printf " [%i]\t%s\n" "${indx}" "$n"
-      indx=$((indx + 1))
-    done
-    printf " [0]\tSelect All \n"
-
-    local ans
-
-    read -r -p "Select Options: " ans
-    for m in $ans; do
-      if [[ "$m" =~ ^[0-9]$ ]]; then
-        if [ -n "$debug" ]; then
-          printf "%s input accepted\n" "$m"
-        fi
-        menu_selections+=("$((m - 1))")
-      else
-        if [ -n "$debug" ]; then
-          printf "%s input rejected\n" "$m"
-        fi
-      fi
-    done
-
-    for n in "${menu_selections[@]}"; do
-      if [ "$n" -eq -1 ]; then
-        menu_selections=()
-        indx=1
-        for s in "${optionnames[@]}"; do
-          menu_selections+=("$((indx - 1))")
-          indx=$((indx + 1))
-        done
-        break
-      fi
-    done
-
-    selected_names=()
-    printf "\nOption Selected: "
-    for n in "${menu_selections[@]}"; do
-      selected_names+=("$n")
-      printf "%s " "${optionnames[$((n))]}"
-    done
-
-    #---------------------------------------------------------------
-    # CONFIG CONFIRMATION
-    #---------------------------------------------------------------
-    printf "\n[C]ontinue [R]eselect [A]bort ? "
-    if ! read -r continue; then
-      printf "Error reading STDIN! Aborting...\n"
-      exit 1
-    elif [[ "$continue" =~ [cC].* ]]; then
-      answered="yes"
-      if [ ! -f "$selected_names_file" ]; then
-        touch "$selected_names_file"
-      fi
-      for n in "${selected_names[@]}"; do
-        printf "%s\n" "${optionnames[$((n))]}" >>"$selected_names_file"
-      done
-      break
-    elif [[ "$continue" =~ [rR].* ]]; then
-      printf "Reselecting...\n"
-    elif [[ "$continue" =~ [aA].* ]]; then
-      printf "Cleaning up & exiting...\n"
-      clean_up "$menu_opts_file"
-      if [ -n "$debug" ]; then
-        printf "Bye bye!\n"
-      fi
-    else
-      printf "\n[C]ontinue [R]eselect [A]bort ? "
-    fi
-  done
-
-  if [ -f "$menu_opts_file" ]; then
-    if ! rm "$menu_opts_file"; then
-      printf "Error removing aux files!\n"
-    fi
-  fi
-}
-
 ##################################################################################################################################
 # MANAGE SERVICES
 # ################################################################################################################################
@@ -406,20 +225,9 @@ function setup_station() {
 # CLEAN UP FUNCTION
 # ################################################################################################################################
 function dist2dev() {
-    "$repodir/SEISREC-DIST/scripts/dist2dev.sh"
+    print_title "%s TO %s - SEISREC_config" "$sta_type" "$other_sta_type"
+    "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "$other_sta_type"
 }
-
-##################################################################################################################################
-# CLEAN UP FUNCTION
-# ################################################################################################################################
-if [ -z "$repodir" ]; then
-  repodir="$HOME"
-  if [ -n "$debug" ]; then
-    printf "repodir = %s\n" "$repodir"
-  fi
-fi
-
-workdir="$repodir/SEISREC-DIST"
 
 #*********************************************************************************************************************************
 # MAIN BODY
@@ -526,7 +334,7 @@ while [ -z "$done" ]; do
     else
       while [ -z "$done" ]; do
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
-        options=("Configure Station Parameters" "Manage Unit Services" "Convert to $other_sta_type" "Help" "Back")
+        options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Help" "Back")
         select opt in "${options[@]}"; do
           case $opt in
           "Configure Station Parameters")
@@ -536,6 +344,11 @@ while [ -z "$done" ]; do
             ;;
           "Manage Unit Services")
             manage_services
+            any_key
+            break
+            ;;
+          "Manage Networks")
+            under_construction
             any_key
             break
             ;;
