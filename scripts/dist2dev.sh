@@ -86,7 +86,7 @@ currdir=$(pwd)
 
 if [ -d "$distdir/SEISREC-DEV" ]; then
   printf "DEV directory already exists..."
-  if ! cd "./SEISREC-DEV"; then
+  if ! cd "$distdir/SEISREC-DEV"; then
     printf "Error cd'ing into ./SEISREC-DEV!\n"
     exit 1
   fi

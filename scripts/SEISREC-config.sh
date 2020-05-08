@@ -10,10 +10,6 @@ other_sta_type="DEV"
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
-if [ -z "$repodir" ]; then
-  repodir="$HOME"
-fi
-workdir="$repodir/SEISREC-DIST"
 
 source "$workdir/scripts/script_utils.sh"
 
@@ -226,16 +222,20 @@ function setup_station() {
 function dist2dev() {
   print_title "$sta_type TO $other_sta_type - SEISREC_config"
   local opts=()
-  opts+=("$other_sta_type")
   if [ -n "$debug" ]; then
     opts+=( "-d" )
   fi
+  opts+=("$other_sta_type")
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
 }
 
 #*********************************************************************************************************************************
 # MAIN BODY
 #*********************************************************************************************************************************
+if [ -z "$repodir" ]; then
+  repodir="$HOME"
+fi
+workdir="$repodir/SEISREC-DIST"
 
 # Parse options
 while getopts "dh" opt; do
