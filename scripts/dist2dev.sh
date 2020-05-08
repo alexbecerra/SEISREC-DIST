@@ -57,6 +57,10 @@ if [ -z "$distdir" ]; then
   fi
 fi
 
+if [ -n "$debug" ]; then
+  printf "distdir = %s\n" "$distdir"
+fi
+
 currdir=$(pwd)
 
 if [ -d "$distdir/SEISREC-DEV" ]; then
