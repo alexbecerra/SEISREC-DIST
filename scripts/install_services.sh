@@ -98,6 +98,9 @@ done
 unset PARAM
 
 if [ -z "$repodir" ]; then
+  if [ -n "$debug" ]; then
+      printf "repodir empty!\n"
+  fi
   repodir="$HOME"
 fi
 

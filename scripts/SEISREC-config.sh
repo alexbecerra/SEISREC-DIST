@@ -11,11 +11,18 @@ other_sta_type="DEV"
 # CLEAN UP FUNCTION
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
-  repodir="$HOME"
+  repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST\/scripts//")
 fi
-workdir="$repodir/SEISREC-DIST"
 
-source "$workdir/scripts/script_utils.sh"
+if [ -n "$repodir" ]; then
+  export repodir
+  workdir="$repodir/SEISREC-DIST"
+  source "$workdir/scripts/script_utils.sh"
+else
+  printf "Error getting working directory! Aborting...\n"
+  exit 1
+fi
 
 ##################################################################################################################################
 # PRINT HELP SECTION

@@ -5,6 +5,9 @@ debug=""
 
 convert_to=""
 if [ -z "$repodir" ]; then
+  if [ -n "$debug" ]; then
+    printf "repodir empty!\n"
+  fi
   repodir="$HOME"
 fi
 workdir="$repodir/SEISREC-DIST"
