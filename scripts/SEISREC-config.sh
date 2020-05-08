@@ -4,6 +4,8 @@ debug=''
 choice=""
 done=""
 cfgeverywhere=""
+sta_type="DIST"
+other_sta_type="DEV"
 
 function print_banner() {
   printf "                                                                             \n"
@@ -19,7 +21,7 @@ function under_construction() {
   printf "\n"
   printf "  #######################################\n"
   printf "  #                                     #\n"
-  printf "  #           UNDER CONSTRUCTION        #\n"
+  printf "  #            BAJO CONSTRUCCIÓN        #\n"
   printf "  #                                     #\n"
   printf "  #######################################\n"
   printf "\n"
@@ -63,7 +65,7 @@ function clean_up() {
 # CLEAN UP AFTER SIG-INT
 # ################################################################################################################################
 function any_key() {
-  read -n 1 -r -s -p $'Press enter to continue...\n'
+  read -n 1 -r -s -p $'Presione Enter para continuar...\n'
 }
 
 ##################################################################################################################################
@@ -91,8 +93,9 @@ function ctrl_c() {
 # PRINT HELP SECTION
 # ################################################################################################################################
 function print_help() {
-  print_title "HELP - SEISREC-config.sh"
+  print_title "AYUDA - SEISREC-config.sh"
   under_construction
+  # TODO: Write Help Section
 }
 
 ##################################################################################################################################
@@ -116,7 +119,8 @@ function configure_station() {
 # UPDATE SYSTEM SOFTWARE
 # ################################################################################################################################
 function update_station_software() {
-  printf "Under Construction!\n"
+  # TODO: Complete section
+  printf "BAJO CONSTRUCCIÓN!\n"
   printf "\n"
   printf "This function should update the SEISREC-DIST software!\n"
   printf "Maybe Check what versions are available and then select\n"
@@ -342,6 +346,7 @@ function manage_services() {
 function get_software_info() {
   print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
   under_construction
+  # TODO: Complete section
 }
 
 ##################################################################################################################################
@@ -400,6 +405,13 @@ function setup_station() {
 ##################################################################################################################################
 # CLEAN UP FUNCTION
 # ################################################################################################################################
+function dist2dev() {
+    "$repodir/SEISREC-DIST/scripts/dist2dev.sh"
+}
+
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$HOME"
   if [ -n "$debug" ]; then
@@ -408,6 +420,10 @@ if [ -z "$repodir" ]; then
 fi
 
 workdir="$repodir/SEISREC-DIST"
+
+#*********************************************************************************************************************************
+# MAIN BODY
+#*********************************************************************************************************************************
 
 # Parse options
 while getopts "dh" opt; do
@@ -445,11 +461,11 @@ fi
 while [ -z "$done" ]; do
   print_title "MAIN MENU - SEISREC_config"
   PS3='Selection: '
-  options=("Configure Station Software" "Station Info & Tests" "Software Setup & Update" "Help" "Quit")
+  options=(  "Software Setup & Update" "Station Info & Tests" "Advanced Options"  "Help" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
-    "Configure Station Software")
-      choice="Configure Station Software"
+    "Advanced Options")
+      choice="Advanced Options"
       break
       ;;
     "Station Info & Tests")
@@ -486,7 +502,23 @@ while [ -z "$done" ]; do
   #-------------------------------------------------------------------------------------------------------------------------------
   # CLEAN UP FUNCTION
   #-------------------------------------------------------------------------------------------------------------------------------
-  "Configure Station Software")
+  "Advanced Options")
+    if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
+      currdir=$(pwd)
+      if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
+        printf "Error cd'ing into SEISREC-DEV!\n"
+      fi
+      reponame=$(basename $(git rev-parse --show-toplevel))
+      if [ "$reponame" == "SEISREC-DEV" ]; then
+        sta_type="DEV"
+        other_sta_type="DIST"
+      else
+        printf "SEISREC-DEV directory present, but has wrong repository!\n"
+      fi
+    else
+      sta_type="DEV"
+      other_sta_type="DIST"
+    fi
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
       printf "No parameter file found! Please run station setup first!\n"
@@ -494,7 +526,7 @@ while [ -z "$done" ]; do
     else
       while [ -z "$done" ]; do
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
-        options=("Configure Station Parameters" "Manage Unit Services" "Help" "Back")
+        options=("Configure Station Parameters" "Manage Unit Services" "Convert to $other_sta_type" "Help" "Back")
         select opt in "${options[@]}"; do
           case $opt in
           "Configure Station Parameters")
@@ -504,6 +536,11 @@ while [ -z "$done" ]; do
             ;;
           "Manage Unit Services")
             manage_services
+            any_key
+            break
+            ;;
+          "Convert to $other_sta_type")
+            dist2dev
             any_key
             break
             ;;
@@ -528,7 +565,7 @@ while [ -z "$done" ]; do
     done=""
     while [ -z "$done" ]; do
       print_title "STATION INFO - SEISREC_config.sh"
-      options=("Run Station Tests" "Detailed Software Info" "Back")
+      options=("Run Station Tests" "Detailed Software Info" "Performance Reports" "Back")
       select opt in "${options[@]}"; do
         case $opt in
         "Run Station Tests")
@@ -538,6 +575,11 @@ while [ -z "$done" ]; do
           ;;
         "Detailed Software Info")
           get_software_info
+          any_key
+          break
+          ;;
+        "Performance Reports")
+          under_construction
           any_key
           break
           ;;

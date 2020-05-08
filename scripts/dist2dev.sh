@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# TODO: Complete script
 function print_help() {
   printf "Usage: dist2dev.sh [path to repo] \n"
   printf "       e.g \$ dist2dev.sh \"\$(pwd)\" \n"
@@ -7,7 +7,7 @@ function print_help() {
 }
 
 while [ -n "$1" ]; do
-  PARAM="${1,,}"
+  PARAM="$1"
   if [ -n "$debug" ]; then
     printf "PARAM = %s\n" "$PARAM"
   fi
@@ -16,7 +16,7 @@ while [ -n "$1" ]; do
   fi
 shift
 done
-unset PARAM
+
 
 if [ -z "$repodir" ]; then
     printf "Searching for directory.\n"
@@ -46,3 +46,5 @@ if ! cd $currdir; then
   printf "Error cd'ing back into %s!\n" "$currdir"
   exit 1
 fi
+
+unset PARAM
