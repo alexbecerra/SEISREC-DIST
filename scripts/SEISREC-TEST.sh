@@ -1,6 +1,20 @@
 #!/bin/bash
 
-dir="$HOME/SEISREC-DIST/TEST"
+if [ -z "$repodir" ]; then
+  repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
+fi
+
+if [ -n "$repodir" ]; then
+  export repodir
+  workdir="$repodir/SEISREC-DIST"
+  source "$workdir/scripts/script_utils.sh"
+else
+  printf "Error getting working directory! Aborting...\n"
+  exit 1
+fi
+
+dir="$repodir/TEST"
 
 echo " "
 echo "Comenzando pruebas de placa ACC355"
