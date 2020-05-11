@@ -76,6 +76,10 @@ function ctrl_c() {
   local tempfiles
   if [ -d "$workdir" ]; then
     tempfiles=$(ls "$workdir" | grep ".*.tmp")
+    listfiles=$(ls "$workdir" | grep ".*.list")
+    for l in $listfiles; do
+      clean_up "$l"
+    done
     for t in $tempfiles; do
       clean_up "$t"
     done
