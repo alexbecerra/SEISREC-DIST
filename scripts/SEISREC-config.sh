@@ -227,11 +227,10 @@ function get_software_info() {
 ##################################################################################################################################
 # STATION SETUP FUNCTION
 # ################################################################################################################################
-function setup_station()
+function setup_station() {
   print_title "STATION SETUP - SEISREC-config.sh"
 
   printf "Preparing setup...\n"
-
   printf "Checking for updates...\n"
   update_station_software
 
@@ -239,7 +238,7 @@ function setup_station()
   configure_station
 
   printf "Installing services...\n"
-  local opts=(  "INSTALL" )
+  local opts=( "INSTALL" )
   if [ -n "$debug" ]; then
       opts+=( -d )
   fi
