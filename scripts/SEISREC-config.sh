@@ -183,14 +183,51 @@ function manage_services() {
 # ################################################################################################################################
 function get_software_info() {
   print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
-  under_construction
-  # TODO: Complete section
+  local opts=()
+  if [ -n "$debug" ]; then
+      opts+=( -d )
+  fi
+
+  if [ -d "$workdir/SEISREC-DEV" ]; then
+  if ! cd "$workdir"; then
+    printf "Error cd'ing into %s\n" "$workdir"
+    exit 1
+  fi
+
+  if ! git log | head -5 >/dev/null 2>&1; then
+    printf "SEISREC-DIST last commit:\n\n"
+    printf "%s" "$(git log | head -5)"
+  else
+    printf "Error getting git logs!\n"
+  fi
+  else
+    printf "SEISREC-DIST not found!\n"
+  fi
+
+  if [ -d "$workdir/SEISREC-DEV" ]; then
+  if ! cd "$workdir"; then
+    printf "Error cd'ing into %s\n" "$workdir"
+    exit 1
+  fi
+
+  if ! git log | head -5 >/dev/null 2>&1; then
+    printf "SEISREC-DEV last commit:\n\n"
+    printf "%s" "$(git log | head -5)"
+  else
+    printf "Error getting git logs!\n"
+  fi
+  else
+    printf "SEISREC-DEV not found!\n"
+  fi
+
+
+
 }
 
 ##################################################################################################################################
 # STATION SETUP FUNCTION
 # ################################################################################################################################
-function setup_station() {
+function setup_station()
   print_title "STATION SETUP - SEISREC-config.sh"
 
   printf "Preparing setup...\n"
@@ -202,7 +239,11 @@ function setup_station() {
   configure_station
 
   printf "Installing services...\n"
-  if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "INSTALL"; then
+  local opts=(  "INSTALL" )
+  if [ -n "$debug" ]; then
+      opts+=( -d )
+  fi
+  if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
     printf "Error installing services! Please fix problems before retrying!\n"
     exit 1
   fi
