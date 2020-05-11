@@ -8,7 +8,7 @@ sta_type="DIST"
 other_sta_type="DEV"
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# GET WORKING DIRECTORY
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -40,6 +40,7 @@ function configure_station() {
   local opts=()
   opts+=(-pth "$repodir/SEISREC-DIST/")
   if [ -n "$debug" ]; then
+    opts+=( -debug )
     printf "opts = "
     for o in "${opts[@]}"; do
       printf "%s " "$o"
@@ -229,10 +230,10 @@ function setup_station() {
       if [ -z "$inPath" ]; then
         # Add it permanently to path
         printf "Adding ./SEISREC-DIST to PATH...\n"
-        printf 'inPath=$(printf "$PATH"|grep "SEISREC-DIST")\n' >>~/.bashrc
+        printf "inPath=$(printf \"$PATH\"|grep "%s/SEISREC-DIST")\n" "$repodir" >> ~/.bashrc
         printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
         printf 'then\n' >>~/.bashrc
-        printf '  export PATH="~/SEISREC-DIST:$PATH"\n' >>~/.bashrc
+        printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >>~/.bashrc
         printf 'fi\n' >>~/.bashrc
       fi
     fi
