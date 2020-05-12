@@ -6,6 +6,7 @@ CLIEXEC=/usr/local/bin/redis-cli
 PIDFILE=/var/run/redis_6379.pid
 CONF="/etc/redis/6379.conf"
 REDISPORT="6379"
+# Included by Alex Becerra to assign an specific core and a priority to the redis process
 TCORE=/usr/bin/taskset
 TPRIO=/usr/bin/chrt
 ###############
@@ -34,6 +35,7 @@ case "$1" in
             echo "Starting Redis server..."
             $EXEC $CONF
             while ! [ -f $PIDFILE ]
+        # Included by Alex Becerra to set the core and priority once the redis process has started
 	    do
 	        sleep 1
             done
@@ -49,6 +51,7 @@ case "$1" in
         else
             PID=$(cat $PIDFILE)
             echo "Stopping ..."
+            # Modified by Alex Becerra to shutdown a password protected redis server
             $CLIEXEC -a '$$earlywarningCSN' -p $REDISPORT shutdown
             while [ -x /proc/${PID} ]
             do
