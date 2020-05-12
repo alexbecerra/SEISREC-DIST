@@ -1,0 +1,6 @@
+# Change MODE of ttyAMA0 so it is readable by NTP and provide
+# a symlink to /dev/gps0
+KERNEL=="ttyAMA0", SUBSYSTEM=="tty", DRIVER=="", SYMLINK+="gps0", MODE="0666"
+# Symlink /dev/pps0 to /dev/gpspps0
+KERNEL=="pps0", SUBSYSTEM=="pps", DRIVER=="", SYMLINK+="gpspps0", MODE="0666"
+
