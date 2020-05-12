@@ -14,6 +14,7 @@ rtc_snooze_m=6
 rtc_snooze_s=0
 dyn_host=null.dyndns.org
 dyn_pass=password
+dyn_time=5
 dyn_user=user
 file_db_host=127.0.0.1
 file_db_name=LOCALBUF
