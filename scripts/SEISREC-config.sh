@@ -224,7 +224,7 @@ function get_software_info() {
       printf "Error cd'ing into %s\n" "$workdir"
       exit 1
     else
-      if ! git log | head -5 >/dev/null 2>&1; then
+      if git log | head -5 >/dev/null 2>&1; then
         printf "SEISREC-DIST last commit:\n\n"
         printf "%s" "$(git log | head -5)"
       else
@@ -242,7 +242,7 @@ function get_software_info() {
         printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
         exit 1
       else
-        if ! git log | head -5 >/dev/null 2>&1; then
+        if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DEV last commit:\n\n"
           printf "%s" "$(git log | head -5)"
         else
@@ -257,13 +257,15 @@ function get_software_info() {
 
   local all_folders=$(ls "$workdir")
   for d in $all_folders; do
-    local files=$(ls "$workdir/$d")
-    for f in $files; do
-      local tmpversion=$(printf "%s" "$f" | grep "$d")
-      if [ -n "$tmpversion" ]; then
-        printf "%s: \n  %s\n" "$f" "$tmpversion"
-      fi
-    done
+    if [ -d "$workdir/$d" ]; then
+      local files=$(ls "$workdir/$d")
+      for f in $files; do
+        local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
+        if [ -n "$tmpversion" ]; then
+          printf "%s: \n  %s\n" "$f" "$tmpversion"
+        fi
+      done
+    fi
   done
 
   if [ -d "$currdir" ]; then
