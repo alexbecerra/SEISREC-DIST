@@ -186,6 +186,7 @@ case $convert_to in
 esac
 
 if [ -n "$debug" ]; then
+  printf "\$(pwd) = %s\n" "$(pwd)"
   printf "currdir = %s\n" "$currdir"
 fi
 
