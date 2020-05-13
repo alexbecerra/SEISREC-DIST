@@ -88,7 +88,7 @@ function update_station_software() {
         exit 1
       else
         if git log | head -5 >/dev/null 2>&1; then
-          printf "SEISREC-DEV last commit:\n\n"
+          printf "\nSEISREC-DEV last commit:\n\n"
           printf "%s\n\n" "$(git log | head -5)"
         else
           printf "Error getting git logs!\n"
