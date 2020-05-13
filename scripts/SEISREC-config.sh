@@ -57,42 +57,96 @@ function configure_station() {
 function update_station_software() {
   print_title "SYSTEM UPDATE- SEISREC-config.sh"
   # TODO: Complete section
+  if [ -z "$sta_type" ]; then
+    printf "Station Type not defined!\n"
+    exit 1
+  fi
+
   local currdir=$(pwd)
 
   if [ -d "$workdir" ]; then
     if ! cd "$workdir"; then
       printf "Error cd'ing into %s\n" "$workdir"
       exit 1
-    fi
-
-    printf "Pulling changes from SEISREC-DIST remote...\n\n"
-    git pull
-
-    if [ "$sta_type" == "DEV" ]; then
-      if [ -d "$workdir/SEISREC-DEV" ]; then
-        if ! cd "$workdir/SEISREC-DEV"; then
-          printf "Error cd'ing into %s/SEISREC-DEV\n" "$workdir"
-          exit 1
-        fi
-
-        printf "\nPulling changes from SEISREC-DEV remote...\n\n"
-        git pull
+    else
+      if git log | head -5 >/dev/null 2>&1; then
+        printf "SEISREC-DIST last commit:\n\n"
+        printf "%s" "$(git log | head -5)"
       else
-        printf "%s/SEISREC-DEV not found!\n" "$workdir"
+        printf "Error getting git logs!\n"
       fi
     fi
   else
-    printf "%s/SEISREC-DEV not found!\n" "$workdir"
+    printf "SEISREC-DIST not found!\n"
+    exit 1
   fi
-
-  if [ -d "$currdir" ]; then
-    if ! cd "$currdir"; then
-      printf "Error cd'ing into %s\n" "$currdir"
+  printf "\n"
+  if [ "$sta_type" == "DEV" ]; then
+    if [ -d "$workdir/SEISREC-DEV" ]; then
+      if ! cd "$workdir/SEISREC-DEV"; then
+        printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
+        exit 1
+      else
+        if git log | head -5 >/dev/null 2>&1; then
+          printf "SEISREC-DEV last commit:\n\n"
+          printf "%s\n\n" "$(git log | head -5)"
+        else
+          printf "Error getting git logs!\n"
+        fi
+      fi
+    else
+      printf "SEISREC-DEV not found!\n"
       exit 1
     fi
-  else
-    printf "%s not found!\n" "$currdir"
   fi
+
+  while [ -z "$continue" ]; do
+    if ! read -r -p "Update station? [Yes/No] " continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [yY].* ]]; then
+      if [ -d "$workdir" ]; then
+        if ! cd "$workdir"; then
+          printf "Error cd'ing into %s\n" "$workdir"
+          exit 1
+        fi
+
+        printf "Pulling changes from SEISREC-DIST remote...\n\n"
+        git pull
+
+        if [ "$sta_type" == "DEV" ]; then
+          if [ -d "$workdir/SEISREC-DEV" ]; then
+            if ! cd "$workdir/SEISREC-DEV"; then
+              printf "Error cd'ing into %s/SEISREC-DEV\n" "$workdir"
+              exit 1
+            fi
+
+            printf "\nPulling changes from SEISREC-DEV remote...\n\n"
+            git pull
+          else
+            printf "%s/SEISREC-DEV not found!\n" "$workdir"
+          fi
+        fi
+      else
+        printf "%s/SEISREC-DEV not found!\n" "$workdir"
+      fi
+
+      if [ -d "$currdir" ]; then
+        if ! cd "$currdir"; then
+          printf "Error cd'ing into %s\n" "$currdir"
+          exit 1
+        fi
+      else
+        printf "%s not found!\n" "$currdir"
+      fi
+      break
+    elif [[ "$continue" =~ [nN].* ]]; then
+      break
+    else
+      continue=""
+    fi
+  done
+
   under_construction
 }
 ##################################################################################################################################
@@ -265,10 +319,10 @@ function get_software_info() {
       for f in $files; do
         local is_exec=$(printf "%s" "$f" | grep "$d")
         if [ -n "$is_exec" ]; then
-        local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
-        if [ -n "$tmpversion" ]; then
-          printf "%s: \n  %s\n\n" "$f" "$tmpversion"
-        fi
+          local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
+          if [ -n "$tmpversion" ]; then
+            printf "%s: \n  %s\n\n" "$f" "$tmpversion"
+          fi
         fi
       done
     fi
