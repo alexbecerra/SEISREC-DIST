@@ -160,7 +160,7 @@ case $convert_to in
       exit 1
     else
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
-      if ! cd .. ; then
+      if ! cd "$workdir" ; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
         exit 1
       fi
@@ -190,8 +190,14 @@ if [ -n "$debug" ]; then
   printf "currdir = %s\n" "$currdir"
 fi
 
-if ! cd $currdir; then
+if ! cd "$currdir"; then
   printf "Error cd'ing back into %s!\n" "$currdir"
   exit 1
 fi
+
+if [ -n "$debug" ]; then
+  printf "\$(pwd) = %s\n" "$(pwd)"
+  printf "currdir = %s\n" "$currdir"
+fi
+
 unset PARAM
