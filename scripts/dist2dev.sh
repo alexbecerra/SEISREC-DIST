@@ -23,7 +23,7 @@ else
   exit 1
 fi
 
-if [ -n "$(pwd | grep \"SEISREC-DIST\")" ]; then
+if [ -n "$(pwd | grep SEISREC-DIST)" ]; then
    printf "Current directory is inside SEISREC-DIST!\n"
    currdir="$repodir"
 else
@@ -88,6 +88,7 @@ done
 unset PARAM
 
 if [ -n "$debug" ]; then
+  printf "\$(pwd) = %s\n" "$(pwd)"
   printf "currdir = %s\n" "$currdir"
 fi
 
