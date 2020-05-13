@@ -55,6 +55,7 @@ function configure_station() {
 # UPDATE SYSTEM SOFTWARE
 # ################################################################################################################################
 function update_station_software() {
+  print_title "SYSTEM UPDATE- SEISREC-config.sh"
   # TODO: Complete section
   local currdir=$(pwd)
 
@@ -64,6 +65,7 @@ function update_station_software() {
       exit 1
     fi
 
+    printf "Pulling changes from SEISREC-DIST remote...\n\n"
     git pull
 
     if [ "$sta_type" == "DEV" ]; then
@@ -73,6 +75,7 @@ function update_station_software() {
           exit 1
         fi
 
+        printf "Pulling changes from SEISREC-DIST remote...\n\n"
         git pull
       else
         printf "%s/SEISREC-DEV not found!\n" "$workdir"
