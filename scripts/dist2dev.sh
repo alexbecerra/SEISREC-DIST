@@ -25,10 +25,11 @@ fi
 
 if [ -n "$(pwd | grep \"SEISREC-DIST\")" ]; then
    printf "Current directory is inside SEISREC-DIST!\n"
-   currdir="$workdir"
+   currdir="$repodir"
 else
   currdir=$(pwd)
 fi
+
 
 function print_help() {
   printf "Usage: dist2dev.sh [DIST or DEV] \n"
@@ -182,6 +183,10 @@ case $convert_to in
   exit 1
   ;;
 esac
+
+if [ -n "$debug" ]; then
+  printf "currdir = %s\n" "$currdir"
+fi
 
 if ! cd $currdir; then
   printf "Error cd'ing back into %s!\n" "$currdir"
