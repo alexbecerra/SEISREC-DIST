@@ -1,20 +1,34 @@
 #!/bin/bash
-# TODO: Complete script
+
+# TODO: Add documentation & debug Messages
+
 
 debug=""
-
 convert_to=""
+
+##################################################################################################################################
+# GET WORKING DIRECTORY
+# ################################################################################################################################
 if [ -z "$repodir" ]; then
-  if [ -n "$debug" ]; then
-    printf "repodir empty!\n"
-  fi
-  repodir="$HOME"
+  repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
 fi
-workdir="$repodir/SEISREC-DIST"
 
-currdir=$(pwd)
+if [ -n "$repodir" ]; then
+  export repodir
+  workdir="$repodir/SEISREC-DIST"
+  source "$workdir/scripts/script_utils.sh"
+else
+  printf "Error getting working directory! Aborting...\n"
+  exit 1
+fi
 
-source "$workdir/scripts/script_utils.sh"
+if [ -n "$(pwd | grep \"SEISREC-DIST\")" ]; then
+   printf "Current directory is inside SEISREC-DIST!\n"
+   currdir="$workdir"
+else
+  currdir=$(pwd)
+fi
 
 function print_help() {
   printf "Usage: dist2dev.sh [DIST or DEV] \n"
@@ -51,12 +65,10 @@ while [ -n "$1" ]; do
     print_help
   fi
   case $PARAM in
-  # START: start all services
   "dist")
     convert_to="DIST"
     break
     ;;
-    # STOP: stop all services
   "dev")
     convert_to="DEV"
     break
@@ -74,18 +86,6 @@ while [ -n "$1" ]; do
 done
 unset PARAM
 
-if [ -z "$distdir" ]; then
-  printf "Searching for directory.\n"
-  distdir=$(find -P / -name "SEISREC-DIST" -print 2>/dev/null)
-  if [ -z "$distdir" ]; then
-    printf "Error finding repo directory!\n"
-    distdir="$repodir/SEISREC-DIST"
-  fi
-fi
-
-if [ -n "$debug" ]; then
-  printf "distdir = %s\n" "$distdir"
-fi
 if [ -n "$debug" ]; then
   printf "currdir = %s\n" "$currdir"
 fi
@@ -93,9 +93,9 @@ fi
 case $convert_to in
 # START: start all services
 "DIST")
-  if [ -d "$distdir/SEISREC-DEV" ]; then
+  if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists...\n"
-    if ! cd "$distdir/SEISREC-DEV"; then
+    if ! cd "$workdir/SEISREC-DEV"; then
       printf "Error cd'ing into ./SEISREC-DEV!\n"
       exit 1
     fi
@@ -118,9 +118,9 @@ case $convert_to in
 
   ;;
 "DEV")
-  if [ -d "$distdir/SEISREC-DEV" ]; then
+  if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists...\n"
-    if ! cd "$distdir/SEISREC-DEV"; then
+    if ! cd "$workdir/SEISREC-DEV"; then
       printf "Error cd'ing into ./SEISREC-DEV!\n"
       exit 1
     fi
@@ -140,13 +140,13 @@ case $convert_to in
       fi
     fi
   fi
-  printf "cd'ing into %s\n" "$distdir"
-  if ! cd "$distdir"; then
+  printf "cd'ing into %s\n" "$workdir"
+  if ! cd "$workdir"; then
     printf "Error cd'ing into SEISREC-DIST!\n"
     exit 1
   fi
 
-  if [ -d "$distdir/SEISREC-DEV" ]; then
+  if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists..."
     if ! cd "./SEISREC-DEV"; then
       printf "Error cd'ing into ./SEISREC-DEV!\n"
