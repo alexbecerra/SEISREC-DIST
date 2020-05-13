@@ -75,7 +75,7 @@ function update_station_software() {
           exit 1
         fi
 
-        printf "Pulling changes from SEISREC-DIST remote...\n\n"
+        printf "\nPulling changes from SEISREC-DEV remote...\n\n"
         git pull
       else
         printf "%s/SEISREC-DEV not found!\n" "$workdir"
