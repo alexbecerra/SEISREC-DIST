@@ -247,7 +247,7 @@ function get_software_info() {
       else
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DEV last commit:\n\n"
-          printf "%s" "$(git log | head -5)"
+          printf "%s\n\n" "$(git log | head -5)"
         else
           printf "Error getting git logs!\n"
         fi
@@ -263,9 +263,12 @@ function get_software_info() {
     if [ -d "$workdir/$d" ]; then
       local files=$(ls "$workdir/$d")
       for f in $files; do
+        local is_exec=$(printf "%s" "$f" | grep "$f")
+        if [ -n "$is_exec" ]; then
         local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
         if [ -n "$tmpversion" ]; then
-          printf "%s: \n  %s\n" "$f" "$tmpversion"
+          printf "%s: \n  %s\n\n" "$f" "$tmpversion"
+        fi
         fi
       done
     fi
