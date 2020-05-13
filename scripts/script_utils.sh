@@ -23,8 +23,8 @@ function under_construction() {
 # ################################################################################################################################
 function print_title() {
   if [ -z "$debug" ]; then
-    if ! cls; then
-      if ! clear; then
+    if ! cls >/dev/null 2>&1; then
+      if ! clear >/dev/null 2>&1; then
         printf "D'OH"
       fi
     fi
