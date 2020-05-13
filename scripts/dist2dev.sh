@@ -23,9 +23,9 @@ else
   exit 1
 fi
 
-if [ -n "$(pwd | grep SEISREC-DIST)" ]; then
-   printf "Current directory is inside SEISREC-DIST!\n"
-   currdir="$repodir"
+if [ -n "$(pwd | grep SEISREC-DEV)" ]; then
+   printf "Current directory is inside SEISREC-DEV!\n"
+   currdir="$workdir"
 else
   currdir=$(pwd)
 fi
