@@ -8,7 +8,7 @@ sta_type="DIST"
 other_sta_type="DEV"
 
 ##################################################################################################################################
-# GET WORKING DIRECTORY
+# GET  WORKING DIRECTORY
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -183,45 +183,60 @@ function manage_services() {
 # ################################################################################################################################
 function get_software_info() {
   print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
-  local opts=()
-  if [ -n "$debug" ]; then
-      opts+=( -d )
+
+  if [ -z "$sta_type" ]; then
+      printf "Station Type not defined!\n"
+      exit 1
   fi
 
-  if [ -d "$workdir/SEISREC-DEV" ]; then
-  if ! cd "$workdir"; then
-    printf "Error cd'ing into %s\n" "$workdir"
-    exit 1
-  fi
-
-  if ! git log | head -5 >/dev/null 2>&1; then
-    printf "SEISREC-DIST last commit:\n\n"
-    printf "%s" "$(git log | head -5)"
-  else
-    printf "Error getting git logs!\n"
-  fi
+  if [ -d "$workdir" ]; then
+    if ! cd "$workdir"; then
+      printf "Error cd'ing into %s\n" "$workdir"
+      exit 1
+    else
+      if ! git log | head -5 >/dev/null 2>&1; then
+        printf "SEISREC-DIST last commit:\n\n"
+        printf "%s" "$(git log | head -5)"
+      else
+        printf "Error getting git logs!\n"
+      fi
+    fi
   else
     printf "SEISREC-DIST not found!\n"
-  fi
-
-  if [ -d "$workdir/SEISREC-DEV" ]; then
-  if ! cd "$workdir"; then
-    printf "Error cd'ing into %s\n" "$workdir"
     exit 1
   fi
-
-  if ! git log | head -5 >/dev/null 2>&1; then
-    printf "SEISREC-DEV last commit:\n\n"
-    printf "%s" "$(git log | head -5)"
-  else
-    printf "Error getting git logs!\n"
+  printf "\n"
+  if [ "$sta_type" == "DEV" ]; then
+    if [ -d "$workdir/SEISREC-DEV" ]; then
+      if ! cd "$workdir/SEISREC-DEV"; then
+        printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
+        exit 1
+      else
+        if ! git log | head -5 >/dev/null 2>&1; then
+          printf "SEISREC-DEV last commit:\n\n"
+          printf "%s" "$(git log | head -5)"
+        else
+          printf "Error getting git logs!\n"
+        fi
+      fi
+    else
+      printf "SEISREC-DEV not found!\n"
+      exit 1
+    fi
   fi
-  else
-    printf "SEISREC-DEV not found!\n"
-  fi
 
+  local all_folders=$(ls "$workdir")
+  for d in $all_folders; do
+    local files=$(ls "$workdir/$d")
+    for f in $files; do
+      local tmpversion=$(printf "%s" "$f" | grep "$d")
+      if [ -n "$tmpversion" ]; then
+        printf "%s: \n  %s\n" "$f" "$tmpversion"
+      fi
+    done
+  done
 
-
+  # TODO: Add executable info display strings TEST_ACC355 | grep "Version: .*UTC"
 }
 
 ##################################################################################################################################
