@@ -263,7 +263,7 @@ function get_software_info() {
     if [ -d "$workdir/$d" ]; then
       local files=$(ls "$workdir/$d")
       for f in $files; do
-        local is_exec=$(printf "%s" "$f" | grep "$f")
+        local is_exec=$(printf "%s" "$f" | grep "$d")
         if [ -n "$is_exec" ]; then
         local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
         if [ -n "$tmpversion" ]; then
