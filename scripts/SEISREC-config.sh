@@ -56,13 +56,43 @@ function configure_station() {
 # ################################################################################################################################
 function update_station_software() {
   # TODO: Complete section
+  local currdir=$(pwd)
+
+  if [ -d "$workdir" ]; then
+    if ! cd "$workdir"; then
+      printf "Error cd'ing into %s\n" "$workdir"
+      exit 1
+    fi
+
+    git pull
+
+    if [ "$sta_type" == "DEV" ]; then
+      if [ -d "$workdir/SEISREC-DEV" ]; then
+        if ! cd "$workdir/SEISREC-DEV"; then
+          printf "Error cd'ing into %s/SEISREC-DEV\n" "$workdir"
+          exit 1
+        fi
+
+        git pull
+      else
+        printf "%s/SEISREC-DEV not found!\n" "$workdir"
+      fi
+    fi
+  else
+    printf "%s/SEISREC-DEV not found!\n" "$workdir"
+  fi
+
+
+
+  if [ -d "$currdir" ]; then
+      if ! cd "$currdir"; then
+        printf "Error cd'ing into %s\n" "$currdir"
+        exit 1
+      fi
+  else
+      printf "%s not found!\n" "$currdir"
+  fi
   printf "BAJO CONSTRUCCIÓN!\n"
-  printf "\n"
-  printf "This function should update the SEISREC-DIST software!\n"
-  printf "Maybe Check what versions are available and then select\n"
-  printf "for download from repository\n"
-  printf "\n"
-  printf "\n"
 }
 ##################################################################################################################################
 # MANAGE SERVICES
@@ -189,6 +219,8 @@ function get_software_info() {
       exit 1
   fi
 
+  local currdir=$(pwd)
+
   if [ -d "$workdir" ]; then
     if ! cd "$workdir"; then
       printf "Error cd'ing into %s\n" "$workdir"
@@ -236,6 +268,14 @@ function get_software_info() {
     done
   done
 
+  if [ -d "$currdir" ]; then
+      if ! cd "$currdir"; then
+        printf "Error cd'ing into %s\n" "$currdir"
+        exit 1
+      fi
+  else
+      printf "%s not found!\n" "$currdir"
+  fi
   # TODO: Add executable info display strings TEST_ACC355 | grep "Version: .*UTC"
 }
 
