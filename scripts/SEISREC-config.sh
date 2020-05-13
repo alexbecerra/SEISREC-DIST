@@ -11,7 +11,7 @@ other_sta_type="DEV"
 # GET  WORKING DIRECTORY
 # ################################################################################################################################
 if [ -z "$repodir" ]; then
-  repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+  repodir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
 fi
 
@@ -40,7 +40,7 @@ function configure_station() {
   local opts=()
   opts+=(-pth "$repodir/SEISREC-DIST/")
   if [ -n "$debug" ]; then
-    opts+=( -debug )
+    opts+=(-debug)
     printf "opts = "
     for o in "${opts[@]}"; do
       printf "%s " "$o"
@@ -82,17 +82,15 @@ function update_station_software() {
     printf "%s/SEISREC-DEV not found!\n" "$workdir"
   fi
 
-
-
   if [ -d "$currdir" ]; then
-      if ! cd "$currdir"; then
-        printf "Error cd'ing into %s\n" "$currdir"
-        exit 1
-      fi
+    if ! cd "$currdir"; then
+      printf "Error cd'ing into %s\n" "$currdir"
+      exit 1
+    fi
   else
-      printf "%s not found!\n" "$currdir"
+    printf "%s not found!\n" "$currdir"
   fi
-  printf "BAJO CONSTRUCCIÓN!\n"
+  under_construction
 }
 ##################################################################################################################################
 # MANAGE SERVICES
@@ -142,9 +140,9 @@ function manage_services() {
 
     local opts=()
     if [ -n "$debug" ]; then
-      opts+=( -d )
+      opts+=(-d)
     fi
-    opts+=( -f "$workdir/selected_services_file.tmp" )
+    opts+=(-f "$workdir/selected_services_file.tmp")
     PS3='Selection: '
     options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
     select opt in "${options[@]}"; do
@@ -215,8 +213,8 @@ function get_software_info() {
   print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
 
   if [ -z "$sta_type" ]; then
-      printf "Station Type not defined!\n"
-      exit 1
+    printf "Station Type not defined!\n"
+    exit 1
   fi
 
   local currdir=$(pwd)
@@ -269,12 +267,12 @@ function get_software_info() {
   done
 
   if [ -d "$currdir" ]; then
-      if ! cd "$currdir"; then
-        printf "Error cd'ing into %s\n" "$currdir"
-        exit 1
-      fi
+    if ! cd "$currdir"; then
+      printf "Error cd'ing into %s\n" "$currdir"
+      exit 1
+    fi
   else
-      printf "%s not found!\n" "$currdir"
+    printf "%s not found!\n" "$currdir"
   fi
   # TODO: Add executable info display strings TEST_ACC355 | grep "Version: .*UTC"
 }
@@ -293,9 +291,9 @@ function setup_station() {
   configure_station
 
   printf "Installing services...\n"
-  local opts=( "INSTALL" )
+  local opts=("INSTALL")
   if [ -n "$debug" ]; then
-      opts+=( -d )
+    opts+=(-d)
   fi
   if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
     printf "Error installing services! Please fix problems before retrying!\n"
@@ -325,7 +323,7 @@ function setup_station() {
       if [ -z "$inPath" ]; then
         # Add it permanently to path
         printf "Adding ./SEISREC-DIST to PATH...\n"
-        printf "inPath=$(printf \"$PATH\"|grep "%s/SEISREC-DIST")\n" "$repodir" >> ~/.bashrc
+        printf "inPath=$(printf \"$PATH\" | grep "%s/SEISREC-DIST")\n" "$repodir" >>~/.bashrc
         printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
         printf 'then\n' >>~/.bashrc
         printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >>~/.bashrc
@@ -342,7 +340,7 @@ function dist2dev() {
   print_title "$sta_type TO $other_sta_type - SEISREC_config"
   local opts=()
   if [ -n "$debug" ]; then
-    opts+=( -d )
+    opts+=(-d)
   fi
   opts+=("$other_sta_type")
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
@@ -351,11 +349,30 @@ function dist2dev() {
 function SEISREC-build() {
   local opts=()
   if [ -n "$debug" ]; then
-    opts+=( -d )
+    opts+=(-d)
   fi
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
 }
 
+function check_sta_type() {
+
+  if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
+    currdir=$(pwd)
+    if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
+      printf "Error cd'ing into SEISREC-DEV!\n"
+    fi
+    reponame=$(basename $(git rev-parse --show-toplevel))
+    if [ "$reponame" == "SEISREC-DEV" ]; then
+      sta_type="DEV"
+      other_sta_type="DIST"
+    else
+      printf "SEISREC-DEV directory present, but has wrong repository!\n"
+    fi
+  else
+    sta_type="DIST"
+    other_sta_type="DEV"
+  fi
+}
 #*********************************************************************************************************************************
 # MAIN BODY
 #*********************************************************************************************************************************
@@ -389,6 +406,7 @@ if [ -n "$debug" ]; then
   printf "repodir = %s\n" "$repodir"
 fi
 
+check_sta_type
 #=================================================================================================================================
 # CLEAN UP FUNCTION
 #=================================================================================================================================
@@ -444,22 +462,8 @@ while [ -z "$done" ]; do
       any_key
     else
       while [ -z "$done" ]; do
-        if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
-          currdir=$(pwd)
-          if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
-            printf "Error cd'ing into SEISREC-DEV!\n"
-          fi
-          reponame=$(basename $(git rev-parse --show-toplevel))
-          if [ "$reponame" == "SEISREC-DEV" ]; then
-            sta_type="DEV"
-            other_sta_type="DIST"
-          else
-            printf "SEISREC-DEV directory present, but has wrong repository!\n"
-          fi
-        else
-          sta_type="DIST"
-          other_sta_type="DEV"
-        fi
+        check_sta_type
+
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
         if [ "$sta_type" == "DEV" ]; then
           options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Build Station Software" "Back")
