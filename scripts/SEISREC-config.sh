@@ -266,7 +266,7 @@ function manage_services() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# GET SOFTWARE INFO FUNCTION
 # ################################################################################################################################
 function get_software_info() {
   print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
@@ -397,7 +397,7 @@ function setup_station() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# DIST 2 DEV
 # ################################################################################################################################
 function dist2dev() {
   print_title "$sta_type TO $other_sta_type - SEISREC_config"
@@ -410,7 +410,7 @@ function dist2dev() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# SEISREC_build
 # ################################################################################################################################
 function SEISREC-build() {
   local opts=()
@@ -418,6 +418,149 @@ function SEISREC-build() {
     opts+=(-d)
   fi
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
+}
+
+##################################################################################################################################
+# MANAGE NTP
+# ################################################################################################################################
+function manage_ntp() {
+  local PS3
+  local options
+  local opt
+  local choice
+  local REPLY
+  local answered
+
+  while [ -z "$answered" ]; do
+    choice=""
+    print_title "MANAGE NTP - SEISREC_config"
+
+    local opts=()
+    if [ -n "$debug" ]; then
+      opts+=(-d)
+    fi
+    PS3='Selection: '
+    options=("Edit NTP .conf File" "Load .conf file from distro" "View ntp.conf" "Back")
+    select opt in "${options[@]}"; do
+      case $opt in
+      "Edit NTP .conf File")
+        if [ -f "/etc/ntp.conf" ]; then
+          if ! sudo nano /etc/ntp.conf; then
+            printf "Error editing /etc/ntp.conf! \n"
+          fi
+        else
+          printf "Couldn't find /etc/ntp.conf!\n"
+        fi
+        any_key
+        break
+        ;;
+      "Load .conf file from distro")
+        local ans
+        while [ -z "$continue" ]; do
+          if ! read -r -p "This will completely overwrite the existing system ntp.conf. Are you sure? [Y/N]" continue; then
+            printf "Error reading STDIN! Aborting...\n"
+            exit 1
+          elif [[ "$continue" =~ [yY].* ]]; then
+            if [ -f "/etc/ntp.conf" ]; then
+              if ! sudo rm "/etc/ntp.conf"; then
+                printf "Error removing /etc/ntp.conf!"
+              fi
+            fi
+            if ! cp "$workdir/sysfiles/ntp.conf" "/etc/ntp.conf"; then
+              printf "Error copying /etc/ntp.conf! \n"
+            fi
+            any_key
+            break
+          elif [[ "$continue" =~ [sS].* ]]; then
+            break
+          else
+            continue=""
+          fi
+        done
+        break
+        ;;
+      "View ntp.conf")
+        if [ -f "/etc/ntp.conf" ]; then
+          if ! sudo cat "/etc/ntp.conf"; then
+              printf "Error viewing /etc/ntp.conf!"
+          fi
+        else
+          printf "Couldn't find /etc/ntp.conf!\n"
+        fi
+        break
+        ;;
+      "Back")
+        answered="yes"
+        break
+        ;;
+      *)
+        printf "invalid option %s\n" "$REPLY"
+        break
+        ;;
+      esac
+    done
+  done
+  #under_construction
+}
+
+##################################################################################################################################
+# MANAGE NETWORKS
+# ################################################################################################################################
+function manage_networks() {
+  local PS3
+  local options
+  local opt
+  local choice
+  local REPLY
+  local answered
+
+  while [ -z "$answered" ]; do
+    choice=""
+    print_title "MANAGE NETWORKS - SEISREC_config"
+
+    local opts=()
+    if [ -n "$debug" ]; then
+      opts+=(-d)
+    fi
+    PS3='Selection: '
+    options=("Configure Interface IP Address" "Configure Network Priority" "Back")
+    select opt in "${options[@]}"; do
+      case $opt in
+      "Configure Interface IP Address")
+        under_construction
+        any_key
+        break
+        ;;
+      "Configure Network Priority")
+        if [ -f "$workdir/sysfiles/dhcpcd.conf" ]; then
+          if ! sudo nano "$workdir/sysfiles/dhcpcd.conf"; then
+            printf "Error editing %s/sysfiles/dhcpcd.conf! \n" "$workdir"
+          fi
+        else
+          printf "Couldn't find %s/sysfiles/dhcpcd.conf!\n" "$workdir"
+        fi
+        any_key
+        break
+        ;;
+      "Back")
+        answered="yes"
+        break
+        ;;
+      *)
+        printf "invalid option %s\n" "$REPLY"
+        break
+        ;;
+      esac
+    done
+  done
+}
+
+##################################################################################################################################
+# PERFORMANCE REPORT
+# ################################################################################################################################
+function performance_report() {
+  print_title "PERFORMANCE REPORT - SEISREC_config"
+  under_construction
 }
 
 ##################################################################################################################################
@@ -522,7 +665,7 @@ while [ -z "$done" ]; do
   #=================================================================================================================================
   case $choice in
   #-------------------------------------------------------------------------------------------------------------------------------
-  # CLEAN UP FUNCTION
+  # Advanced Options
   #-------------------------------------------------------------------------------------------------------------------------------
   "Advanced Options")
     done=""
@@ -535,9 +678,9 @@ while [ -z "$done" ]; do
 
         print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
         if [ "$sta_type" == "DEV" ]; then
-          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Build Station Software" "Back")
+          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP" "Convert to $other_sta_type" "Build Station Software" "Back")
         else
-          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Convert to $other_sta_type" "Back")
+          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP""Convert to $other_sta_type" "Back")
         fi
         select opt in "${options[@]}"; do
           case $opt in
@@ -552,7 +695,7 @@ while [ -z "$done" ]; do
             break
             ;;
           "Manage Networks")
-            under_construction
+            manage_networks
             any_key
             break
             ;;
@@ -563,6 +706,11 @@ while [ -z "$done" ]; do
             ;;
           "Build Station Software")
             SEISREC-build
+            any_key
+            break
+            ;;
+          "Manage NTP")
+            manage_ntp
             any_key
             break
             ;;
@@ -581,7 +729,7 @@ while [ -z "$done" ]; do
     fi
     ;;
     #-------------------------------------------------------------------------------------------------------------------------------
-    # CLEAN UP FUNCTION
+    # Station Info & Tests
     #-------------------------------------------------------------------------------------------------------------------------------
   "Station Info & Tests")
     done=""
@@ -601,7 +749,7 @@ while [ -z "$done" ]; do
           break
           ;;
         "Performance Reports")
-          under_construction
+          performance_report
           any_key
           break
           ;;
@@ -619,7 +767,7 @@ while [ -z "$done" ]; do
     done=""
     ;;
     #-------------------------------------------------------------------------------------------------------------------------------
-    # CLEAN UP FUNCTION
+    # Software Setup & Update
     #-------------------------------------------------------------------------------------------------------------------------------
   "Software Setup & Update")
     done=""
