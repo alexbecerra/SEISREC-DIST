@@ -333,6 +333,28 @@ function get_software_info() {
     fi
   done
 
+  printf "Linux Software Versions:\n\n"
+
+  python3 --version
+
+  printf "\n"
+  redis-server -v
+  redis-cli -v
+
+  printf "\n"
+  sudo ldconfig -v 2>&1 | grep mraa | tail -1
+  sudo ldconfig -v 2>&1 | grep hiredis | tail -1
+
+  printf "\n"
+  pip3 show hiredis
+
+  if [ "$sta_type" == "DEV" ]; then
+    printf "\n"
+    pip3 show pyinstaller
+  fi
+
+  dpkg -l | grep "hi  ntp"
+
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
       printf "Error cd'ing into %s\n" "$currdir"
