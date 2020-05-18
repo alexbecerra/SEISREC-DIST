@@ -713,7 +713,7 @@ while [ -z "$done" ]; do
         if [ "$sta_type" == "DEV" ]; then
           options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP" "Convert to $other_sta_type" "Build Station Software" "Back")
         else
-          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP""Convert to $other_sta_type" "Back")
+          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP" "Convert to $other_sta_type" "Back")
         fi
         select opt in "${options[@]}"; do
           case $opt in
