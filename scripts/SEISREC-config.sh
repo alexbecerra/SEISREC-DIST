@@ -343,7 +343,7 @@ function get_software_info() {
 
   printf "\n"
   printf "MRAA C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libmraa.so.*.$" | sed -e "s/> libmraa.so.//")"
-  printf "hiredis C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libhiredis.so.*.$" | sed -e "s/> hiredis.so.//")"
+  printf "hiredis C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep hiredis | tail -1 | grep -m2 -o "> libhiredis.so.*.$" | sed -e "s/> libhiredis.so.//")"
 
   printf "\n"
   printf "Hiredis Python - %s\n" "$(pip3 show hiredis | grep Version)"
