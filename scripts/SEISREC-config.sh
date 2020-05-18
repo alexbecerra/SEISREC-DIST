@@ -704,6 +704,7 @@ while [ -z "$done" ]; do
             ;;
           "Manage Networks")
             manage_networks
+            break
             ;;
           "Convert to $other_sta_type")
             dist2dev
