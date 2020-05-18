@@ -33,6 +33,7 @@ function print_help() {
   print_title "AYUDA - SEISREC-config.sh"
   under_construction
   # TODO: Write Help Section
+  any_key
 }
 
 ##################################################################################################################################
@@ -51,6 +52,7 @@ function configure_station() {
   fi
   print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
+  any_key
 }
 
 ##################################################################################################################################
@@ -150,6 +152,7 @@ function update_station_software() {
   done
 
   under_construction
+  any_key
 }
 ##################################################################################################################################
 # MANAGE SERVICES
@@ -338,6 +341,8 @@ function get_software_info() {
   else
     printf "%s not found!\n" "$currdir"
   fi
+
+  any_key
 }
 
 ##################################################################################################################################
@@ -394,6 +399,7 @@ function setup_station() {
       fi
     fi
   fi
+  any_key
 }
 
 ##################################################################################################################################
@@ -407,6 +413,7 @@ function dist2dev() {
   fi
   opts+=("$other_sta_type")
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
+  any_key
 }
 
 ##################################################################################################################################
@@ -418,6 +425,7 @@ function SEISREC-build() {
     opts+=(-d)
   fi
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
+  any_key
 }
 
 ##################################################################################################################################
@@ -451,7 +459,6 @@ function manage_ntp() {
         else
           printf "Couldn't find /etc/ntp.conf!\n"
         fi
-        any_key
         break
         ;;
       "Load .conf file from distro")
@@ -468,8 +475,8 @@ function manage_ntp() {
             fi
             if ! cp "$workdir/sysfiles/ntp.conf" "/etc/ntp.conf"; then
               printf "Error copying /etc/ntp.conf! \n"
+              any_key
             fi
-            any_key
             break
           elif [[ "$continue" =~ [sS].* ]]; then
             break
@@ -487,6 +494,7 @@ function manage_ntp() {
         else
           printf "Couldn't find /etc/ntp.conf!\n"
         fi
+        any_key
         break
         ;;
       "Back")
@@ -535,11 +543,12 @@ function manage_networks() {
         if [ -f "$workdir/sysfiles/dhcpcd.conf" ]; then
           if ! sudo nano "$workdir/sysfiles/dhcpcd.conf"; then
             printf "Error editing %s/sysfiles/dhcpcd.conf! \n" "$workdir"
+            any_key
           fi
         else
           printf "Couldn't find %s/sysfiles/dhcpcd.conf!\n" "$workdir"
+          any_key
         fi
-        any_key
         break
         ;;
       "Back")
@@ -561,6 +570,7 @@ function manage_networks() {
 function performance_report() {
   print_title "PERFORMANCE REPORT - SEISREC_config"
   under_construction
+  any_key
 }
 
 ##################################################################################################################################
@@ -686,32 +696,25 @@ while [ -z "$done" ]; do
           case $opt in
           "Configure Station Parameters")
             configure_station
-            any_key
             break
             ;;
           "Manage Unit Services")
             manage_services
-            any_key
             break
             ;;
           "Manage Networks")
             manage_networks
-            any_key
-            break
             ;;
           "Convert to $other_sta_type")
             dist2dev
-            any_key
             break
             ;;
           "Build Station Software")
             SEISREC-build
-            any_key
             break
             ;;
           "Manage NTP")
             manage_ntp
-            any_key
             break
             ;;
           "Back")
@@ -745,12 +748,10 @@ while [ -z "$done" ]; do
           ;;
         "Detailed Software Info")
           get_software_info
-          any_key
           break
           ;;
         "Performance Reports")
           performance_report
-          any_key
           break
           ;;
         "Back")
@@ -796,7 +797,6 @@ while [ -z "$done" ]; do
         case $opt in
         "SEISREC version & update")
           update_station_software
-          any_key
           break
           ;;
         "Station Setup")
@@ -819,7 +819,6 @@ while [ -z "$done" ]; do
             fi
           fi
           setup_station
-          any_key
           break
           ;;
         "Back")
