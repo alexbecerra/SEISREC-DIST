@@ -342,11 +342,11 @@ function get_software_info() {
   redis-cli -v
 
   printf "\n"
-  sudo ldconfig -v 2>&1 | grep mraa | tail -1
-  sudo ldconfig -v 2>&1 | grep hiredis | tail -1
+  printf "MRAA C lib Version: %s" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libmraa.so.*.$" | sed -e "s/> libmraa.so.//")"
+  printf "hiredis C lib Version: %s" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libhiredis.so.*.$" | sed -e "s/> hiredis.so.//")"
 
   printf "\n"
-  printf "Hiredis - %s\n" "$(pip3 show hiredis | grep Version)"
+  printf "Hiredis Python - %s\n" "$(pip3 show hiredis | grep Version)"
 
   if [ "$sta_type" == "DEV" ]; then
     printf "\n"
