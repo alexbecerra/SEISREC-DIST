@@ -1,3 +1,5 @@
+# TODO: Add documentation & debug Messages
+
 function print_banner() {
   printf "                                                                             \n"
   printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"

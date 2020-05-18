@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Add documentation & debug Messages
+
 debug=''
 choice=""
 done=""
@@ -336,7 +338,6 @@ function get_software_info() {
   else
     printf "%s not found!\n" "$currdir"
   fi
-  # TODO: Add executable info display strings TEST_ACC355 | grep "Version: .*UTC"
 }
 
 ##################################################################################################################################
@@ -408,6 +409,9 @@ function dist2dev() {
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
 }
 
+##################################################################################################################################
+# CLEAN UP FUNCTION
+# ################################################################################################################################
 function SEISREC-build() {
   local opts=()
   if [ -n "$debug" ]; then
@@ -416,6 +420,9 @@ function SEISREC-build() {
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
 }
 
+##################################################################################################################################
+# UTILITIES
+# ################################################################################################################################
 function check_sta_type() {
 
   if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
