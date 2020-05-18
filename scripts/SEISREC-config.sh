@@ -346,11 +346,11 @@ function get_software_info() {
   sudo ldconfig -v 2>&1 | grep hiredis | tail -1
 
   printf "\n"
-  pip3 show hiredis | head -2
+  printf "Hiredis - %s\n" "$(pip3 show hiredis | grep Version)"
 
   if [ "$sta_type" == "DEV" ]; then
     printf "\n"
-    pip3 show pyinstaller | head -2
+    printf "Pyinstaller - %s\n" "$(pip3 show pyinstaller | grep Version)"
   fi
 
   printf "\n"
