@@ -346,13 +346,14 @@ function get_software_info() {
   sudo ldconfig -v 2>&1 | grep hiredis | tail -1
 
   printf "\n"
-  pip3 show hiredis
+  pip3 show hiredis | head -2
 
   if [ "$sta_type" == "DEV" ]; then
     printf "\n"
-    pip3 show pyinstaller
+    pip3 show pyinstaller | head -2
   fi
 
+  printf "\n"
   dpkg -l | grep "hi  ntp"
 
   if [ -d "$currdir" ]; then
