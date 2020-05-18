@@ -9,3 +9,5 @@
 /.idea/*
 /SEISREC-DEV/
 /SEISREC-DEV/*
+SEISREC-config
+*.list
