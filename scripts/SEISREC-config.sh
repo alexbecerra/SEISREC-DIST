@@ -335,26 +335,26 @@ function get_software_info() {
 
   printf "Linux Software Versions:\n\n"
 
-  python3 --version
+  printf "Python Version: %s" "$(python3 --version | sed -e "s/Python //")"
 
   printf "\n"
-  redis-server -v
-  redis-cli -v
+  printf "Redis Server Version: %s\n""$(redis-server -v | grep -o "v=.* sha" | sed -e "s/v=//" | sed -e "s/sha//")"
+  printf "Redis Client Version: %s\n""$(redis-cli -v | grep -o " .*$" | sed -e "s/ //")"
 
   printf "\n"
   printf "MRAA C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libmraa.so.*.$" | sed -e "s/> libmraa.so.//")"
   printf "hiredis C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep hiredis | tail -1 | grep -m2 -o "> libhiredis.so.*.$" | sed -e "s/> libhiredis.so.//")"
 
   printf "\n"
-  printf "Hiredis Python - %s\n" "$(pip3 show hiredis | grep Version)"
+  printf "Hiredis Python %s\n" "$(pip3 show hiredis | grep Version)"
 
   if [ "$sta_type" == "DEV" ]; then
     printf "\n"
-    printf "Pyinstaller - %s\n" "$(pip3 show pyinstaller | grep Version)"
+    printf "Pyinstaller %s\n" "$(pip3 show pyinstaller | grep Version)"
   fi
 
   printf "\n"
-  dpkg -l | grep "hi  ntp"
+  printf "NTP Version: %s\n" "$(dpkg -l | grep "hi  ntp" | grep -o "1:....." | sed -e "s/1://")"
 
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
