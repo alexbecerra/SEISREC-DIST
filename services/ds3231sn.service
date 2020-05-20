@@ -11,6 +11,9 @@ User=root
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_ds3231sn -l -h $rtc_snooze_h -m $rtc_snooze_m -s $rtc_snooze_s
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=1
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ds3231sn
 
 [Install]
 WantedBy=multi-user.target
