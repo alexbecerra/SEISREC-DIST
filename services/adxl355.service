@@ -2,14 +2,14 @@
 Description=ADXL355 service
 After=multi-user.target
 Before=db2file.service
-Requires=redis_6379.service neom8.service
+Requires=redis_6379_2.service neom8.service
 
 [Service]
+CPUAffinity=2
 Type=notify
 Restart=always
 RestartSec=5
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
-CPUAffinity=$sys_acc_core
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_adxl355 -r $acc_range -s $adxl_sps -n $sta_name -w $sta_net -p $acc_db_pass -e $adxl_extclk -y $adxl_syncopt -m $adxl_mode
 CPUSchedulingPolicy=rr
 CPUSchedulingPriority=99
