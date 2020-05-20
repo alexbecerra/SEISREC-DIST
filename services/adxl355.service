@@ -5,7 +5,7 @@ Before=db2file.service
 Requires=redis_6379.service neom8.service
 
 [Service]
-CPUAffinity=$sys_acc_core
+CPUAffinity=2
 Type=notify
 Restart=always
 RestartSec=5
