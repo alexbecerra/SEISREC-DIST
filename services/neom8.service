@@ -9,6 +9,8 @@ User=root
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_neom8 -f $gnss_freq -u -c
 CPUSchedulingPolicy=fifo
 CPUSchedulingPriority=1
+StandardOutput=file:/home/pi/fuckyou.log
+StandardError=file:/home/pi/whydoesnothingfuckingwork.log
 
 
 [Install]
