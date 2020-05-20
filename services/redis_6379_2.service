@@ -1,0 +1,11 @@
+[Unit]
+Description=REDIS launcher service
+
+[Service]
+Type=oneshot
+ExecStart=/home/pi/SEISREC-DIST/sysfiles/redis_6379 start
+ExecStop=/home/pi/SEISREC-DIST/sysfiles/redis_6379 stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
