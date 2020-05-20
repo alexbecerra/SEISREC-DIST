@@ -5,7 +5,7 @@ Before=db2file.service
 Requires=redis_6379.service neom8.service
 
 [Service]
-CPUAffinity=2
+CPUAffinity=$sys_acc_core
 Type=notify
 Restart=always
 RestartSec=5
@@ -16,7 +16,6 @@ CPUSchedulingPriority=99
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=adxl355
-
 
 [Install]
 WantedBy=multi-user.target

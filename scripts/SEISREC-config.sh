@@ -338,8 +338,8 @@ function get_software_info() {
   printf "Python Version: %s" "$(python3 --version | sed -e "s/Python //")"
 
   printf "\n"
-  printf "Redis Server Version: %s\n""$(redis-server -v | grep -o "v=.* sha" | sed -e "s/v=//" | sed -e "s/sha//")"
-  printf "Redis Client Version: %s\n""$(redis-cli -v | grep -o " .*$" | sed -e "s/ //")"
+  printf "Redis Server Version: %s\n" "$(redis-server -v | grep -o "v=.* sha" | sed -e "s/v=//" | sed -e "s/sha//")"
+  printf "Redis Client Version: %s\n" "$(redis-cli -v | grep -o " .*$" | sed -e "s/ //")"
 
   printf "\n"
   printf "MRAA C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep mraa | tail -1 | grep -m2 -o "> libmraa.so.*.$" | sed -e "s/> libmraa.so.//")"

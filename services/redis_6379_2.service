@@ -3,6 +3,7 @@ Description=REDIS launcher service
 
 [Service]
 Type=oneshot
+CPUAffinity=3
 ExecStart=/home/pi/SEISREC-DIST/sysfiles/redis_6379 start
 ExecStop=/home/pi/SEISREC-DIST/sysfiles/redis_6379 stop
 RemainAfterExit=yes
