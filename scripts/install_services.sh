@@ -205,6 +205,10 @@ if [ -n "$install" ]; then
       unitname=$(printf "%s" "$f" | sed -e "s/.service//")
       if [ -z "$(ls "$repodir/SEISREC-DIST/unit/" | grep "$unitname")" ]; then
         printf "No corresponding unit executable for %s!!\n" "$f"
+      elif [ "$repodir" == "/home/pi" ]; then
+        if ! sed -i "/\/home\/pi/$repodir/"; then
+          printf "Error setting unit executable paths in %s\n!" "$f"
+        fi
       fi
 
       printf "Installing %s...\n" "$f"
