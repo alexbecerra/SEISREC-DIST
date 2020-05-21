@@ -202,5 +202,4 @@ fi
 
 unset PARAM
 
-any_key
 exit 0
