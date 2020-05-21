@@ -355,6 +355,7 @@ function get_software_info() {
 
   printf "\n"
   printf "NTP Version: %s\n" "$(dpkg -l | grep "hi  ntp" | grep -o "1:....." | sed -e "s/1://")"
+  printf "GPSD Version: %s\n" "$(gpsd -V | grep -o "revision.*)" | sed -e "s/revision //" | sed -e "s/)//")"
 
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
