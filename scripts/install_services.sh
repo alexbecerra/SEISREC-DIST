@@ -13,12 +13,14 @@ debug=""
 fileList=""
 disable=""
 startstop=""
+noprompt=""
 # Parse options
 function print_help() {
   printf "Usage: install_services.sh [options] <mode>\n"
   printf "    [-h]                  Display this help message.\n"
   printf "    [-f]                  File listing services to be built/installed\n"
   printf "    [-d]                  Debug flag\n"
+  printf "    [-n]                  No prompt\n"
   printf "\nModes:\n"
   printf "  START: start all services.\n"
   printf "  STOP: stop all services.\n"
@@ -27,7 +29,7 @@ function print_help() {
   printf "  INSTALL: stop, disable, remove all links, install and reenable all services.\n"
   exit 0
 }
-while getopts ":hfd" opt; do
+while getopts ":hfdn" opt; do
   case ${opt} in
   h)
     print_help
@@ -37,6 +39,9 @@ while getopts ":hfd" opt; do
     ;;
   d)
     debug="yes"
+    ;;
+  n)
+    noprompt="yes"
     ;;
   \?)
     printf "Invalid Option: -%s" "$OPTARG" 1>&2
@@ -107,6 +112,7 @@ fi
 # Let the user know the script started
 printf "install_services.sh - SEISREC services install utility\n"
 
+if [ -n "$noprompt" ]; then
 # Print warning, this should be optional
 printf "This script will modify running SEISREC services. Continue? [Y]es/[N]o "
 # Get answer
@@ -132,6 +138,7 @@ if [ "$answered" == "yes" ]; then
 else
   printf "Exiting script!\n"
   exit 1
+fi
 fi
 answered=""
 
