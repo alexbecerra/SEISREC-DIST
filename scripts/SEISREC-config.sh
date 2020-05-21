@@ -596,6 +596,47 @@ function performance_report() {
   under_construction
   any_key
 }
+##################################################################################################################################
+# UNINSTALL SEISREC
+# ################################################################################################################################
+function uninstall_seisrec() {
+  print_title "UNINSTALL SEISREC - SEISREC_config"
+  local opts=()
+  if [ -n "$debug" ]; then
+    opts+=(-d)
+  fi
+  while [ -z "$continue" ]; do
+    if ! read -r -p "This will uninstall all SEISREC software from device. Continue? [Yes/No] " continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [yY].* ]]; then
+      choice="disable"
+      opts+=( -n "$choice")
+      if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+        printf "Error disabling services!\n"
+      fi
+
+      # TODO: Take care of symlinks outside SEISREC-DIST
+      # TODO: Remove SEISREC-DIST from path
+
+      if ! sudo rm -r "$repodir/SEISREC-DIST/"; then
+        printf "Error removing SEISREC-DIST repository!\n"
+        exit 1
+      fi
+
+      printf "To reinstall software, clone from https://github.com/alexbecerra/SEISREC-DIST.git"
+      any_key
+      exit 0
+
+    elif [[ "$continue" =~ [nN].* ]]; then
+      break
+    else
+      continue=""
+    fi
+  done
+  any_key
+}
+
 
 ##################################################################################################################################
 # UTILITIES
@@ -817,7 +858,7 @@ while [ -z "$done" ]; do
       fi
       print_title "STATION SOFTWARE & UPDATE - SEISREC_config.sh"
 
-      options=("SEISREC version & update" "Station Setup" "Back")
+      options=("SEISREC version & update" "Station Setup" "Uninstall" "Back")
       select opt in "${options[@]}"; do
         case $opt in
         "SEISREC version & update")
@@ -844,6 +885,10 @@ while [ -z "$done" ]; do
             fi
           fi
           setup_station
+          break
+          ;;
+        "Uninstall")
+          uninstall_seisrec
           break
           ;;
         "Back")
