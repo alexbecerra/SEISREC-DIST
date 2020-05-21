@@ -415,10 +415,10 @@ function setup_station() {
       if [ -z "$inPath" ]; then
         # Add it permanently to path
         printf "Adding ./SEISREC-DIST to PATH...\n"
-        printf "inPath=$(printf \"$PATH\" | grep "%s/SEISREC-DIST")\n" "$repodir" >>~/.bashrc
+        printf "inPath=\"\$(printf \"$PATH\" | grep \"%s/SEISREC-DIST\")\"\n" "$repodir" >> ~/.bashrc
         printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
         printf 'then\n' >>~/.bashrc
-        printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >>~/.bashrc
+        printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >> ~/.bashrc
         printf 'fi\n' >>~/.bashrc
       fi
     fi
