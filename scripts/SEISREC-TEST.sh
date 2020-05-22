@@ -14,7 +14,7 @@ else
   exit 1
 fi
 
-dir="$repodir/TEST"
+dir="$repodir/SEISREC-DIST/TEST"
 
 echo " "
 echo "Comenzando pruebas de placa ACC355"
