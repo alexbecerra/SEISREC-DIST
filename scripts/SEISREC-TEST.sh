@@ -16,6 +16,7 @@ fi
 
 dir="$repodir/SEISREC-DIST/TEST"
 
+# TODO: Update code & generalize for all TESTS in /TEST/
 echo " "
 echo "Comenzando pruebas de placa ACC355"
 sudo "$dir/TEST_ACC355"
