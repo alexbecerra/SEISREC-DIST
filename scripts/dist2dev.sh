@@ -1,14 +1,21 @@
 #!/bin/bash
 
-# TODO: Add documentation & debug Messages
-
-
 debug=""
 convert_to=""
 
 ##################################################################################################################################
+# DISPLAY HELP
+#################################################################################################################################
+function print_help() {
+  printf "Usage: dist2dev.sh [DIST or DEV] \n"
+  printf "       DIST: Convert to distribution version \n"
+  printf "       DEV:  Convert to development version \n"
+  exit 0
+}
+
+##################################################################################################################################
 # GET WORKING DIRECTORY
-# ################################################################################################################################
+#################################################################################################################################
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
@@ -23,6 +30,11 @@ else
   exit 1
 fi
 
+if [ -n "$debug" ]; then
+  printf "workdir = %s\n" "$workdir"
+fi
+
+# If im in the directory im going to delete then bail out
 if [ -n "$(pwd | grep SEISREC-DEV)" ]; then
    printf "Current directory is inside SEISREC-DEV!\n"
    currdir="$workdir"
@@ -30,13 +42,6 @@ else
   currdir=$(pwd)
 fi
 
-
-function print_help() {
-  printf "Usage: dist2dev.sh [DIST or DEV] \n"
-  printf "       DIST: Convert to distribution version \n"
-  printf "       DEV:  Convert to development version \n"
-  exit 0
-}
 # Parse options
 while getopts "dh" opt; do
   case ${opt} in
@@ -57,6 +62,7 @@ while getopts "dh" opt; do
 done
 shift $((OPTIND - 1))
 
+# Parse arguments
 while [ -n "$1" ]; do
   PARAM="${1,,}"
   if [ -n "$debug" ]; then
@@ -93,7 +99,7 @@ if [ -n "$debug" ]; then
 fi
 
 case $convert_to in
-# START: start all services
+# If converting to DIST, delete DEV directory safely
 "DIST")
   if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists...\n"
@@ -102,6 +108,11 @@ case $convert_to in
       exit 1
     fi
     reponame=$(basename $(git rev-parse --show-toplevel))
+
+    if [ -n "$debug" ]; then
+      printf "reponame = %s\n" "$reponame"
+    fi
+
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "SEISREC-DEV directory present. Deleting...\n"
     else
@@ -120,6 +131,7 @@ case $convert_to in
 
   ;;
 "DEV")
+  # in converting to DEV, check if directory structure is broken, then clone.
   if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists...\n"
     if ! cd "$workdir/SEISREC-DEV"; then
@@ -127,34 +139,42 @@ case $convert_to in
       exit 1
     fi
     reponame=$(basename $(git rev-parse --show-toplevel))
+    if [ -n "$debug" ]; then
+      printf "reponame = %s\n" "$reponame"
+    fi
+
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "Already converted to DEV! Exiting...\n"
-      exit 1
+      exit 1 # Exit if there's any funny business with the filesystem
     else
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
       if ! cd ..; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
-        exit 1
+        exit 1 # Exit if there's any funny business with the filesystem
       fi
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error removing ./SEISREC-DEV! Aborting...\n"
-        exit 1
+        exit 1 # Exit if there's any funny business with the filesystem
       fi
     fi
   fi
   printf "cd'ing into %s\n" "$workdir"
   if ! cd "$workdir"; then
     printf "Error cd'ing into SEISREC-DIST!\n"
-    exit 1
+    exit 1 # Exit if there's any funny business with the filesystem
   fi
 
   if [ -d "$workdir/SEISREC-DEV" ]; then
     printf "DEV directory already exists..."
     if ! cd "./SEISREC-DEV"; then
       printf "Error cd'ing into ./SEISREC-DEV!\n"
-      exit 1
+      exit 1 # Exit if there's any funny business with the filesystem
     fi
     reponame=$(basename $(git rev-parse --show-toplevel))
+    if [ -n "$debug" ]; then
+      printf "reponame = %s\n" "$reponame"
+    fi
+
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "Already converted to DEV! Exiting...\n"
       exit 1
@@ -162,11 +182,11 @@ case $convert_to in
       printf "SEISREC-DEV directory present, but has wrong repository. Deleting...\n"
       if ! cd "$workdir" ; then
         printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
-        exit 1
+        exit 1 # Exit if there's any funny business with the filesystem
       fi
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error removing ./SEISREC-DEV! Aborting...\n"
-        exit 1
+        exit 1 # Exit if there's any funny business with the filesystem
       fi
     fi
   fi
@@ -174,7 +194,7 @@ case $convert_to in
   printf "Cloning SEISREC-DEV...\n"
   if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
     printf "Error cloning into ./SEISREC-DEV!\n"
-    exit 1
+    exit 1 # Exit if there's any funny business with the filesystem
   fi
 
   printf "cd'ing back into %s!\n" "$currdir"
