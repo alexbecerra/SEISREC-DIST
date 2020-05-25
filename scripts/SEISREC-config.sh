@@ -102,9 +102,9 @@ function update_station_software() {
       exit 1
     fi
   fi
-
+  printf "\n"
   while [ -z "$continue" ]; do
-    if ! read -r -p "\nUpdate station? [Yes/No] " continue; then
+    if ! read -r -p "Update station? [Yes/No] " continue; then
       printf "Error reading STDIN! Aborting...\n"
       exit 1
     elif [[ "$continue" =~ [yY].* ]]; then
