@@ -104,7 +104,7 @@ function update_station_software() {
   fi
 
   while [ -z "$continue" ]; do
-    if ! read -r -p "Update station? [Yes/No] " continue; then
+    if ! read -r -p "\nUpdate station? [Yes/No] " continue; then
       printf "Error reading STDIN! Aborting...\n"
       exit 1
     elif [[ "$continue" =~ [yY].* ]]; then
@@ -286,7 +286,7 @@ function get_software_info() {
       exit 1
     else
       if git log | head -5 >/dev/null 2>&1; then
-        printf "SEISREC-DIST last commit:\n\n"
+        printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
         printf "%s" "$(git log | head -5)"
       else
         printf "Error getting git logs!\n"
@@ -304,7 +304,7 @@ function get_software_info() {
         exit 1
       else
         if git log | head -5 >/dev/null 2>&1; then
-          printf "SEISREC-DEV last commit:\n\n"
+          printf "SEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
         else
           printf "Error getting git logs!\n"
