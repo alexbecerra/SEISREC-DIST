@@ -60,7 +60,6 @@ function configure_station() {
 # ################################################################################################################################
 function update_station_software() {
   print_title "SYSTEM UPDATE- SEISREC-config.sh"
-  # TODO: Complete section
   if [ -z "$sta_type" ]; then
     printf "Station Type not defined!\n"
     exit 1
@@ -74,7 +73,7 @@ function update_station_software() {
       exit 1
     else
       if git log | head -5 >/dev/null 2>&1; then
-        printf "SEISREC-DIST last commit:\n\n"
+        printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
         printf "%s" "$(git log | head -5)"
       else
         printf "Error getting git logs!\n"
@@ -92,7 +91,7 @@ function update_station_software() {
         exit 1
       else
         if git log | head -5 >/dev/null 2>&1; then
-          printf "\nSEISREC-DEV last commit:\n\n"
+          printf "\nSEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
         else
           printf "Error getting git logs!\n"
@@ -408,6 +407,10 @@ function setup_station() {
       ln -s "$repodir/SEISREC-DIST/scripts/SEISREC-config.sh" "$repodir/SEISREC-DIST/SEISREC-config"
     fi
 
+    if ! cp "$HOME/.bashrc" "$HOME/.bashrc.bak"; then
+      printf "Error backing up .bashrc!\n"
+    fi
+
     # Check if ~/SEISREC is in PATH, if not, add it to PATH
     inBashrc=$(cat "$HOME/.bashrc" | grep 'SEISREC-DIST')
     inPath=$(printf "%s" "$PATH" | grep 'SEISREC-DIST')
@@ -420,6 +423,7 @@ function setup_station() {
         printf 'then\n' >>~/.bashrc
         printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >> ~/.bashrc
         printf 'fi\n' >>~/.bashrc
+        printf "\n\nalias servcheck='sudo systemctl status neom8.service ; sudo systemctl status adxl355.service ; sudo systemctl status dyndns-manager.service ; sudo systemctl status db2file.service ; sudo systemctl status ds3231sn.service ; sudo systemctl status redis_6379_2.service ; sudo systemctl status ntp2.service'" >>~/.bashrc
       fi
     fi
   fi
@@ -626,7 +630,16 @@ function uninstall_seisrec() {
       fi
 
       # TODO: Take care of symlinks outside SEISREC-DIST
-      # TODO: Remove SEISREC-DIST from path
+
+      if ! rm "$HOME/.bashrc"; then
+        printf "Error removing .bashrc!\n"
+      fi
+
+      if ! mv "$HOME/.bashrc.bak" "$HOME/.bashrc"; then
+        printf "Error restoring .bashrc!\n"
+      fi
+
+      export PATH=$(printf "%s" "$PATH" | sed -e "s|$repodir/SEISREC-DIST:||")
 
       if ! sudo rm -r "$repodir/SEISREC-DIST/"; then
         printf "Error removing SEISREC-DIST repository!\n"
