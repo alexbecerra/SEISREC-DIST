@@ -346,10 +346,10 @@ function get_software_info() {
   printf "hiredis C lib Version: %s\n" "$(sudo ldconfig -v 2>&1 | grep hiredis | tail -1 | grep -m2 -o "> libhiredis.so.*.$" | sed -e "s/> libhiredis.so.//")"
 
   printf "\n"
-  printf "Hiredis Python %s\n" "$(pip3 show hiredis | grep Version)"
 
   if [ "$sta_type" == "DEV" ]; then
     printf "\n"
+    printf "Hiredis Python %s\n" "$(pip3 show hiredis | grep Version)"
     printf "Pyinstaller %s\n" "$(pip3 show pyinstaller | grep Version)"
   fi
 
@@ -415,7 +415,7 @@ function setup_station() {
       if [ -z "$inPath" ]; then
         # Add it permanently to path
         printf "Adding ./SEISREC-DIST to PATH...\n"
-        printf "inPath=\"\$(printf \"$PATH\" | grep \"%s/SEISREC-DIST\")\"\n" "$repodir" >> ~/.bashrc
+        printf "inPath=\"\$(printf \"\$PATH\" | grep \"%s/SEISREC-DIST\")\"\n" "$repodir" >> ~/.bashrc
         printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
         printf 'then\n' >>~/.bashrc
         printf '  export PATH="%s/SEISREC-DIST:$PATH"\n' "$repodir" >> ~/.bashrc
@@ -601,6 +601,15 @@ function performance_report() {
 # ################################################################################################################################
 function uninstall_seisrec() {
   print_title "UNINSTALL SEISREC - SEISREC_config"
+  local currdir=$(pwd)
+
+  if [ -n "$(pwd | grep "SEISREC-DIST")" ]; then
+      if [ -n "$debug" ]; then
+        printf "Current working directory is inside SESIREC-DIST"
+      fi
+      cd "$HOME"
+  fi
+
   local opts=()
   if [ -n "$debug" ]; then
     opts+=(-d)
@@ -624,7 +633,7 @@ function uninstall_seisrec() {
         exit 1
       fi
 
-      printf "To reinstall software, clone from https://github.com/alexbecerra/SEISREC-DIST.git"
+      printf "To reinstall software, clone from https://github.com/alexbecerra/SEISREC-DIST.git\n"
       any_key
       exit 0
 
