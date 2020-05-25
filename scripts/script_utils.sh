@@ -1,5 +1,6 @@
-# TODO: Add documentation & debug Messages
-
+##################################################################################################################################
+# PRINT TITLE FUNCTION
+# ################################################################################################################################
 function print_banner() {
   printf "                                                                             \n"
   printf "███████╗███████╗██╗    ██╗       ██████╗███████╗███╗   ██╗\n"
@@ -10,6 +11,9 @@ function print_banner() {
   printf "╚══════╝╚══════╝ ╚══╝╚══╝        ╚═════╝╚══════╝╚═╝  ╚═══╝\n"
 }
 
+##################################################################################################################################
+# Prints "under construction" banner
+# ################################################################################################################################
 function under_construction() {
   printf "\n"
   printf "  #######################################\n"
@@ -21,11 +25,23 @@ function under_construction() {
 }
 
 ##################################################################################################################################
-# PRINT TITLE FUNCTION
+# Clears screen and prints title
 # ################################################################################################################################
 function print_title() {
+  if [ -n "$debug" ]; then
+    if [ -n "$(type -t cls)" ]; then
+      printf "cls func present\n"
+    fi
+    if [ -n "$(type -t clear)" ]; then
+      printf "clear func present\n"
+    fi
+  fi
   if [ -z "$debug" ]; then
-    if ! cls; then
+    if [ -n "$(type -t cls)" ]; then
+      if ! cls; then
+        printf "D'OH"
+      fi
+    elif [ -n "$(type -t clear)" ]; then
       if ! clear; then
         printf "D'OH"
       fi
@@ -41,7 +57,7 @@ function print_title() {
 }
 
 ##################################################################################################################################
-# CLEAN UP FUNCTION
+# Cleans up target file
 # ################################################################################################################################
 function clean_up() {
   local file
@@ -58,7 +74,7 @@ function clean_up() {
 
 
 ##################################################################################################################################
-# CLEAN UP AFTER SIG-INT
+# Press any key to continue func
 # ################################################################################################################################
 function any_key() {
   read -n 1 -r -s -p $'Press any key to continue...\n'
@@ -78,7 +94,13 @@ function ctrl_c() {
   local tempfiles
   if [ -d "$workdir" ]; then
     tempfiles=$(ls "$workdir" | grep ".*.tmp")
+    if [ -n "$debug" ]; then
+      printf "tempfiles = %s\n" "$tempfiles"
+    fi
     listfiles=$(ls "$workdir" | grep ".*.list")
+    if [ -n "$debug" ]; then
+      printf "listfiles = %s\n" "$listfiles"
+    fi
     for l in $listfiles; do
       clean_up "$l"
     done
@@ -90,7 +112,7 @@ function ctrl_c() {
 }
 
 ##################################################################################################################################
-# MENU FUNCTION
+# Creates a variable element menu selection
 # ################################################################################################################################
 function select_several_menu() {
   local menu_opts_file
@@ -105,6 +127,12 @@ function select_several_menu() {
   menu_opts_file="$2"
   selected_names_file="$3"
 
+  if [ -n "$debug" ]; then
+    printf "menu_title = %s " "$menu_title"
+    printf "menu_opts_file = %s " "$menu_opts_file"
+    printf "selected_names_file = %s " "$selected_names_file"
+  fi
+
   clean_up "$selected_names_file"
 
   optionnames=()
@@ -116,6 +144,12 @@ function select_several_menu() {
     printf "Menu options file not found!\n"
     exit 1
   fi
+
+  if [ -n "$debug" ]; then
+    printf "optionnames = %s " "${optionnames[@]}"
+    printf "\n"
+  fi
+
 
   while [ -z "$answered" ]; do
     print_title "$menu_title"
@@ -162,9 +196,6 @@ function select_several_menu() {
       printf "%s " "${optionnames[$((n))]}"
     done
 
-    #---------------------------------------------------------------
-    # CONFIG CONFIRMATION
-    #---------------------------------------------------------------
     printf "\n[C]ontinue [R]eselect [A]bort ? "
     if ! read -r continue; then
       printf "Error reading STDIN! Aborting...\n"
