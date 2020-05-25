@@ -16,10 +16,16 @@ fi
 
 dir="$repodir/SEISREC-DIST/TEST"
 
-# TODO: Update code & generalize for all TESTS in /TEST/
-echo " "
-echo "Comenzando pruebas de placa ACC355"
-sudo "$dir/TEST_ACC355"
-echo " "
-echo "Comenzando pruebas de placa TIMING"
-sudo "$dir/TEST_TIMING"
+if [ -d "$dir" ]; then
+TESTS=$(ls "$dir")
+
+for t in $TESTS; do
+  printf "Comenzando pruebas de placa %s...\n" "$(printf "%s" "$s" | sed -e "s/TEST_//")"
+  if ! "$dir/$t"; then
+    printf "Error en %s!\n" "$t"
+  fi
+  printf "\n"
+done
+else
+  printf "No hay tests disponibles!\n"
+fi
