@@ -61,4 +61,4 @@ Enter value: EEW
 After defining parameters, unit services are installed and station software starts.
 
 Finally, if desired, SEISREC-config utility can be added to the standard path and run by typing:
-``pi@raspberry:~$ SEISREC-config ``
+```pi@raspberry:~$ SEISREC-config```
