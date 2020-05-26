@@ -151,6 +151,7 @@ function update_station_software() {
   done
 
   under_construction
+  # TODO : git tags support
   any_key
 }
 ##################################################################################################################################
@@ -564,6 +565,7 @@ function manage_networks() {
       case $opt in
       "Configure Interface IP Address")
         under_construction
+        # TODO: Write IP config function
         any_key
         break
         ;;
@@ -597,6 +599,7 @@ function manage_networks() {
 # ################################################################################################################################
 function performance_report() {
   print_title "PERFORMANCE REPORT - SEISREC_config"
+  # TODO: write performance tests
   under_construction
   any_key
 }
