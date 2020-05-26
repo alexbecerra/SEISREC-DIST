@@ -20,8 +20,8 @@ if [ -d "$dir" ]; then
 TESTS=$(ls "$dir")
 
 for t in $TESTS; do
-  printf "Comenzando pruebas de placa %s...\n" "$(printf "%s" "$s" | sed -e "s/TEST_//")"
-  if ! "$dir/$t"; then
+  printf "Comenzando pruebas de placa %s...\n" "$(printf "%s" "$t" | sed -e "s/TEST_//")"
+  if ! sudo "$dir/$t"; then
     printf "Error en %s!\n" "$t"
   fi
   printf "\n"
