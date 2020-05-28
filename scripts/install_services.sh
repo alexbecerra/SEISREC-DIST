@@ -159,18 +159,41 @@ if [ -n "$debug" ]; then
 fi
 
 justservices=$(printf "%s " "$services" | grep ".*.service")
+servicegraph=$(systemd-analyze blame)
+
+ordered_services=()
+for s in $servicegraph; do
+  for t in $justservices; do
+    if [ "$s" == "$t" ]; then
+        if [ -n "$debug" ]; then
+          printf "t = %s\n" "$t"
+        fi
+        ordered_services+=( "t" )
+    fi
+  done
+done
+
 
 if [ -n "$startstop" ]; then
-  for s in $justservices; do
-    printf "%sing %s\n" "$startstop" "$s"
+  tempstring=""
+  case $startstop in
+  "start")
+      tempstring="Starting"
+    ;;
+  "stop")
+      tempstring="Stopping"
+    ;;
+  esac
+  for s in $ordered_services; do
+    printf "%s %s\n" "$tempstring" "$s"
     if ! sudo systemctl "$startstop" "$s"; then
-      printf "Error %sing %s\n" "$startstop" "$s"
+      printf "Error %s %s\n" "$tempstring" "$s"
     fi
   done
 fi
 
 if [ -n "$disable" ]; then
-  for s in $justservices; do
+  for s in $ordered_services; do
     printf "Disabling %s...\n" "$s"
     if ! sudo systemctl disable "$s"; then
       printf "Error disabling %s!\n" "$s"
@@ -242,14 +265,14 @@ if [ -n "$install" ]; then
   fi
   # enable after all services have been installed
 
-  for f in $justservices; do
+  for f in $ordered_services; do
     if ! sudo systemctl enable "$f"; then
       printf "Error enabling %s! Skipping...\n" "$f"
       continue
     fi
   done
 
-  for f in $justservices; do
+  for f in $ordered_services; do
     if ! sudo systemctl start "$f"; then
       printf "Error starting %s! Skipping...\n" "$f"
       continue
