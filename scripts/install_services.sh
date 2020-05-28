@@ -189,8 +189,11 @@ for t in $justservices; do
 done
 
 if [ -n "$debug" ]; then
-  printf "ordered_services = %s " "${ordered_services[@]}"
+  printf "ordered_services = "
+  for f in "${ordered_services[@]}"; do
+  printf "%s " "$f"
   printf "\n"
+  done
 fi
 
 if [ -n "$startstop" ]; then
