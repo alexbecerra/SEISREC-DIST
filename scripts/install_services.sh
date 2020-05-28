@@ -168,11 +168,15 @@ for s in $servicegraph; do
         if [ -n "$debug" ]; then
           printf "t = %s\n" "$t"
         fi
-        ordered_services+=( "t" )
+        ordered_services+=( "$t" )
     fi
   done
 done
 
+if [ -n "$debug" ]; then
+  printf "ordered_services = %s " "${ordered_services[@]}"
+  printf "\n"
+fi
 
 if [ -n "$startstop" ]; then
   tempstring=""
