@@ -206,7 +206,7 @@ if [ -n "$startstop" ]; then
       tempstring="Stopping"
     ;;
   esac
-  for s in $ordered_services; do
+  for s in "${ordered_services[@]}"; do
     printf "%s %s\n" "$tempstring" "$s"
     if ! sudo systemctl "$startstop" "$s"; then
       printf "Error %s %s\n" "$tempstring" "$s"
@@ -215,7 +215,7 @@ if [ -n "$startstop" ]; then
 fi
 
 if [ -n "$disable" ]; then
-  for s in $ordered_services; do
+  for s in "${ordered_services[@]}"; do
     printf "Disabling %s...\n" "$s"
     if ! sudo systemctl disable "$s"; then
       printf "Error disabling %s!\n" "$s"
@@ -287,14 +287,14 @@ if [ -n "$install" ]; then
   fi
   # enable after all services have been installed
 
-  for f in $ordered_services; do
+  for f in "${ordered_services[@]}"; do
     if ! sudo systemctl enable "$f"; then
       printf "Error enabling %s! Skipping...\n" "$f"
       continue
     fi
   done
 
-  for f in $ordered_services; do
+  for f in "${ordered_services[@]}"; do
     if ! sudo systemctl start "$f"; then
       printf "Error starting %s! Skipping...\n" "$f"
       continue
