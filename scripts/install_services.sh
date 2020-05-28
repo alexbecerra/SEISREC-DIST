@@ -173,6 +173,21 @@ for s in $servicegraph; do
   done
 done
 
+for t in $justservices; do
+  matched="no"
+  for s in $servicegraph; do
+    if [ "$s" == "$t" ]; then
+      matched="yes"
+    fi
+  done
+  if [ "$matched" == "no" ]; then
+    if [ -n "$debug" ]; then
+      printf "t = %s\n" "$t"
+    fi
+    ordered_services+=( "$t" )
+  fi
+done
+
 if [ -n "$debug" ]; then
   printf "ordered_services = %s " "${ordered_services[@]}"
   printf "\n"
