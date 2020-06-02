@@ -165,7 +165,7 @@ function select_several_menu() {
 
     read -r -p "Select Options: " ans
     for m in $ans; do
-      if [[ "$m" =~ ^[0-9]$ ]]; then
+      if [[ "$m" =~ ^[0-9]{1,2}$ ]]; then
         if [ -n "$debug" ]; then
           printf "%s input accepted\n" "$m"
         fi
