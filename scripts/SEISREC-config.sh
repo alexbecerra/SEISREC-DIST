@@ -65,7 +65,8 @@ function update_station_software() {
     exit 1
   fi
 
-  local currdir=$(pwd)
+  local currdir
+  currdir=$(pwd)
 
   if [ -d "$workdir" ]; then
     if ! cd "$workdir"; then
@@ -317,33 +318,7 @@ function get_software_info() {
     fi
   fi
 
-  local all_folders=$(ls "$workdir")
-  for d in $all_folders; do
-    if [ -n "$debug" ]; then
-      printf "d = %s\n" "$d"
-    fi
-    if [ -d "$workdir/$d" ]; then
-      local files=$(ls "$workdir/$d")
-      if [ -n "$debug" ]; then
-        printf "files = %s\n" "$files"
-      fi
-      for f in $files; do
-        local is_exec=$(printf "%s" "$f" | grep "$d")
-        if [ -n "$debug" ]; then
-          printf "is_exec = %s\n" "$is_exec"
-        fi
-        if [ -n "$is_exec" ]; then
-          local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
-          if [ -n "$debug" ]; then
-            printf "tmpversion = %s\n" "$tmpversion"
-          fi
-          if [ -n "$tmpversion" ]; then
-            printf "%s: \n  %s\n\n" "$f" "$tmpversion"
-          fi
-        fi
-      done
-    fi
-  done
+  print_exec_versions
 
   printf "Linux Software Versions:\n\n"
 
