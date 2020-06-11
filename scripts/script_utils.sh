@@ -290,7 +290,7 @@ function print_exec_versions() {
               if [ -n "$debug" ]; then
                 printf "modulelist not empty! \n"
               fi
-              for m in "${modulelist[@]}"; do
+              for m in ${modulelist[@]}; do
                 if [ -n "$debug" ]; then
                   printf "m = $m\n"
                 fi
