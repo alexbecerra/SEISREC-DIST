@@ -285,9 +285,22 @@ function print_exec_versions() {
             else
               printf "%s: \n  %s\n\n" "$f" "$tmpversion"
             fi
-
           else
-            printf "%s: \n  No version info\n\n" "$f"
+            if [ -n "$modulelist" ]; then
+              if [ -n "$debug" ]; then
+                printf "modulelist not empty! \n"
+              fi
+              for m in "${modulelist[@]}"; do
+                if [ -n "$debug" ]; then
+                  printf "m = $m\n"
+                fi
+                if [ "$m" == "$f" ]; then
+                  printf "%s: \n  No version info\n\n" "$f"
+                fi
+              done
+            else
+              printf "%s: \n  No version info\n\n" "$f"
+            fi
           fi
         fi
       done
