@@ -237,7 +237,15 @@ function print_exec_versions() {
     shift
   done
 
-    local all_folders=$(ls "$workdir")
+  if [ -n "$debug" ]; then
+    printf "modulelist = "
+    for m in $modulelist; do
+      printf "%s " "$m"
+    done
+    printf "\n"
+  fi
+
+  local all_folders=$(ls "$workdir")
   for d in $all_folders; do
     if [ -n "$debug" ]; then
       printf "d = %s\n" "$d"
@@ -253,20 +261,33 @@ function print_exec_versions() {
           printf "is_exec = %s\n" "$is_exec"
         fi
         if [ -n "$is_exec" ]; then
-          if [ -n "$modulelist" ]; then
-              for m in $module_list; do
-                if [ "$m" == "$f" ]; then
-                  local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
-                fi
-              done
-          else
             local tmpversion=$(strings "$workdir/$d/$f" | grep "Version: .*UTC")
-          fi
           if [ -n "$debug" ]; then
             printf "tmpversion = %s\n" "$tmpversion"
           fi
+
           if [ -n "$tmpversion" ]; then
-            printf "%s: \n  %s\n\n" "$f" "$tmpversion"
+            if [ -n "$debug" ]; then
+                printf "tmpversion not empty! \n"
+            fi
+            if [ -n "$modulelist" ]; then
+              if [ -n "$debug" ]; then
+                printf "modulelist not empty! \n"
+              fi
+              for m in ${modulelist[@]}; do
+                if [ -n "$debug" ]; then
+                  printf "m = $m\n"
+                fi
+                if [ "$m" == "$f" ]; then
+                  printf "%s: \n  %s\n\n" "$f" "$tmpversion"
+                fi
+              done
+            else
+              printf "%s: \n  %s\n\n" "$f" "$tmpversion"
+            fi
+
+          else
+            printf "%s: \n  No version info\n\n" "$f"
           fi
         fi
       done
