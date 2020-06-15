@@ -4,7 +4,6 @@
 #
 # Utility for installing services and building distribution
 # copies of the service units used in SEISREC system.
-#
 
 disable=""
 install=""
@@ -14,6 +13,8 @@ fileList=""
 disable=""
 startstop=""
 noprompt=""
+unset PARAM
+
 # Parse options
 function print_help() {
   printf "Usage: install_services.sh [options] <mode>\n"
@@ -50,8 +51,6 @@ while getopts ":hfdn" opt; do
   esac
 done
 shift $((OPTIND - 1))
-
-unset PARAM
 
 while [ -n "$1" ]; do
   PARAM="${1,,}"
@@ -142,11 +141,17 @@ fi
 fi
 answered=""
 
+if [ -n "$debug" ]; then
+  printf "fileList = %s\n" "$fileList"
+fi
 # List all services & timers in the services directory
 printf "Getting service list...\n"
 if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
+    if [ -n "$debug" ]; then
+      printf "fileList is file!\n"
+    fi
   else
     services=$(ls "$repodir/SEISREC-DIST/services/")
   fi
