@@ -365,7 +365,7 @@ function manage_services() {
     fi
 
     local opts=()
-    opts+=( "-f" "$workdir/selected_services_file.tmp" )
+    opts+=("-f" "$workdir/selected_services_file.tmp")
     if [ -n "$debug" ]; then
       opts+=(-d)
     fi
