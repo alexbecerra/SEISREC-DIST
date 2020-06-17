@@ -68,8 +68,14 @@ function update_station_software() {
   local currdir=$(pwd)
   local answered=''
   local version=''
+  local versionlist=''
+  local selectedversion=''
 
   while [ -z "$answered" ]; do
+    continue=""
+    answered=""
+    version=""
+    print_title "SYSTEM UPDATE- SEISREC-config.sh"
     # Get last commit to SEISREC-DIST
     if [ -d "$workdir" ]; then
       if ! cd "$workdir"; then
@@ -78,10 +84,10 @@ function update_station_software() {
       else
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
-          printf "%s" "$(git log | head -5)"
+          printf "%s\n\n" "$(git log | head -5)"
           version=$(git describe --tags)
           if [ -n "$version" ]; then
-              printf "\nSoftware Version: %s\n" "$version"
+            printf "\nSoftware Version: %s\n" "$version"
           fi
         else
           printf "Error getting git logs!\n"
@@ -127,6 +133,7 @@ function update_station_software() {
     select opt in "${options[@]}"; do
       case $opt in
       "Manual Update")
+      print_title "Manual Update"
         while [ -z "$continue" ]; do
           if ! read -r -p "Update station? [Yes/No] " continue; then
             printf "Error reading STDIN! Aborting...\n"
@@ -164,25 +171,133 @@ function update_station_software() {
             continue=""
           fi
         done
+        break
         ;;
 
       "DIST software version")
-        if ! cd "$workdir"; then
-          printf "Error cd into %s!\n" "$workdir"
-        fi
+        while [ -z "$continue" ]; do
+          print_title "Update DIST softare version"
+          if ! cd "$workdir"; then
+            printf "Error cd into %s!\n" "$workdir"
+          fi
+          version=$(git describe --tags)
+          printf "Current DIST software version: %s\n" "$version"
+          printf "\n"
+          if ! read -r -p "Change DIST software version? [Yes/No] " continue; then
+            printf "Error reading STDIN! Aborting...\n"
+            exit 1
+          elif [[ "$continue" =~ [yY].* ]]; then
+            versionlist=$(git tag -l)
+            if [ -z "$versionlist" ]; then
+              printf "No versions found!\n"
+              any_key
+              break
+            fi
+            if [ -f "$workdir/versionlist.tmp" ]; then
+              if ! rm "$workdir/versionlist.tmp"; then
+                printf "Error removing versionlist.tmp!\n"
+              fi
+            fi
 
-      ;;
+            PS3='Select Version: '
+            options=()
+            for f in $(printf "%s" "$versionlist" | sed -e 's/$version\n//'); do
+              options+=( "$f" )
+            done
+            options+=( "Exit" )
+            select opt in "${options[@]}"; do
+              if [ -n "$debug" ]; then
+                printf "opt = %s\n" "$opt"
+              fi
+
+              if [ "$opt" == "Exit" ]; then
+                  break
+              elif ! "git checkout tags/$opt"; then
+                printf "Error updating software!\n"
+                continue=''
+                any_key
+                break
+              fi
+            done
+            if [ -f "$workdir/versionlist.tmp" ]; then
+              if ! rm "$workdir/versionlist.tmp"; then
+                printf "Error removing versionlist.tmp!\n"
+              fi
+            fi
+          elif [[ "$continue" =~ [nN].* ]]; then
+            break
+          else
+            continue=""
+          fi
+        done
+        break
+        ;;
 
       "DEV software version")
-        if [ "$sta_type" == "DEV" ]; then
-          printf "Error in sta_type!\n"
-          exit 1
-        fi
+        while [ -z "$continue" ]; do
+          print_title "Update DIST softare version"
+          if [ "$sta_type" != "DEV" ]; then
+            printf "Error in sta_type!\n"
+            exit 1
+          fi
 
+          if ! cd "$workdir/SEISREC-DEV"; then
+            printf "Error cd into %s!\n" "$workdir"
+          fi
+          version=$(git describe --tags)
+          printf "Current DEV software version: %s\n" "$version"
+          printf "\n"
 
-      ;;
+          if ! read -r -p "Change DEV software version? [Yes/No] " continue; then
+            printf "Error reading STDIN! Aborting...\n"
+            exit 1
+          elif [[ "$continue" =~ [yY].* ]]; then
+            versionlist=$(git tag -l)
+            if [ -z "$versionlist" ]; then
+              printf "No versions found!\n"
+              any_key
+              break
+            fi
+            if [ -f "$workdir/versionlist.tmp" ]; then
+              if ! rm "$workdir/versionlist.tmp"; then
+                printf "Error removing versionlist.tmp!\n"
+              fi
+            fi
+
+            PS3='Select DEV Version: '
+            options=()
+            for f in $(printf "%s" "$versionlist" | sed -e 's/$version\n//'); do
+              options+=( "$f" )
+            done
+            select opt in "${options[@]}"; do
+              if [ "$opt" == "Exit" ]; then
+                  break
+              elif ! "git checkout tags/$opt"; then
+                printf "Error updating software!\n"
+                continue=''
+                any_key
+                break
+              fi
+            done
+            if [ -f "$workdir/versionlist.tmp" ]; then
+              if ! rm "$workdir/versionlist.tmp"; then
+                printf "Error removing versionlist.tmp!\n"
+              fi
+            fi
+            continue=""
+            break
+          elif [[ "$continue" =~ [nN].* ]]; then
+            break
+          else
+            continue=""
+          fi
+          break
+        done
+        break
+        ;;
 
       "Back")
+        answered="yes"
         break
         ;;
       esac
