@@ -1,12 +1,16 @@
 [Unit]
-Description=REDIS launcher service
+Description=REDIS launcher service (systemd)
 
 [Service]
-Type=oneshot
+Type=notify
+EnvironmentFile=/home/pi/SEISREC-DIST/parameter
+Restart=always
+ExecStart=/usr/local/bin/redis-server /etc/redis/6379.conf --supervised systemd
+ExecStop=/usr/local/bin/redis-cli -a $acc_db_pass shutdown
 CPUAffinity=3
-ExecStart=/home/pi/SEISREC-DIST/sysfiles/redis_6379 start
-ExecStop=/home/pi/SEISREC-DIST/sysfiles/redis_6379 stop
-RemainAfterExit=yes
+CPUSchedulingPolicy=rr
+CPUSchedulingPriority=20
+
 
 [Install]
 WantedBy=multi-user.target
