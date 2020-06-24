@@ -691,7 +691,6 @@ function SEISREC-build() {
   fi
   # Build software using SEISREC-BUILD
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
-  any_key
 }
 
 ##################################################################################################################################
