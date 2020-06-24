@@ -216,6 +216,7 @@ function update_station_software() {
             continue=""
           fi
         done
+        any_key
         break
         ;;
 
@@ -356,7 +357,6 @@ function update_station_software() {
   else
     printf "%s not found!\n" "$currdir"
   fi
-  any_key
 }
 ##################################################################################################################################
 # MANAGE SERVICES
