@@ -1,33 +1,68 @@
 #!/bin/bash
 
-# TODO: Add documentation & debug Messages
-
 debug=''
 choice=""
 done=""
-cfgeverywhere=""
 sta_type="DIST"
 other_sta_type="DEV"
 
+# Parse options first and foremost
+while getopts "dh" opt; do
+  case ${opt} in
+  d)
+    debug="yes" # Set debug as early as posible
+    ;;
+  h)
+    printf "Usage: SEISREC-config.sh [options]"
+    printf "    [-h]                  Display this help message & exit.\n"
+    printf "    [-d]                  Enable debug messages.\n"
+    exit 0
+    ;;
+  \?)
+    printf "Invalid Option: -%s" "$OPTARG" 1>&2
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 ##################################################################################################################################
-# GET  WORKING DIRECTORY
+# GET WORKING DIRECTORY - obtains directory where repo is stored
 # ################################################################################################################################
+
+# Get working directory from source directory of running script
 if [ -z "$repodir" ]; then
   repodir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+  # remove SEISREC-DIST to obtain directory where repo is located
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
 fi
 
+# if the directory is found, export variable for scripts that are called later
 if [ -n "$repodir" ]; then
+  if [ -n "$debug" ]; then
+    printf "repodir = %s" "$repodir"
+  fi
   export repodir
   workdir="$repodir/SEISREC-DIST"
-  source "$workdir/scripts/script_utils.sh"
+  # workdir variable declared for convenience
+  if [ -n "$debug" ]; then
+    printf "workdir = %s" "$workdir"
+  fi
+
+  # Sourcing script_utils.sh for utility bash functions
+  if source "$workdir/scripts/script_utils.sh"; then
+    printf "Sourcing script_utils.sh...\n"
+  else
+    printf "Error sourcing script_utils.sh! Aborting...\n"
+    exit 1
+  fi
 else
   printf "Error getting working directory! Aborting...\n"
   exit 1
 fi
 
 ##################################################################################################################################
-# PRINT HELP SECTION
+# PRINT HELP SECTION - function for printing help onscreen
 # ################################################################################################################################
 function print_help() {
   print_title "AYUDA - SEISREC-config.sh"
@@ -37,12 +72,15 @@ function print_help() {
 }
 
 ##################################################################################################################################
-# CONFIGURE STATION PARAMS
+# CONFIGURE STATION PARAMS - function that calls util Param-edit for editing station parameters
 # ################################################################################################################################
 function configure_station() {
   local opts=()
+  # specifying path to parameter file
   opts+=(-pth "$repodir/SEISREC-DIST/")
+  # if debug print used options
   if [ -n "$debug" ]; then
+    #if debug flag, call util param-edit with -debug
     opts+=(-debug)
     printf "opts = "
     for o in "${opts[@]}"; do
@@ -56,10 +94,11 @@ function configure_station() {
 }
 
 ##################################################################################################################################
-# UPDATE SYSTEM SOFTWARE
+# UPDATE SYSTEM SOFTWARE - updates to DIST and DEV software
 # ################################################################################################################################
 function update_station_software() {
   print_title "SYSTEM UPDATE- SEISREC-config.sh"
+  # sta_type variable must be defined
   if [ -z "$sta_type" ]; then
     printf "Station Type not defined!\n"
     exit 1
@@ -85,7 +124,9 @@ function update_station_software() {
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
-          version=$(git describe --tags)
+          if git describe --tags >/dev/null 2>&1; then
+            version=$(git describe --tags)
+          fi
           if [ -n "$version" ]; then
             printf "\nSoftware Version: %s\n" "$version"
           fi
@@ -109,7 +150,9 @@ function update_station_software() {
           if git log | head -5 >/dev/null 2>&1; then
             printf "\nSEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
             printf "%s\n\n" "$(git log | head -5)"
-            version=$(git describe --tags)
+            if git describe --tags >/dev/null 2>&1; then
+              version=$(git describe --tags)
+            fi
             if [ -n "$version" ]; then
               printf "\nSoftware Version: %s\n" "$version"
             fi
@@ -124,6 +167,7 @@ function update_station_software() {
     fi
     printf "\n"
 
+    # Select update by version or simple git pull
     PS3='Selection: '
     if [ "$sta_type" == "DEV" ]; then
       options=("DIST software version" "DEV software version" "Manual Update" "Back")
@@ -133,6 +177,7 @@ function update_station_software() {
     select opt in "${options[@]}"; do
       case $opt in
       "Manual Update")
+      # Manual update pulls most recent commit from remote
       print_title "Manual Update"
         while [ -z "$continue" ]; do
           if ! read -r -p "Update station? [Yes/No] " continue; then
@@ -175,28 +220,30 @@ function update_station_software() {
         ;;
 
       "DIST software version")
+        # Print current DIST version
         while [ -z "$continue" ]; do
           print_title "Update DIST softare version"
           if ! cd "$workdir"; then
             printf "Error cd into %s!\n" "$workdir"
           fi
-          version=$(git describe --tags)
-          printf "Current DIST software version: %s\n" "$version"
+          if git describe --tags >/dev/null 2>&1; then
+            version=$(git describe --tags)
+            printf "Current DIST software version: %s\n" "$version"
+          else
+            printf "Current commit has no tags.\n"
+          fi
+
           printf "\n"
           if ! read -r -p "Change DIST software version? [Yes/No] " continue; then
             printf "Error reading STDIN! Aborting...\n"
             exit 1
           elif [[ "$continue" =~ [yY].* ]]; then
+            # Get and print list of tags to checkout
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
               printf "No versions found!\n"
               any_key
               break
-            fi
-            if [ -f "$workdir/versionlist.tmp" ]; then
-              if ! rm "$workdir/versionlist.tmp"; then
-                printf "Error removing versionlist.tmp!\n"
-              fi
             fi
 
             PS3='Select Version: '
@@ -210,6 +257,7 @@ function update_station_software() {
                 printf "opt = %s\n" "$opt"
               fi
 
+              # Try checking out tag
               if [ "$opt" == "Exit" ]; then
                   break
               elif ! "git checkout tags/$opt"; then
@@ -219,11 +267,6 @@ function update_station_software() {
                 break
               fi
             done
-            if [ -f "$workdir/versionlist.tmp" ]; then
-              if ! rm "$workdir/versionlist.tmp"; then
-                printf "Error removing versionlist.tmp!\n"
-              fi
-            fi
           elif [[ "$continue" =~ [nN].* ]]; then
             break
           else
@@ -234,6 +277,7 @@ function update_station_software() {
         ;;
 
       "DEV software version")
+        # Print current DEV version
         while [ -z "$continue" ]; do
           print_title "Update DIST softare version"
           if [ "$sta_type" != "DEV" ]; then
@@ -244,24 +288,24 @@ function update_station_software() {
           if ! cd "$workdir/SEISREC-DEV"; then
             printf "Error cd into %s!\n" "$workdir"
           fi
-          version=$(git describe --tags)
+          if git describe --tags >/dev/null 2>&1; then
+            version=$(git describe --tags)
           printf "Current DEV software version: %s\n" "$version"
+          else
+            printf "Current commit has no tags.\n"
+          fi
           printf "\n"
 
           if ! read -r -p "Change DEV software version? [Yes/No] " continue; then
             printf "Error reading STDIN! Aborting...\n"
             exit 1
           elif [[ "$continue" =~ [yY].* ]]; then
+            # Get and print list of tags to checkout
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
               printf "No versions found!\n"
               any_key
               break
-            fi
-            if [ -f "$workdir/versionlist.tmp" ]; then
-              if ! rm "$workdir/versionlist.tmp"; then
-                printf "Error removing versionlist.tmp!\n"
-              fi
             fi
 
             PS3='Select DEV Version: '
@@ -270,6 +314,11 @@ function update_station_software() {
               options+=( "$f" )
             done
             select opt in "${options[@]}"; do
+              if [ -n "$debug" ]; then
+                printf "opt = %s" "$opt"
+              fi
+
+              # Try checking out tag
               if [ "$opt" == "Exit" ]; then
                   break
               elif ! "git checkout tags/$opt"; then
@@ -279,11 +328,6 @@ function update_station_software() {
                 break
               fi
             done
-            if [ -f "$workdir/versionlist.tmp" ]; then
-              if ! rm "$workdir/versionlist.tmp"; then
-                printf "Error removing versionlist.tmp!\n"
-              fi
-            fi
             continue=""
             break
           elif [[ "$continue" =~ [nN].* ]]; then
@@ -312,10 +356,6 @@ function update_station_software() {
   else
     printf "%s not found!\n" "$currdir"
   fi
-  # TODO : git tags support
-
-  # Get tags
-
   any_key
 }
 ##################################################################################################################################
@@ -334,7 +374,10 @@ function manage_services() {
     choice=""
     print_title "MANAGE SERVICES - SEISREC_config.sh"
 
+    # Get enabled services
     enabled_services=$(systemctl list-unit-files)
+
+    # Get SEISREC services
     services=$(ls "$repodir/SEISREC-DIST/services")
     printf "\nService status:\n"
     for s in $services; do
@@ -350,10 +393,12 @@ function manage_services() {
       fi
     done
 
+    # Assemble selected services file if it doesn't exist
     if [ ! -f "$workdir/selected_services_file.tmp" ]; then
       printf "%s" "$(ls "$repodir/SEISREC-DIST/services" | grep ".*.service")" >>"$workdir/selected_services_file.tmp"
     fi
 
+    # Get list from temp file for display
     local list
     if [ -f "$workdir/selected_services_file.tmp" ]; then
       list=$(cat "$workdir/selected_services_file.tmp")
@@ -369,6 +414,8 @@ function manage_services() {
     if [ -n "$debug" ]; then
       opts+=(-d)
     fi
+
+    # Select action for services and run install_services.sh
     PS3='Selection: '
     options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
     select opt in "${options[@]}"; do
@@ -468,6 +515,7 @@ function get_software_info() {
     exit 1
   fi
 
+  # Get current working directory for return point
   local currdir=$(pwd)
 
   if [ -d "$workdir" ]; then
@@ -475,6 +523,7 @@ function get_software_info() {
       printf "Error cd'ing into %s\n" "$workdir"
       exit 1
     else
+      # Get last commit info
       if git log | head -5 >/dev/null 2>&1; then
         printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
         printf "%s" "$(git log | head -5)"
@@ -493,6 +542,7 @@ function get_software_info() {
         printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
         exit 1
       else
+        # Get last commit info
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
@@ -505,6 +555,8 @@ function get_software_info() {
       exit 1
     fi
   fi
+
+  # Display Info
 
   print_exec_versions
 
@@ -532,6 +584,7 @@ function get_software_info() {
   printf "NTP Version: %s\n" "$(dpkg -l | grep "hi  ntp" | grep -o "1:....." | sed -e "s/1://")"
   printf "GPSD Version: %s\n" "$(gpsd -V | grep -o "revision.*)" | sed -e "s/revision //" | sed -e "s/)//")"
 
+  # Return to working directory
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
       printf "Error cd'ing into %s\n" "$currdir"
@@ -548,15 +601,20 @@ function get_software_info() {
 # STATION SETUP FUNCTION
 # ################################################################################################################################
 function setup_station() {
+  local cfgeverywhere=""
+
   print_title "STATION SETUP - SEISREC-config.sh"
 
   printf "Preparing setup...\n"
   printf "Checking for updates...\n"
+  # Update Station software
   update_station_software
 
   printf "Setting up station parameters...\n"
+  # Set up station parameters for operation
   configure_station
 
+  # Install Services after configuring parameters
   printf "Installing services...\n"
   local opts=("INSTALL")
   if [ -n "$debug" ]; then
@@ -567,6 +625,7 @@ function setup_station() {
     exit 1
   fi
 
+  # Prompt for installing SEISREC-config utility
   if ! read -r -p "Install SEISREC-config? [Yes/No]" continue; then
     printf "Error reading STDIN! Aborting...\n"
     exit 1
@@ -616,6 +675,8 @@ function dist2dev() {
     opts+=(-d)
   fi
   opts+=("$other_sta_type")
+
+  # Automatically switch software version
   "$repodir/SEISREC-DIST/scripts/dist2dev.sh" "${opts[@]}"
   any_key
 }
@@ -628,6 +689,7 @@ function SEISREC-build() {
   if [ -n "$debug" ]; then
     opts+=(-d)
   fi
+  # Build software using SEISREC-BUILD
   "$repodir/SEISREC-DIST/SEISREC-DEV/scripts/SEISREC_build.sh" "${opts[@]}"
   any_key
 }
@@ -807,8 +869,6 @@ function uninstall_seisrec() {
         printf "Error disabling services!\n"
       fi
 
-      # TODO: Take care of symlinks outside SEISREC-DIST
-
       if ! rm "$HOME/.bashrc"; then
         printf "Error removing .bashrc!\n"
       fi
@@ -862,26 +922,6 @@ function check_sta_type() {
 #*********************************************************************************************************************************
 # MAIN BODY
 #*********************************************************************************************************************************
-
-# Parse options
-while getopts "dh" opt; do
-  case ${opt} in
-  d)
-    debug="yes"
-    ;;
-  h)
-    printf "Usage: SEISREC-config.sh [options]"
-    printf "    [-h]                  Display this help message & exit.\n"
-    printf "    [-d]                  Enable debug messages.\n"
-    exit 0
-    ;;
-  \?)
-    printf "Invalid Option: -%s" "$OPTARG" 1>&2
-    exit 1
-    ;;
-  esac
-done
-shift $((OPTIND - 1))
 
 print_title
 print_banner
