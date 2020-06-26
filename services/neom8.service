@@ -1,6 +1,6 @@
 [Unit]
 Description=NEOM8 GPS config binary
-Before=adxl355.service gpsd.service
+Before=adxl355.service
 
 [Service]
 Type=notify

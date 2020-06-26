@@ -1,6 +1,6 @@
 [Unit]
 Description=New NTP service
-Requires=neom8.service gpsd.service
+Requires=neom8.service
 
 [Service]
 Type=oneshot
