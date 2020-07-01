@@ -62,16 +62,6 @@ else
 fi
 
 ##################################################################################################################################
-# PRINT HELP SECTION - function for printing help onscreen
-# ################################################################################################################################
-function print_help() {
-  print_title "AYUDA - SEISREC-config.sh"
-  under_construction
-  # TODO: Write Help Section
-  any_key
-}
-
-##################################################################################################################################
 # CONFIGURE STATION PARAMS - function that calls util Param-edit for editing station parameters
 # ################################################################################################################################
 function configure_station() {
@@ -939,7 +929,7 @@ check_sta_type
 while [ -z "$done" ]; do
   print_title "MAIN MENU - SEISREC_config"
   PS3='Selection: '
-  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Help" "Quit")
+  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
     "Advanced Options")
@@ -952,10 +942,6 @@ while [ -z "$done" ]; do
       ;;
     "Software Setup & Update")
       choice="Software Setup & Update"
-      break
-      ;;
-    "Help")
-      print_help
       break
       ;;
     "Quit")
