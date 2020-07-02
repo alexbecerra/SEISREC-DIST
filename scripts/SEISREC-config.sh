@@ -114,6 +114,7 @@ function update_station_software() {
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
+          version=""
           if git describe --tags >/dev/null 2>&1; then
             version=$(git describe --tags)
           fi
@@ -140,6 +141,7 @@ function update_station_software() {
           if git log | head -5 >/dev/null 2>&1; then
             printf "\nSEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
             printf "%s\n\n" "$(git log | head -5)"
+            version=""
             if git describe --tags >/dev/null 2>&1; then
               version=$(git describe --tags)
             fi
