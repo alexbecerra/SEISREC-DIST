@@ -62,16 +62,6 @@ else
 fi
 
 ##################################################################################################################################
-# PRINT HELP SECTION - function for printing help onscreen
-# ################################################################################################################################
-function print_help() {
-  print_title "AYUDA - SEISREC-config.sh"
-  under_construction
-  # TODO: Write Help Section
-  any_key
-}
-
-##################################################################################################################################
 # CONFIGURE STATION PARAMS - function that calls util Param-edit for editing station parameters
 # ################################################################################################################################
 function configure_station() {
@@ -124,6 +114,7 @@ function update_station_software() {
         if git log | head -5 >/dev/null 2>&1; then
           printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
+          version=""
           if git describe --tags >/dev/null 2>&1; then
             version=$(git describe --tags)
           fi
@@ -150,6 +141,7 @@ function update_station_software() {
           if git log | head -5 >/dev/null 2>&1; then
             printf "\nSEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
             printf "%s\n\n" "$(git log | head -5)"
+            version=""
             if git describe --tags >/dev/null 2>&1; then
               version=$(git describe --tags)
             fi
@@ -939,7 +931,7 @@ check_sta_type
 while [ -z "$done" ]; do
   print_title "MAIN MENU - SEISREC_config"
   PS3='Selection: '
-  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Help" "Quit")
+  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Quit")
   select opt in "${options[@]}"; do
     case $opt in
     "Advanced Options")
@@ -952,10 +944,6 @@ while [ -z "$done" ]; do
       ;;
     "Software Setup & Update")
       choice="Software Setup & Update"
-      break
-      ;;
-    "Help")
-      print_help
       break
       ;;
     "Quit")
