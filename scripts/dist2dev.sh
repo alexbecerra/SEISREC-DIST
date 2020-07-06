@@ -128,7 +128,6 @@ case $convert_to in
         exit 1
       fi
       printf "Removiendo SEISREC-DEV...\n"
-      # TODO [1]: Por qué sudo?
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
         exit 1
@@ -158,7 +157,6 @@ case $convert_to in
         printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
         exit 1 # Exit if there's any funny business with the filesystem
       fi
-      # TODO [0]: Por que sudo?
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
         exit 1 # Exit if there's any funny business with the filesystem
