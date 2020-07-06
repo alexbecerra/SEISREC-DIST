@@ -3,8 +3,6 @@
 debug=""
 convert_to=""
 
-# TODO [2]: Documentar mas el codigo
-
 ##################################################################################################################################
 # DISPLAY HELP
 #################################################################################################################################
@@ -164,22 +162,27 @@ case $convert_to in
       printf "Error tratando de acceder a ./SEISREC-DEV!\n"
       exit 1
     fi
+    # check for repository name to be sure were deleting the correct directory
     reponame=$(basename $(git rev-parse --show-toplevel))
 
     if [ -n "$debug" ]; then
       printf "Nombre del repositorio = %s\n" "$reponame"
     fi
 
+    # Notify if everything's in order, delete directory anyway
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "Se detecto el directorio SEISREC-DEV. Borrando...\n"
     else
       printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
     fi
+
+    # Exit directory first
     if ! cd ..; then
         printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
         exit 1
       fi
       printf "Removiendo SEISREC-DEV...\n"
+      # remove with sudo, as git prevents user deleting repository files
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
         exit 1
@@ -195,15 +198,18 @@ case $convert_to in
       printf "Error tratando de acceder a ./SEISREC-DEV!\n"
       exit 1
     fi
+    # check for repository name to be sure were deleting the correct directory
     reponame=$(basename $(git rev-parse --show-toplevel))
     if [ -n "$debug" ]; then
       printf "Nombre del repositorio = %s\n" "$reponame"
     fi
 
+    # Check if SEISREC-DEV already present
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "La estacion ya esta convertida a DEV!. Saliendo...\n"
       exit 1 # Exit if there's any funny business with the filesystem
     else
+      # If there's some error with the repository, delete directory and start fresh
       printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
       if ! cd ..; then
         printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
@@ -215,46 +221,20 @@ case $convert_to in
       fi
     fi
   fi
+  # move into SEISREC-DIST
   printf "Accediendo a %s\n" "$workdir"
   if ! cd "$workdir"; then
     printf "Error tratando de acceder a SEISREC-DIST!\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
-  if [ -d "$workdir/SEISREC-DEV" ]; then
-    printf "Directorio DEV ya existe...\n"
-    if ! cd "./SEISREC-DEV"; then
-      printf "Error tratando de acceder a ./SEISREC-DEV!\n"
-      exit 1 # Exit if there's any funny business with the filesystem
-    fi
-    reponame=$(basename $(git rev-parse --show-toplevel))
-    if [ -n "$debug" ]; then
-      printf "Nombre del repositorio = %s\n" "$reponame"
-    fi
-
-    if [ "$reponame" == "SEISREC-DEV" ]; then
-      printf "La estacion ya esta convertida a DEV!. Saliendo...\n"
-      exit 1
-    else
-      printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
-      if ! cd "$workdir" ; then
-        printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
-        exit 1 # Exit if there's any funny business with the filesystem
-      fi
-      if ! sudo rm -r "SEISREC-DEV"; then
-        printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
-        exit 1 # Exit if there's any funny business with the filesystem
-      fi
-    fi
-  fi
-
+  # Clone Directory
   printf "Clonando SEISREC-DEV...\n"
   if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
     printf "Error clonando ./SEISREC-DEV!\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
-  printf "Error volviendo a %s!\n" "$currdir"
   ;;
 \?)
   printf "Argumento invalido: -%s" "$PARAM" 1>&2
@@ -267,6 +247,7 @@ if [ -n "$debug" ]; then
   printf "Directorio actual = %s\n" "$currdir"
 fi
 
+# move back out to original directory
 if ! cd "$currdir"; then
   printf "Error volviendo a %s!\n" "$currdir"
   exit 1
