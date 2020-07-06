@@ -78,6 +78,7 @@ if [ -z "$repodir" ]; then
   #repodir is the immediate parent directory to SEISREC-DIST
 fi
 
+# if repodir found, source script utils
 if [ -n "$repodir" ]; then
   export repodir
   workdir="$repodir/SEISREC-DIST"
@@ -101,7 +102,6 @@ else
   currdir=$(pwd)
 fi
 
-# TODO [4]: Quizas, para no confundir, agregar la opcion -t donde se indique si es dev o dist, asi todo queda dentro de este getopts
 # Parse options
 while getopts "dh" opt; do
   case ${opt} in
