@@ -15,6 +15,50 @@ function print_help() {
   exit 0
 }
 
+function prompt_workdir() {
+  local answered=""
+  local done=""
+  local continue
+  local continue2
+
+  printf "Directorio del repositorio no pudo ser encontrado automáticamente.\n"
+  printf "Desea ingresarlo de forma manual? [S]í/[N]o \n"
+  while [ -z "$done" ]; do
+    if ! read -r continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [sS].* ]]; then
+      done="yes"
+      while [ -z "$answered" ]; do
+      printf "Directorio donde se encuentra la carpeta SEISREC-DIST: \n"
+      if ! read -r repodir; then
+        printf "Error reading STDIN! Aborting...\n"
+        exit 1
+      fi
+      printf "Es \"$repodir\" correcto? [S]í/[N]o/[C]ancelar\n"
+        if ! read -r continue2; then
+          printf "Error reading STDIN! Aborting...\n"
+          exit 1
+        elif [[ "$continue2" =~ [sS].* ]]; then
+          answered="yes"
+          return 0
+        elif [[ "$continue2" =~ [nN].* ]]; then
+          answered=""
+        elif [[ "$continue2" =~ [cC].* ]]; then
+          answered="no"
+        else
+          printf "\n[S]í/[N]o ?"
+        fi
+      done
+    elif [[ "$continue" =~ [nN].* ]]; then
+      done="no"
+    else
+      printf "\n[S]í/[N]o ?"
+    fi
+  done
+  return 1
+}
+
 ##################################################################################################################################
 # GET WORKING DIRECTORY
 #################################################################################################################################
@@ -28,9 +72,10 @@ if [ -n "$repodir" ]; then
   workdir="$repodir/SEISREC-DIST"
   source "$workdir/scripts/script_utils.sh"
 else
-  # TODO [2]: Agregar posibilidad de ingresar el directorio manualmente, luego, salir.
-  printf "Error obteniendo el directorio de trabajo. Abortando...\n"
-  exit 1
+  if ! prompt_workdir; then
+    printf "Error obteniendo el directorio de trabajo. Abortando...\n"
+    exit 1
+  fi
 fi
 
 if [ -n "$debug" ]; then
