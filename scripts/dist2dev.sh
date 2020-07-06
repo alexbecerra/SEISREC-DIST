@@ -9,12 +9,18 @@ convert_to=""
 # DISPLAY HELP
 #################################################################################################################################
 function print_help() {
-  printf "Uso: dist2dev.sh [DIST, DEV] \n"
+  printf "Uso: dist2dev.sh [opciones] <modo> \n"
+  printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
+  printf "    [-d]                  Habilita los mensajes de debug.\n"
+  printf "\nModos:\n"
   printf "       DIST: Convierte a la version DISTRIBUCION \n"
   printf "       DEV:  Convierte a la version DESARROLLO \n"
   exit 0
 }
 
+##################################################################################################################################
+# PROMPT FOR REPODIR MANUALLY
+#################################################################################################################################
 function prompt_workdir() {
   local answered=""
   local done=""
@@ -23,11 +29,13 @@ function prompt_workdir() {
 
   printf "Directorio del repositorio no pudo ser encontrado automáticamente.\n"
   printf "Desea ingresarlo de forma manual? [S]í/[N]o \n"
+  # Chance to exit without enterin repodir
   while [ -z "$done" ]; do
     if ! read -r continue; then
       printf "Error reading STDIN! Aborting...\n"
       exit 1
     elif [[ "$continue" =~ [sS].* ]]; then
+      # if yes prompt for repodir
       done="yes"
       while [ -z "$answered" ]; do
       printf "Directorio donde se encuentra la carpeta SEISREC-DIST: \n"
@@ -35,7 +43,8 @@ function prompt_workdir() {
         printf "Error reading STDIN! Aborting...\n"
         exit 1
       fi
-      printf "Es \"$repodir\" correcto? [S]í/[N]o/[C]ancelar\n"
+      printf "Es \"%s\" correcto? [S]í/[N]o/[C]ancelar\n" "$repodir"
+        # Confirm input
         if ! read -r continue2; then
           printf "Error reading STDIN! Aborting...\n"
           exit 1
@@ -62,9 +71,11 @@ function prompt_workdir() {
 ##################################################################################################################################
 # GET WORKING DIRECTORY
 #################################################################################################################################
+# automatic search for repo directory assuming dist2dev resides in /SEISREC-DIST/scripts/
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
+  #repodir is the immediate parent directory to SEISREC-DIST
 fi
 
 if [ -n "$repodir" ]; then
@@ -98,11 +109,7 @@ while getopts "dh" opt; do
     debug="yes"
     ;;
   h)
-    # TODO [5]: Corregir esto, pues es diferente a la descripcion de print_help()
-    printf "Uso: dist2dev.sh [opciones]"
-    printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
-    printf "    [-d]                  Habilita los mensajes de debug.\n"
-    exit 0
+    print_help
     ;;
   \?)
     printf "Opcion invalida: -%s" "$OPTARG" 1>&2
