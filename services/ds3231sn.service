@@ -4,6 +4,7 @@ After=multi-user.target
 Before=db2file.service
 Requires=ntp2.service
 
+# TODO [2]: Por qué necesita root?
 [Service]
 Type=simple
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
