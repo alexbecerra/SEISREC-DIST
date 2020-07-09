@@ -4,11 +4,11 @@ After=multi-user.target
 Before=db2file.service
 Requires=ntp2.service
 
-# TODO [2]: Por qué necesita root?
+
 [Service]
 Type=simple
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
-User=root
+User=pi
 Restart=always
 RestartSec=60
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_ds3231sn -d -i $rtc_if -S $rtc_sleep_s -h $rtc_snooze_h -m $rtc_snooze_m -s $rtc_snooze_s
