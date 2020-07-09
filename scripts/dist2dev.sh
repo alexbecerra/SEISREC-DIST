@@ -3,34 +3,89 @@
 debug=""
 convert_to=""
 
-# TODO [2]: Documentar mas el codigo
-
 ##################################################################################################################################
 # DISPLAY HELP
 #################################################################################################################################
 function print_help() {
-  printf "Uso: dist2dev.sh [DIST, DEV] \n"
+  printf "Uso: dist2dev.sh [opciones] <modo> \n"
+  printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
+  printf "    [-d]                  Habilita los mensajes de debug.\n"
+  printf "\nModos:\n"
   printf "       DIST: Convierte a la version DISTRIBUCION \n"
   printf "       DEV:  Convierte a la version DESARROLLO \n"
   exit 0
 }
 
 ##################################################################################################################################
+# PROMPT FOR REPODIR MANUALLY
+#################################################################################################################################
+function prompt_workdir() {
+  local answered=""
+  local done=""
+  local continue
+  local continue2
+
+  printf "Directorio del repositorio no pudo ser encontrado automáticamente.\n"
+  printf "Desea ingresarlo de forma manual? [S]í/[N]o \n"
+  # Chance to exit without enterin repodir
+  while [ -z "$done" ]; do
+    if ! read -r continue; then
+      printf "Error reading STDIN! Aborting...\n"
+      exit 1
+    elif [[ "$continue" =~ [sS].* ]]; then
+      # if yes prompt for repodir
+      done="yes"
+      while [ -z "$answered" ]; do
+      printf "Directorio donde se encuentra la carpeta SEISREC-DIST: \n"
+      if ! read -r repodir; then
+        printf "Error reading STDIN! Aborting...\n"
+        exit 1
+      fi
+      printf "Es \"%s\" correcto? [S]í/[N]o/[C]ancelar\n" "$repodir"
+        # Confirm input
+        if ! read -r continue2; then
+          printf "Error reading STDIN! Aborting...\n"
+          exit 1
+        elif [[ "$continue2" =~ [sS].* ]]; then
+          answered="yes"
+          return 0
+        elif [[ "$continue2" =~ [nN].* ]]; then
+          answered=""
+        elif [[ "$continue2" =~ [cC].* ]]; then
+          answered="no"
+        else
+          printf "\n[S]í/[N]o ?"
+        fi
+      done
+    elif [[ "$continue" =~ [nN].* ]]; then
+      done="no"
+    else
+      printf "\n[S]í/[N]o ?"
+    fi
+  done
+  return 1
+}
+
+##################################################################################################################################
 # GET WORKING DIRECTORY
 #################################################################################################################################
+# automatic search for repo directory assuming dist2dev resides in /SEISREC-DIST/scripts/
 if [ -z "$repodir" ]; then
   repodir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
   repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
+  #repodir is the immediate parent directory to SEISREC-DIST
 fi
 
+# if repodir found, source script utils
 if [ -n "$repodir" ]; then
   export repodir
   workdir="$repodir/SEISREC-DIST"
   source "$workdir/scripts/script_utils.sh"
 else
-  # TODO [2]: Agregar posibilidad de ingresar el directorio manualmente, luego, salir.
-  printf "Error obteniendo el directorio de trabajo. Abortando...\n"
-  exit 1
+  if ! prompt_workdir; then
+    printf "Error obteniendo el directorio de trabajo. Abortando...\n"
+    exit 1
+  fi
 fi
 
 if [ -n "$debug" ]; then
@@ -45,7 +100,6 @@ else
   currdir=$(pwd)
 fi
 
-# TODO [4]: Quizas, para no confundir, agregar la opcion -t donde se indique si es dev o dist, asi todo queda dentro de este getopts
 # Parse options
 while getopts "dh" opt; do
   case ${opt} in
@@ -53,11 +107,7 @@ while getopts "dh" opt; do
     debug="yes"
     ;;
   h)
-    # TODO [5]: Corregir esto, pues es diferente a la descripcion de print_help()
-    printf "Uso: dist2dev.sh [opciones]"
-    printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
-    printf "    [-d]                  Habilita los mensajes de debug.\n"
-    exit 0
+    print_help
     ;;
   \?)
     printf "Opcion invalida: -%s" "$OPTARG" 1>&2
@@ -112,23 +162,27 @@ case $convert_to in
       printf "Error tratando de acceder a ./SEISREC-DEV!\n"
       exit 1
     fi
+    # check for repository name to be sure were deleting the correct directory
     reponame=$(basename $(git rev-parse --show-toplevel))
 
     if [ -n "$debug" ]; then
       printf "Nombre del repositorio = %s\n" "$reponame"
     fi
 
+    # Notify if everything's in order, delete directory anyway
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "Se detecto el directorio SEISREC-DEV. Borrando...\n"
     else
       printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
     fi
+
+    # Exit directory first
     if ! cd ..; then
         printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
         exit 1
       fi
       printf "Removiendo SEISREC-DEV...\n"
-      # TODO [1]: Por qué sudo?
+      # remove with sudo, as git prevents user deleting repository files
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
         exit 1
@@ -144,67 +198,43 @@ case $convert_to in
       printf "Error tratando de acceder a ./SEISREC-DEV!\n"
       exit 1
     fi
+    # check for repository name to be sure were deleting the correct directory
     reponame=$(basename $(git rev-parse --show-toplevel))
     if [ -n "$debug" ]; then
       printf "Nombre del repositorio = %s\n" "$reponame"
     fi
 
+    # Check if SEISREC-DEV already present
     if [ "$reponame" == "SEISREC-DEV" ]; then
       printf "La estacion ya esta convertida a DEV!. Saliendo...\n"
       exit 1 # Exit if there's any funny business with the filesystem
     else
+      # If there's some error with the repository, delete directory and start fresh
       printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
       if ! cd ..; then
         printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
         exit 1 # Exit if there's any funny business with the filesystem
       fi
-      # TODO [0]: Por que sudo?
       if ! sudo rm -r "SEISREC-DEV"; then
         printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
         exit 1 # Exit if there's any funny business with the filesystem
       fi
     fi
   fi
+  # move into SEISREC-DIST
   printf "Accediendo a %s\n" "$workdir"
   if ! cd "$workdir"; then
     printf "Error tratando de acceder a SEISREC-DIST!\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
-  if [ -d "$workdir/SEISREC-DEV" ]; then
-    printf "Directorio DEV ya existe...\n"
-    if ! cd "./SEISREC-DEV"; then
-      printf "Error tratando de acceder a ./SEISREC-DEV!\n"
-      exit 1 # Exit if there's any funny business with the filesystem
-    fi
-    reponame=$(basename $(git rev-parse --show-toplevel))
-    if [ -n "$debug" ]; then
-      printf "Nombre del repositorio = %s\n" "$reponame"
-    fi
-
-    if [ "$reponame" == "SEISREC-DEV" ]; then
-      printf "La estacion ya esta convertida a DEV!. Saliendo...\n"
-      exit 1
-    else
-      printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
-      if ! cd "$workdir" ; then
-        printf "Error cd'ing out of ./SEISREC-DEV! Aborting...\n"
-        exit 1 # Exit if there's any funny business with the filesystem
-      fi
-      if ! sudo rm -r "SEISREC-DEV"; then
-        printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
-        exit 1 # Exit if there's any funny business with the filesystem
-      fi
-    fi
-  fi
-
+  # Clone Directory
   printf "Clonando SEISREC-DEV...\n"
   if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
     printf "Error clonando ./SEISREC-DEV!\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
-  printf "Error volviendo a %s!\n" "$currdir"
   ;;
 \?)
   printf "Argumento invalido: -%s" "$PARAM" 1>&2
@@ -217,6 +247,7 @@ if [ -n "$debug" ]; then
   printf "Directorio actual = %s\n" "$currdir"
 fi
 
+# move back out to original directory
 if ! cd "$currdir"; then
   printf "Error volviendo a %s!\n" "$currdir"
   exit 1
