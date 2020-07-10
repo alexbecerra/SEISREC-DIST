@@ -12,3 +12,5 @@
 SEISREC-config
 *.list
 parameter
+CMakeLists.txt
+SEISREC-DEV/CMakeLists.txt
