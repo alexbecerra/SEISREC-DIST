@@ -10,7 +10,7 @@ if [ -n "$repodir" ]; then
   workdir="$repodir/SEISREC-DIST"
   source "$workdir/scripts/script_utils.sh"
 else
-  printf "Error getting working directory! Aborting...\n"
+  printf "¡Error obteniendo el directorio de trabajo!. Abortando ...\n"
   exit 1
 fi
 
@@ -20,12 +20,12 @@ if [ -d "$dir" ]; then
 TESTS=$(ls "$dir")
 
 for t in $TESTS; do
-  printf "Comenzando pruebas de placa %s...\n" "$(printf "%s" "$t" | sed -e "s/TEST_//")"
+  printf "Comenzando pruebas de placa %s ...\n" "$(printf "%s" "$t" | sed -e "s/TEST_//")"
   if ! sudo "$dir/$t"; then
-    printf "Error en %s!\n" "$t"
+    printf "¡Error en %s!.\n" "$t"
   fi
   printf "\n"
 done
 else
-  printf "No hay tests disponibles!\n"
+  printf "¡No hay pruebas disponibles!.\n"
 fi

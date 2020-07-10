@@ -26,8 +26,8 @@ function print_help() {
   printf "  START: Inicia todos los servicios.\n"
   printf "  STOP: Detiene todos los servicios.\n"
   printf "  DISABLE: Detiene y deshabilita todos los servicios.\n"
-  printf "  CLEAN: Detiene y deshabilita los servicios y remueve todos los enlaces simbolicos.\n"
-  printf "  INSTALL: Detiene y deshabilita los servicios. Remueve todos los enlaces simbolicos. Instala y rehabilita los servicios.\n"
+  printf "  CLEAN: Detiene y deshabilita los servicios y remueve todos los enlaces simbólicos.\n"
+  printf "  INSTALL: Detiene y deshabilita los servicios. Remueve todos los enlaces simbólicos. Instala y rehabilita los servicios.\n"
   exit 0
 }
 while getopts ":hfdn" opt; do
@@ -45,7 +45,7 @@ while getopts ":hfdn" opt; do
     noprompt="yes"
     ;;
   \?)
-    printf "Opcion invalida: -%s" "$OPTARG" 1>&2
+    printf "Opción inválida: -%s" "$OPTARG" 1>&2
     exit 1
     ;;
   esac
@@ -93,7 +93,7 @@ while [ -n "$1" ]; do
     break
     ;;
   \?)
-    printf "Argumento invalido: -%s" "$PARAM" 1>&2
+    printf "Argumento inválido: -%s." "$PARAM" 1>&2
     exit 1
     ;;
   esac
@@ -103,39 +103,39 @@ unset PARAM
 
 if [ -z "$repodir" ]; then
   if [ -n "$debug" ]; then
-      printf "repodir vacio!\n"
+      printf "¡repodir vacío!.\n"
   fi
   repodir="$HOME"
 fi
 
 # Let the user know the script started
-printf "install_services.sh - SEISREC utilidad de instalacion de servicios\n"
+printf "install_services.sh - SEISREC utilidad de instalación de servicios\n"
 
 if [ -n "$noprompt" ]; then
 # Print warning, this should be optional
-printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [Y]es/[N]o "
+printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [S]i/[N]o "
 # Get answer
 answered=""
 while [ -z "$answered" ]; do
   if ! read -r continue; then
-    printf "Error leyendo STDIN! Abortando...\n"
+    printf "¡Error leyendo STDIN!. Abortando ...\n"
     exit 1
-  elif [[ "$continue" =~ [yY].* ]]; then
+  elif [[ "$continue" =~ [sS].* ]]; then
     answered="yes"
     break
   elif [[ "$continue" =~ [nN].* ]]; then
     answered="no"
     break
   else
-    printf "\n¿Continuar? [Y]es/[N]o "
+    printf "\n¿Continuar? [S]i/[N]o "
   fi
 done
 
 # Let the user know the script has started 100% for real now
 if [ "$answered" == "yes" ]; then
-  printf "Iniciando script...\n"
+  printf "Iniciando script ...\n"
 else
-  printf "Terminando script!\n"
+  printf "Terminando script.\n"
   exit 1
 fi
 fi
@@ -145,7 +145,7 @@ if [ -n "$debug" ]; then
   printf "fileList = %s\n" "$fileList"
 fi
 # List all services & timers in the services directory
-printf "Obteniendo lista de servicios...\n"
+printf "Obteniendo lista de servicios ...\n"
 if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
@@ -222,25 +222,25 @@ fi
 
 if [ -n "$disable" ]; then
   for s in "${ordered_services[@]}"; do
-    printf "Deshabilitando %s...\n" "$s"
+    printf "Deshabilitando %s ...\n" "$s"
     if ! sudo systemctl disable "$s"; then
-      printf "Error deshabilitando %s!\n" "$s"
+      printf "¡Error deshabilitando %s!.\n" "$s"
     fi
   done
 fi
 
 # If -r option is used, remove services
 if [ -n "$re" ]; then
-  printf "Removiendo archivos de servicios instalados...\n"
+  printf "Removiendo archivos de servicios instalados ...\n"
   for f in $services; do
     if [ -h "/etc/systemd/system/$f" ]; then
-      printf "Removiendo %s...\n" "$f"
+      printf "Removiendo %s ...\n" "$f"
       if ! sudo rm "/etc/systemd/system/$f"; then
-        printf "Error removiendo %s!\n" "$f"
+        printf "¡Error removiendo %s!.\n" "$f"
       fi
     else
       if [ -n "$debug" ]; then
-        printf "No hay instalacion previa de %s\n" "$f"
+        printf "No hay instalación previa de %s.\n" "$f"
       fi
     fi
   done
@@ -248,10 +248,10 @@ fi
 
 if [ -n "$install" ]; then
   # Let the user know what versions are installed
-  printf "Instalando servicios...\n"
+  printf "Instalando servicios ...\n"
 
   if [ ! -d "$repodir/SEISREC-DIST/unit/" ]; then
-    printf "No se encontro el directorio de la unidad ejecutable! Abortando...\n"
+    printf "¡No se encontró el directorio de la unidad ejecutable!. Abortando ...\n"
     exit 1
   fi
 
@@ -262,13 +262,13 @@ if [ -n "$install" ]; then
       # Install only if corresponding unit executable exists
       unitname=$(printf "%s" "$f" | sed -e "s/.service//")
       if [ -z "$(ls "$repodir/SEISREC-DIST/unit/" | grep "$unitname")" ]; then
-        printf "No hay una unidad ejecutable correspondiente para %s!!\n" "$f"
+        printf "¡No hay una unidad ejecutable correspondiente para %s!.\n" "$f"
       fi
 
       if [ "$repodir" != "/home/pi" ]; then
         if [ -z "$(grep "=$repodir/SEISREC-DIST" "$repodir/SEISREC-DIST/services/$f")" ]; then
           if ! sed -i "s|/.*/SEISREC-DIST|$repodir/SEISREC-DIST|" "$repodir/SEISREC-DIST/services/$f"; then
-            printf "Error estableciendo la ruta de las unidades ejecutables en %s\n!" "$f"
+            printf "¡Error estableciendo la ruta de las unidades ejecutables en %s.\n!" "$f"
           fi
         fi
       fi
@@ -276,38 +276,38 @@ if [ -n "$install" ]; then
       printf "Installing %s...\n" "$f"
       # Create symlink to service in /etc/systemd/system/
       if ! sudo ln -s "$repodir/SEISREC-DIST/services/$f" "/etc/systemd/system/"; then
-        printf "Error creando el enlace simbolico para %s! Omitiendo...\n" "$f"
+        printf "¡Error creando el enlace simbólico para %s!. Omitiendo ...\n" "$f"
         continue
       fi
     else
       # if already installed, notify and abort
       # TODO[4]: No existe opcion -r (opcion deprecada?)
-      printf "%s ya instalado! Use -r para removerlo. Abortando...\n" "$f"
+      printf "¡%s ya instalado!. Use -r para removerlo. Abortando ...\n" "$f"
       exit 1
     fi
   done
 
   if ! sudo systemctl daemon-reload; then
 
-    printf "Error cargando los servicios! Abortando...\n"
+    printf "¡Error cargando los servicios! Abortando ...\n"
     exit 1
   fi
   # enable after all services have been installed
 
   for f in "${ordered_services[@]}"; do
     if ! sudo systemctl enable "$f"; then
-      printf "error habilitando %s! Omitiendo...\n" "$f"
+      printf "¡Error habilitando %s!. Omitiendo ...\n" "$f"
       continue
     fi
   done
 
   for f in "${ordered_services[@]}"; do
     if ! sudo systemctl start "$f"; then
-      printf "Error iniciando %s! Omitiendo...\n" "$f"
+      printf "¡Error iniciando %s!. Omitiendo ...\n" "$f"
       continue
     fi
   done
 
 fi
 
-printf "Instalacion de servicios completada exitosamente!\n"
+printf "Instalación de servicios completada exitósamente.\n"

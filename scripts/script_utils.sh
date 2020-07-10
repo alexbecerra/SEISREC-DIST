@@ -18,7 +18,7 @@ function under_construction() {
   printf "\n"
   printf "  #######################################\n"
   printf "  #                                     #\n"
-  printf "  #           UNDER CONSTRUCTION        #\n"
+  printf "  #           EN CONSTRUCCIÓN           #\n"
   printf "  #                                     #\n"
   printf "  #######################################\n"
   printf "\n"
@@ -64,10 +64,10 @@ function clean_up() {
   file="$1"
   if [ -f "$file" ]; then
     if [ -n "$debug" ]; then
-      printf "Removing %s\n" "$file"
+      printf "Removiendo %s.\n" "$file"
     fi
     if ! rm "$file" >/dev/null 2>&1; then
-      printf "Error removing %s\n" "$file"
+      printf "Error removiendo %s.\n" "$file"
     fi
   fi
 }
@@ -77,7 +77,7 @@ function clean_up() {
 # Press any key to continue func
 # ################################################################################################################################
 function any_key() {
-  read -n 1 -r -s -p $'Press any key to continue...\n'
+  read -n 1 -r -s -p $'Presionar cualquier tecla para continuar ...\n'
 }
 
 ##################################################################################################################################
@@ -141,7 +141,7 @@ function select_several_menu() {
       optionnames+=("$n")
     done
   else
-    printf "Menu options file not found!\n"
+    printf "¡Archivo de opciones de menú no encontrado!.\n"
     exit 1
   fi
 
@@ -159,20 +159,20 @@ function select_several_menu() {
       printf " [%i]\t%s\n" "${indx}" "$n"
       indx=$((indx + 1))
     done
-    printf " [0]\tSelect All \n"
+    printf " [0]\tSeleccionar todo \n"
 
     local ans
 
-    read -r -p "Select Options: " ans
+    read -r -p "Seleccionar opciones: " ans
     for m in $ans; do
       if [[ "$m" =~ ^[0-9]{1,2}$ ]]; then
         if [ -n "$debug" ]; then
-          printf "%s input accepted\n" "$m"
+          printf "%s entrada aceptada\n" "$m"
         fi
         menu_selections+=("$((m - 1))")
       else
         if [ -n "$debug" ]; then
-          printf "%s input rejected\n" "$m"
+          printf "%s entrada rechazada\n" "$m"
         fi
       fi
     done
@@ -190,15 +190,15 @@ function select_several_menu() {
     done
 
     selected_names=()
-    printf "\nOption Selected: "
+    printf "\nOpción seleccionada: "
     for n in "${menu_selections[@]}"; do
       selected_names+=("$n")
       printf "%s " "${optionnames[$((n))]}"
     done
 
-    printf "\n[C]ontinue [R]eselect [A]bort ? "
+    printf "\n¿[C]ontinuar, [R]eseleccionar, [A]bortar?. "
     if ! read -r continue; then
-      printf "Error reading STDIN! Aborting...\n"
+      printf "!Error leyendo STDIN!. Abortando ...\n"
       exit 1
     elif [[ "$continue" =~ [cC].* ]]; then
       answered="yes"
@@ -210,21 +210,21 @@ function select_several_menu() {
       done
       break
     elif [[ "$continue" =~ [rR].* ]]; then
-      printf "Reselecting...\n"
+      printf "Reseleccionando ...\n"
     elif [[ "$continue" =~ [aA].* ]]; then
-      printf "Cleaning up & exiting...\n"
+      printf "Limpiando y saliendo ...\n"
       clean_up "$menu_opts_file"
       if [ -n "$debug" ]; then
-        printf "Bye bye!\n"
+        printf "¡Hasta luego!.\n"
       fi
     else
-      printf "\n[C]ontinue [R]eselect [A]bort ? "
+      printf "\n¿[C]ontinuar, [R]eseleccionar, [A]bortar?. "
     fi
   done
 
   if [ -f "$menu_opts_file" ]; then
     if ! rm "$menu_opts_file"; then
-      printf "Error removing aux files!\n"
+      printf "¡Error removiendo archivos auxiliares!.\n"
     fi
   fi
 }
@@ -268,11 +268,11 @@ function print_exec_versions() {
 
           if [ -n "$tmpversion" ]; then
             if [ -n "$debug" ]; then
-                printf "tmpversion not empty! \n"
+                printf "¡tmpversion no vacío!. \n"
             fi
             if [ -n "$modulelist" ]; then
               if [ -n "$debug" ]; then
-                printf "modulelist not empty! \n"
+                printf "¡modulelist no vacío!. \n"
               fi
               for m in ${modulelist[@]}; do
                 if [ -n "$debug" ]; then
@@ -288,18 +288,18 @@ function print_exec_versions() {
           else
             if [ -n "$modulelist" ]; then
               if [ -n "$debug" ]; then
-                printf "modulelist not empty! \n"
+                printf "¡modulelist no vacío!. \n"
               fi
               for m in ${modulelist[@]}; do
                 if [ -n "$debug" ]; then
                   printf "m = $m\n"
                 fi
                 if [ "$m" == "$f" ]; then
-                  printf "%s: \n  No version info\n\n" "$f"
+                  printf "%s: \n  Sin información de la versión.\n\n" "$f"
                 fi
               done
             else
-              printf "%s: \n  No version info\n\n" "$f"
+              printf "%s: \n  Sin información de la versión.\n\n" "$f"
             fi
           fi
         fi

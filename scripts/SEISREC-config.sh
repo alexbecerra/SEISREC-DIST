@@ -13,13 +13,13 @@ while getopts "dh" opt; do
     debug="yes" # Set debug as early as posible
     ;;
   h)
-    printf "Usage: SEISREC-config.sh [options]"
-    printf "    [-h]                  Display this help message & exit.\n"
-    printf "    [-d]                  Enable debug messages.\n"
+    printf "Uso: SEISREC-config.sh [opciones]"
+    printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
+    printf "    [-d]                  Habilita mensajes de debug.\n"
     exit 0
     ;;
   \?)
-    printf "Invalid Option: -%s" "$OPTARG" 1>&2
+    printf "Opción inválida: -%s" "$OPTARG" 1>&2
     exit 1
     ;;
   esac
@@ -51,13 +51,13 @@ if [ -n "$repodir" ]; then
 
   # Sourcing script_utils.sh for utility bash functions
   if source "$workdir/scripts/script_utils.sh"; then
-    printf "Sourcing script_utils.sh...\n"
+    printf "Estableciendo parámetros de script_utils.sh ...\n"
   else
-    printf "Error sourcing script_utils.sh! Aborting...\n"
+    printf "¡Error estableciendo parámetros de script_utils.sh!. Abortando ...\n"
     exit 1
   fi
 else
-  printf "Error getting working directory! Aborting...\n"
+  printf "¡Error obteniendo el directorio de trabajo!. Abortando ...\n"
   exit 1
 fi
 
@@ -78,7 +78,7 @@ function configure_station() {
     done
     printf "\n"
   fi
-  print_title "CONFIGURE STATION PARAMETERS - SEISREC-config.sh"
+  print_title "CONFIGURACIÓN DE PARÁMETROS DE LA ESTACIÓN - SEISREC-config.sh"
   "$repodir/SEISREC-DIST/util/util_paramedit" "${opts[@]}"
   any_key
 }
@@ -87,10 +87,10 @@ function configure_station() {
 # UPDATE SYSTEM SOFTWARE - updates to DIST and DEV software
 # ################################################################################################################################
 function update_station_software() {
-  print_title "SYSTEM UPDATE- SEISREC-config.sh"
+  print_title "ACTUALIZACIÓN DEL SOFTWARE DEL SISTEMA - SEISREC-config.sh"
   # sta_type variable must be defined
   if [ -z "$sta_type" ]; then
-    printf "Station Type not defined!\n"
+    printf "¡Tipo de estación no definido!.\n"
     exit 1
   fi
 
@@ -104,29 +104,29 @@ function update_station_software() {
     continue=""
     answered=""
     version=""
-    print_title "SYSTEM UPDATE- SEISREC-config.sh"
+    print_title "ACTUALIZACIÓN DE SISTEMA - SEISREC-config.sh"
     # Get last commit to SEISREC-DIST
     if [ -d "$workdir" ]; then
       if ! cd "$workdir"; then
-        printf "Error cd'ing into %s\n" "$workdir"
+        printf "Error accediendo a %s.\n" "$workdir"
         exit 1
       else
         if git log | head -5 >/dev/null 2>&1; then
-          printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
+          printf "SEISREC-DIST - Último commit a rama %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
           version=""
           if git describe --tags >/dev/null 2>&1; then
             version=$(git describe --tags)
           fi
           if [ -n "$version" ]; then
-            printf "\nSoftware Version: %s\n" "$version"
+            printf "\nVersión de software: %s.\n" "$version"
           fi
         else
-          printf "Error getting git logs!\n"
+          printf "¡Error obteniendo los logs de git!.\n"
         fi
       fi
     else
-      printf "SEISREC-DIST not found!\n"
+      printf "¡No se encontró el directorio de SEISREC-DIST!\n"
       exit 1
     fi
     printf "\n"
@@ -135,71 +135,71 @@ function update_station_software() {
     if [ "$sta_type" == "DEV" ]; then
       if [ -d "$workdir/SEISREC-DEV" ]; then
         if ! cd "$workdir/SEISREC-DEV"; then
-          printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
+          printf "Error accediendo a %s.\n" "$workdir/SEISREC-DEV"
           exit 1
         else
           if git log | head -5 >/dev/null 2>&1; then
-            printf "\nSEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
+            printf "\nSEISREC-DEV - Último commit a rama %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
             printf "%s\n\n" "$(git log | head -5)"
             version=""
             if git describe --tags >/dev/null 2>&1; then
               version=$(git describe --tags)
             fi
             if [ -n "$version" ]; then
-              printf "\nSoftware Version: %s\n" "$version"
+              printf "\nVersión de software: %s.\n" "$version"
             fi
           else
-            printf "Error getting git logs!\n"
+            printf "¡Error obteniendo los logs de git!.\n"
           fi
         fi
       else
-        printf "SEISREC-DEV not found!\n"
+        printf "¡No se encontró el directorio de SEISREC-DEV!.\n"
         exit 1
       fi
     fi
     printf "\n"
 
     # Select update by version or simple git pull
-    PS3='Selection: '
+    PS3='Seleccione: '
     if [ "$sta_type" == "DEV" ]; then
-      options=("DIST software version" "DEV software version" "Manual Update" "Back")
+      options=("Versión software DIST" "Versión software DEV" "Actualización manual" "Atrás")
     else
-      options=("DIST software version" "Manual Update" "Back")
+      options=("Versión software DIST" "Actualización manual" "Atrás")
     fi
     select opt in "${options[@]}"; do
       case $opt in
-      "Manual Update")
+      "Actualización manual")
       # Manual update pulls most recent commit from remote
-      print_title "Manual Update"
+      print_title "Actualización manual"
         while [ -z "$continue" ]; do
-          if ! read -r -p "Update station? [Yes/No] " continue; then
-            printf "Error reading STDIN! Aborting...\n"
+          if ! read -r -p "¿Actualizar estación? [S]i/[N]o. " continue; then
+            printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
-          elif [[ "$continue" =~ [yY].* ]]; then
+          elif [[ "$continue" =~ [sS].* ]]; then
             if [ -d "$workdir" ]; then
               if ! cd "$workdir"; then
-                printf "Error cd'ing into %s\n" "$workdir"
+                printf "Error accediendo a %s.\n" "$workdir"
                 exit 1
               fi
 
-              printf "Pulling changes from SEISREC-DIST remote...\n\n"
+              printf "Obteniendo cambios desde el repositorio remoto de SEISREC-DIST ...\n\n"
               git pull
 
               if [ "$sta_type" == "DEV" ]; then
                 if [ -d "$workdir/SEISREC-DEV" ]; then
                   if ! cd "$workdir/SEISREC-DEV"; then
-                    printf "Error cd'ing into %s/SEISREC-DEV\n" "$workdir"
+                    printf "Error accediendo a %s/SEISREC-DEV.\n" "$workdir"
                     exit 1
                   fi
 
-                  printf "\nPulling changes from SEISREC-DEV remote...\n\n"
+                  printf "\nObteniendo cambios desde el repositorio remoto de SEISREC-DEV ...\n\n"
                   git pull
                 else
-                  printf "%s/SEISREC-DEV not found!\n" "$workdir"
+                  printf "¡No se encontró %s/SEISREC-DEV!.\n" "$workdir"
                 fi
               fi
             else
-              printf "%s/SEISREC-DEV not found!\n" "$workdir"
+              printf "¡No se encontró %s/SEISREC-DEV!.\n" "$workdir"
             fi
             break
           elif [[ "$continue" =~ [nN].* ]]; then
@@ -212,49 +212,49 @@ function update_station_software() {
         break
         ;;
 
-      "DIST software version")
+      "Versión software DIST")
         # Print current DIST version
         while [ -z "$continue" ]; do
-          print_title "Update DIST softare version"
+          print_title "Actualizar versión software DIST"
           if ! cd "$workdir"; then
-            printf "Error cd into %s!\n" "$workdir"
+            printf "¡Error accediendo %s!.\n" "$workdir"
           fi
           if git describe --tags >/dev/null 2>&1; then
             version=$(git describe --tags)
-            printf "Current DIST software version: %s\n" "$version"
+            printf "Versión actual de software DIST: %s.\n" "$version"
           else
-            printf "Current commit has no tags.\n"
+            printf "Commit actual no tiene tags.\n"
           fi
 
           printf "\n"
-          if ! read -r -p "Change DIST software version? [Yes/No] " continue; then
-            printf "Error reading STDIN! Aborting...\n"
+          if ! read -r -p "¿Cambiar la versión del software DIST? [S]i/[N]o " continue; then
+            printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
-          elif [[ "$continue" =~ [yY].* ]]; then
+          elif [[ "$continue" =~ [sS].* ]]; then
             # Get and print list of tags to checkout
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
-              printf "No versions found!\n"
+              printf "¡No se encontraron versiones!.\n"
               any_key
               break
             fi
 
-            PS3='Select Version: '
+            PS3='Seleccione versión: '
             options=()
             for f in $(printf "%s" "$versionlist" | sed -e 's/$version\n//'); do
               options+=( "$f" )
             done
-            options+=( "Exit" )
+            options+=( "Salir" )
             select opt in "${options[@]}"; do
               if [ -n "$debug" ]; then
                 printf "opt = %s\n" "$opt"
               fi
 
               # Try checking out tag
-              if [ "$opt" == "Exit" ]; then
+              if [ "$opt" == "Salir" ]; then
                   break
               elif ! "git checkout tags/$opt"; then
-                printf "Error updating software!\n"
+                printf "¡Error actualizando el software!.\n"
                 continue=''
                 any_key
                 break
@@ -269,42 +269,44 @@ function update_station_software() {
         break
         ;;
 
-      "DEV software version")
+      "Versión software DEV")
         # Print current DEV version
         while [ -z "$continue" ]; do
-          print_title "Update DIST softare version"
+          print_title "Actualizar versión del software DEV"
           if [ "$sta_type" != "DEV" ]; then
-            printf "Error in sta_type!\n"
+            printf "¡Error en el tipo de estación!.\n"
             exit 1
           fi
 
           if ! cd "$workdir/SEISREC-DEV"; then
-            printf "Error cd into %s!\n" "$workdir"
+            printf "¡Error accediendo %s!.\n" "$workdir"
           fi
           if git describe --tags >/dev/null 2>&1; then
             version=$(git describe --tags)
-          printf "Current DEV software version: %s\n" "$version"
+          printf "Actual versión del software DEV: %s.\n" "$version"
           else
-            printf "Current commit has no tags.\n"
+            printf "Commit actual no tiene tags.\n"
           fi
           printf "\n"
 
-          if ! read -r -p "Change DEV software version? [Yes/No] " continue; then
-            printf "Error reading STDIN! Aborting...\n"
+          if ! read -r -p "¿Cambiar versión del software DEV? [S]i/[N]o " continue; then
+            printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
-          elif [[ "$continue" =~ [yY].* ]]; then
+          elif [[ "$continue" =~ [sS].* ]]; then
             # Get and print list of tags to checkout
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
-              printf "No versions found!\n"
+              printf "¡No se encontraron versiones!.\n"
               any_key
               break
             fi
 
-            PS3='Select DEV Version: '
+            PS3='Seleccione versión del software DEV: '
             options=()
             for f in $(printf "%s" "$versionlist" | sed -e 's/$version\n//'); do
               options+=( "$f" )
+              #TODO[0]: ¿Falta agregar acá un options += ("Salir")?
+              #options+=( "Salir" )
             done
             select opt in "${options[@]}"; do
               if [ -n "$debug" ]; then
@@ -312,10 +314,10 @@ function update_station_software() {
               fi
 
               # Try checking out tag
-              if [ "$opt" == "Exit" ]; then
+              if [ "$opt" == "Salir" ]; then
                   break
               elif ! "git checkout tags/$opt"; then
-                printf "Error updating software!\n"
+                printf "¡Error actualizando el software!.\n"
                 continue=''
                 any_key
                 break
@@ -333,7 +335,7 @@ function update_station_software() {
         break
         ;;
 
-      "Back")
+      "Atrás")
         answered="yes"
         break
         ;;
@@ -343,11 +345,11 @@ function update_station_software() {
 
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
-      printf "Error cd'ing into %s\n" "$currdir"
+      printf "Error accediendo a %s.\n" "$currdir"
       exit 1
     fi
   else
-    printf "%s not found!\n" "$currdir"
+    printf "¡No se encontró el directorio %s!.\n" "$currdir"
   fi
 }
 ##################################################################################################################################
@@ -364,14 +366,14 @@ function manage_services() {
 
   while [ -z "$answered" ]; do
     choice=""
-    print_title "MANAGE SERVICES - SEISREC_config.sh"
+    print_title "CONFIGURACIÓN DE SERVICIOS - SEISREC_config.sh"
 
     # Get enabled services
     enabled_services=$(systemctl list-unit-files)
 
     # Get SEISREC services
     services=$(ls "$repodir/SEISREC-DIST/services")
-    printf "\nService status:\n"
+    printf "\nEstado de los servicios:\n"
     for s in $services; do
       if [ -n "$debug" ]; then
         printf "s = %s\n" "$s"
@@ -394,7 +396,7 @@ function manage_services() {
     local list
     if [ -f "$workdir/selected_services_file.tmp" ]; then
       list=$(cat "$workdir/selected_services_file.tmp")
-      printf "\nSelected services for management: "
+      printf "\nSeleccione servicios para su configuración: "
       for l in $list; do
         printf "%s " "$l"
       done
@@ -408,11 +410,11 @@ function manage_services() {
     fi
 
     # Select action for services and run install_services.sh
-    PS3='Selection: '
-    options=("Start" "Stop" "Disable" "Clean" "Install" "Select Services" "Back")
+    PS3='Seleccione: '
+    options=("Iniciar" "Detener" "Deshabilitar" "Limpiar" "Instalar" "Seleccionar servicios" "Atrás")
     select opt in "${options[@]}"; do
       case $opt in
-      "Start")
+      "Iniciar")
         choice="Start"
         opts+=("$choice")
         if [ -n "$debug" ]; then
@@ -424,7 +426,7 @@ function manage_services() {
         any_key
         break
         ;;
-      "Stop")
+      "Detener")
         choice="Stop"
         opts+=("$choice")
         if [ -n "$debug" ]; then
@@ -436,7 +438,7 @@ function manage_services() {
         any_key
         break
         ;;
-      "Disable")
+      "Deshabilitar")
         choice="Disable"
         opts+=("$choice")
         if [ -n "$debug" ]; then
@@ -448,7 +450,7 @@ function manage_services() {
         any_key
         break
         ;;
-      "Clean")
+      "Limpiar")
         choice="Clean"
         opts+=("$choice")
         if [ -n "$debug" ]; then
@@ -460,7 +462,7 @@ function manage_services() {
         any_key
         break
         ;;
-      "Install")
+      "Instalar")
         choice="Install"
         opts+=("$choice")
         if [ -n "$debug" ]; then
@@ -472,23 +474,23 @@ function manage_services() {
         any_key
         break
         ;;
-      "Select Services")
+      "Seleccionar servicios")
         printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >>"$workdir/available_services.tmp"
-        select_several_menu "SELECT SERVICES - SEISREC-config.sh" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
+        select_several_menu "SELECCIONAR SERVICIOS - SEISREC-config.sh" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
         break
         ;;
-      "Back")
+      "Atrás")
         answered="yes"
-        printf "Cleaning up & exiting...\n"
+        printf "Limpiando y saliendo ...\n"
         clean_up "$workdir/available_services.tmp"
         clean_up "$workdir/selected_services_file.tmp"
         if [ -n "$debug" ]; then
-          printf "Bye bye!\n"
+          printf "¡Hasta luego!.\n"
         fi
         break
         ;;
       *)
-        printf "invalid option %s\n" "$REPLY"
+        printf "Opción inválida %s.\n" "$REPLY"
         break
         ;;
       esac
@@ -500,10 +502,10 @@ function manage_services() {
 # GET SOFTWARE INFO FUNCTION
 # ################################################################################################################################
 function get_software_info() {
-  print_title "DETAILED SOFTWARE INFO - SEISREC-config.sh"
+  print_title "INFORMACIÓN DETALLADA DEL SOFTWARE - SEISREC-config.sh"
 
   if [ -z "$sta_type" ]; then
-    printf "Station Type not defined!\n"
+    printf "¡Tipo de estación no definido!.\n"
     exit 1
   fi
 
@@ -512,38 +514,38 @@ function get_software_info() {
 
   if [ -d "$workdir" ]; then
     if ! cd "$workdir"; then
-      printf "Error cd'ing into %s\n" "$workdir"
+      printf "Error accediendo a %s.\n" "$workdir"
       exit 1
     else
       # Get last commit info
       if git log | head -5 >/dev/null 2>&1; then
-        printf "SEISREC-DIST last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
+        printf "SEISREC-DIST - Último commit a rama %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
         printf "%s" "$(git log | head -5)"
       else
-        printf "Error getting git logs!\n"
+        printf "¡Error obteniendo logs de git!.\n"
       fi
     fi
   else
-    printf "SEISREC-DIST not found!\n"
+    printf "¡No se encontró SEISREC-DIST!\n"
     exit 1
   fi
   printf "\n"
   if [ "$sta_type" == "DEV" ]; then
     if [ -d "$workdir/SEISREC-DEV" ]; then
       if ! cd "$workdir/SEISREC-DEV"; then
-        printf "Error cd'ing into %s\n" "$workdir/SEISREC-DEV"
+        printf "Error accediendo a %s.\n" "$workdir/SEISREC-DEV"
         exit 1
       else
         # Get last commit info
         if git log | head -5 >/dev/null 2>&1; then
-          printf "SEISREC-DEV last commit to branch %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
+          printf "SEISREC-DEV - Último commit a rama %s:\n\n" "$(git branch | grep "\*.*" | sed -e "s/* //")"
           printf "%s\n\n" "$(git log | head -5)"
         else
-          printf "Error getting git logs!\n"
+          printf "¡Error obteniendo logs de git!.\n"
         fi
       fi
     else
-      printf "SEISREC-DEV not found!\n"
+      printf "¡No se encontró el directorio de SEISREC-DEV!.\n"
       exit 1
     fi
   fi
@@ -552,7 +554,7 @@ function get_software_info() {
 
   print_exec_versions
 
-  printf "Linux Software Versions:\n\n"
+  printf "Versiones de software instalados:\n\n"
 
   printf "Python Version: %s" "$(python3 --version | sed -e "s/Python //")"
 
@@ -579,11 +581,11 @@ function get_software_info() {
   # Return to working directory
   if [ -d "$currdir" ]; then
     if ! cd "$currdir"; then
-      printf "Error cd'ing into %s\n" "$currdir"
+      printf "Error accediendo a %s.\n" "$currdir"
       exit 1
     fi
   else
-    printf "%s not found!\n" "$currdir"
+    printf "¡No se encontró el directorio %s!.\n" "$currdir"
   fi
 
   any_key
@@ -595,33 +597,34 @@ function get_software_info() {
 function setup_station() {
   local cfgeverywhere=""
 
-  print_title "STATION SETUP - SEISREC-config.sh"
+  print_title "CONFIGURACIÓN DE ESTACIÓN - SEISREC-config.sh"
 
-  printf "Preparing setup...\n"
-  printf "Checking for updates...\n"
+  printf "Preparando configuración ...\n"
+  printf "Chequendo actualizaciones ...\n"
   # Update Station software
   update_station_software
 
-  printf "Setting up station parameters...\n"
+  printf "Configurando parámetros de la estación ...\n"
   # Set up station parameters for operation
   configure_station
 
   # Install Services after configuring parameters
-  printf "Installing services...\n"
+  printf "Instalando servicios ...\n"
   local opts=("INSTALL")
   if [ -n "$debug" ]; then
     opts+=(-d)
   fi
   if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
-    printf "Error installing services! Please fix problems before retrying!\n"
+  #TODO[4]: Especificar problemas a correjir antes de reintentar
+    printf "¡Error instalando servicios!. Por favor, corrija problemas antes de reintentar.\n"
     exit 1
   fi
 
   # Prompt for installing SEISREC-config utility
-  if ! read -r -p "Install SEISREC-config? [Yes/No]" continue; then
-    printf "Error reading STDIN! Aborting...\n"
+  if ! read -r -p "¿Instalar SEISREC-config en el PATH del sistema? [S]i/[N]o" continue; then
+    printf "¡Error leyendo STDIN!. Abortando ...\n"
     exit 1
-  elif [[ "$continue" =~ [yY].* ]]; then
+  elif [[ "$continue" =~ [sS].* ]]; then
     cfgeverywhere="yes"
   elif [[ "$continue" =~ [nN].* ]]; then
     cfgeverywhere=""
@@ -630,12 +633,12 @@ function setup_station() {
   if [ -n "$cfgeverywhere" ]; then
     # if symlink to SEISREC-config doesn't exist, create it
     if [ ! -h "$repodir/SEISREC-DIST/SEISREC-config" ]; then
-      printf "Creating symlinks to SEISREC-config...\n"
+      printf "Creando enlaces simbólicos a SEISREC-config ...\n"
       ln -s "$repodir/SEISREC-DIST/scripts/SEISREC-config.sh" "$repodir/SEISREC-DIST/SEISREC-config"
     fi
 
     if ! cp "$HOME/.bashrc" "$HOME/.bashrc.bak"; then
-      printf "Error backing up .bashrc!\n"
+      printf "¡Error haciendo copia de seguridad del archivo .bashrc!.\n"
     fi
 
     # Check if ~/SEISREC is in PATH, if not, add it to PATH
@@ -644,7 +647,7 @@ function setup_station() {
     if [ -z "$inBashrc" ]; then
       if [ -z "$inPath" ]; then
         # Add it permanently to path
-        printf "Adding ./SEISREC-DIST to PATH...\n"
+        printf "Agregando ./SEISREC-DIST a PATH...\n"
         printf "inPath=\"\$(printf \"\$PATH\" | grep \"%s/SEISREC-DIST\")\"\n" "$repodir" >>~/.bashrc
         printf 'if [ -z "$inPath" ]\n' >>~/.bashrc
         printf 'then\n' >>~/.bashrc
@@ -661,7 +664,7 @@ function setup_station() {
 # DIST 2 DEV
 # ################################################################################################################################
 function dist2dev() {
-  print_title "$sta_type TO $other_sta_type - SEISREC_config"
+  print_title "CONVERSIÓN DE $sta_type A $other_sta_type - SEISREC_config"
   local opts=()
   if [ -n "$debug" ]; then
     opts+=(-d)
@@ -698,43 +701,44 @@ function manage_ntp() {
 
   while [ -z "$answered" ]; do
     choice=""
-    print_title "MANAGE NTP - SEISREC_config"
+    print_title "CONFIGURACIÓN SERVICIO NTP - SEISREC_config"
 
     local opts=()
     if [ -n "$debug" ]; then
       opts+=(-d)
     fi
     PS3='Selection: '
-    options=("Edit NTP .conf File" "Load .conf file from distro" "View ntp.conf" "Back")
+    options=("Editar archivo de configuración de NTP" "Cargar archivo de configuración de NTP desde la distribución" "Ver archivo de configuración de NTP" "Atrás")
     select opt in "${options[@]}"; do
       case $opt in
-      "Edit NTP .conf File")
+      "Editar archivo de configuración de NTP")
         if [ -f "/etc/ntp.conf" ]; then
           if ! sudo nano /etc/ntp.conf; then
-            printf "Error editing /etc/ntp.conf! \n"
+            printf "¡Error editando /etc/ntp.conf!.\n"
           fi
         else
-          printf "Couldn't find /etc/ntp.conf!\n"
+          printf "¡No se pudo encontrar /etc/ntp.conf!.\n"
         fi
         break
         ;;
-      "Load .conf file from distro")
+      "Cargar archivo de configuración de NTP desde la distribución")
         local ans
         while [ -z "$continue" ]; do
-          if ! read -r -p "This will completely overwrite the existing system ntp.conf. Are you sure? [Y/N]" continue; then
-            printf "Error reading STDIN! Aborting...\n"
+          if ! read -r -p "Esta acción sobreescribirá COMPLETAMENTE el archivo ntp.conf existente. ¿Desea continuar? [S]i/[N]o" continue; then
+            printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
-          elif [[ "$continue" =~ [yY].* ]]; then
+          elif [[ "$continue" =~ [sS].* ]]; then
             if [ -f "/etc/ntp.conf" ]; then
               if ! sudo rm "/etc/ntp.conf"; then
-                printf "Error removing /etc/ntp.conf!"
+                printf "!Error removiendo /etc/ntp.conf!.\n"
               fi
             fi
             if ! cp "$workdir/sysfiles/ntp.conf" "/etc/ntp.conf"; then
-              printf "Error copying /etc/ntp.conf! \n"
+              printf "¡Error copiando /etc/ntp.conf!.\n"
               any_key
             fi
             break
+          #TODO[3]: la opción [sS], ¿está bien aquí?
           elif [[ "$continue" =~ [sS].* ]]; then
             break
           else
@@ -743,23 +747,23 @@ function manage_ntp() {
         done
         break
         ;;
-      "View ntp.conf")
+      "Ver archivo de configuración de NTP")
         if [ -f "/etc/ntp.conf" ]; then
           if ! sudo cat "/etc/ntp.conf"; then
-            printf "Error viewing /etc/ntp.conf!"
+            printf "¡Error al leer /etc/ntp.conf!.\n"
           fi
         else
-          printf "Couldn't find /etc/ntp.conf!\n"
+          printf "¡No se pudo encontrar /etc/ntp.conf!.\n"
         fi
         any_key
         break
         ;;
-      "Back")
+      "Atrás")
         answered="yes"
         break
         ;;
       *)
-        printf "invalid option %s\n" "$REPLY"
+        printf "Opción inválida %s.\n" "$REPLY"
         break
         ;;
       esac
@@ -781,40 +785,40 @@ function manage_networks() {
 
   while [ -z "$answered" ]; do
     choice=""
-    print_title "MANAGE NETWORKS - SEISREC_config"
+    print_title "CONFIGURACIÓN DE REDES - SEISREC_config"
 
     local opts=()
     if [ -n "$debug" ]; then
       opts+=(-d)
     fi
-    PS3='Selection: '
-    options=("Configure Interface IP Address" "Configure Network Priority" "Back")
+    PS3='Seleccione: '
+    options=("Configurar dirección IP de la interfaz" "Configurar prioridades de las interfaces" "Atrás")
     select opt in "${options[@]}"; do
       case $opt in
-      "Configure Interface IP Address")
+      "Configurar dirección IP de la interfaz")
         under_construction
         # TODO: Write IP config function
         any_key
         break
         ;;
-      "Configure Network Priority")
+      "Configurar prioridades de las interfaces")
         if [ -f "$workdir/sysfiles/dhcpcd.conf" ]; then
           if ! sudo nano "$workdir/sysfiles/dhcpcd.conf"; then
-            printf "Error editing %s/sysfiles/dhcpcd.conf! \n" "$workdir"
+            printf "¡Error editando %s/sysfiles/dhcpcd.conf!.\n" "$workdir"
             any_key
           fi
         else
-          printf "Couldn't find %s/sysfiles/dhcpcd.conf!\n" "$workdir"
+          printf "¡No se pudo encontrar %s/sysfiles/dhcpcd.conf!.\n" "$workdir"
           any_key
         fi
         break
         ;;
-      "Back")
+      "Atrás")
         answered="yes"
         break
         ;;
       *)
-        printf "invalid option %s\n" "$REPLY"
+        printf "Opción inválida %s.\n" "$REPLY"
         break
         ;;
       esac
@@ -826,7 +830,7 @@ function manage_networks() {
 # PERFORMANCE REPORT
 # ################################################################################################################################
 function performance_report() {
-  print_title "PERFORMANCE REPORT - SEISREC_config"
+  print_title "REPORTE DE RENDIMIENTO - SEISREC_config"
   # TODO: write performance tests
   under_construction
   any_key
@@ -835,12 +839,12 @@ function performance_report() {
 # UNINSTALL SEISREC
 # ################################################################################################################################
 function uninstall_seisrec() {
-  print_title "UNINSTALL SEISREC - SEISREC_config"
+  print_title "DESINSTALAR SOFTWARE SEISREC - SEISREC_config"
   local currdir=$(pwd)
 
   if [ -n "$(pwd | grep "SEISREC-DIST")" ]; then
     if [ -n "$debug" ]; then
-      printf "Current working directory is inside SESIREC-DIST"
+      printf "El directorio de trabajo actual está dentro de SESIREC-DIST"
     fi
     cd "$HOME"
   fi
@@ -850,32 +854,32 @@ function uninstall_seisrec() {
     opts+=(-d)
   fi
   while [ -z "$continue" ]; do
-    if ! read -r -p "This will uninstall all SEISREC software from device. Continue? [Yes/No] " continue; then
-      printf "Error reading STDIN! Aborting...\n"
+    if ! read -r -p "Esta acción DESINSTALARÁ POR COMPLETO el software SEISREC. ¿Desea continuar? [S]i/[N]o " continue; then
+      printf "¡Error leyendo STDIN!. Abortando ...\n"
       exit 1
-    elif [[ "$continue" =~ [yY].* ]]; then
+    elif [[ "$continue" =~ [sS].* ]]; then
       choice="disable"
       opts+=(-n "$choice")
       if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
-        printf "Error disabling services!\n"
+        printf "¡Error deshabilitando servicios!.\n"
       fi
 
       if ! rm "$HOME/.bashrc"; then
-        printf "Error removing .bashrc!\n"
+        printf "¡Error removiendo el archivo .bashrc!.\n"
       fi
 
       if ! mv "$HOME/.bashrc.bak" "$HOME/.bashrc"; then
-        printf "Error restoring .bashrc!\n"
+        printf "¡Error restaurando el archivo .bashrc original!.\n"
       fi
 
       export PATH=$(printf "%s" "$PATH" | sed -e "s|$repodir/SEISREC-DIST:||")
 
       if ! sudo rm -r "$repodir/SEISREC-DIST/"; then
-        printf "Error removing SEISREC-DIST repository!\n"
+        printf "¡Error removiendo el repositorio de SEISREC-DIST!.\n"
         exit 1
       fi
 
-      printf "To reinstall software, clone from https://github.com/alexbecerra/SEISREC-DIST.git\n"
+      printf "Para reinstalar el software, clonar desde el siguiente repositorio https://github.com/alexbecerra/SEISREC-DIST.git\n"
       any_key
       exit 0
 
@@ -896,14 +900,14 @@ function check_sta_type() {
   if [ -d "$repodir/SEISREC-DIST/SEISREC-DEV/" ]; then
     currdir=$(pwd)
     if ! cd "$repodir/SEISREC-DIST/SEISREC-DEV/"; then
-      printf "Error cd'ing into SEISREC-DEV!\n"
+      printf "¡Error accediendo al directorio de SEISREC-DEV!.\n"
     fi
     reponame=$(basename $(git rev-parse --show-toplevel))
     if [ "$reponame" == "SEISREC-DEV" ]; then
       sta_type="DEV"
       other_sta_type="DIST"
     else
-      printf "SEISREC-DEV directory present, but has wrong repository!\n"
+      printf "Directorio SEISREC-DEV está presente pero tiene un repositorio incorrecto.\n"
     fi
   else
     sta_type="DIST"
@@ -929,29 +933,29 @@ check_sta_type
 #=================================================================================================================================
 
 while [ -z "$done" ]; do
-  print_title "MAIN MENU - SEISREC_config"
-  PS3='Selection: '
-  options=("Software Setup & Update" "Station Info & Tests" "Advanced Options" "Quit")
+  print_title "MENÚ PRINCIPAL - SEISREC_config"
+  PS3='Seleccione: '
+  options=("Configuración y actualización de software" "Información y pruebas de la estación" "Opciones avanzadas" "Salir")
   select opt in "${options[@]}"; do
     case $opt in
-    "Advanced Options")
+    "Opciones avanzadas")
       choice="Advanced Options"
       break
       ;;
-    "Station Info & Tests")
+    "Información y pruebas de la estación")
       choice="Station Info & Tests"
       break
       ;;
-    "Software Setup & Update")
+    "Configuración y actualización de software")
       choice="Software Setup & Update"
       break
       ;;
-    "Quit")
-      printf "Good bye!\n"
+    "Salir")
+      printf "¡Hasta luego!.\n"
       exit 0
       ;;
     *)
-      printf "invalid option %s\n" "$REPLY"
+      printf "Opción inválida %s.\n" "$REPLY"
       break
       ;;
     esac
@@ -968,53 +972,53 @@ while [ -z "$done" ]; do
   #-------------------------------------------------------------------------------------------------------------------------------
   # Advanced Options
   #-------------------------------------------------------------------------------------------------------------------------------
-  "Advanced Options")
+  "Opciones avanzadas")
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
-      printf "No parameter file found! Please run station setup first!\n"
+      printf "No se encontró archivo de parámetros válidos. Por favor, ejecute la configuración de la estación primero.\n"
       any_key
     else
       while [ -z "$done" ]; do
         check_sta_type
 
-        print_title "CONFIGURE STATION SOFTWARE - SEISREC_config.sh"
+        print_title "CONFIGURACION DE SOFTWARE DE LA ESTACION - SEISREC_config.sh"
         if [ "$sta_type" == "DEV" ]; then
-          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP" "Convert to $other_sta_type" "Build Station Software" "Back")
+          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Convertir a $other_sta_type" "Compilar software de la estación" "Atrás")
         else
-          options=("Configure Station Parameters" "Manage Unit Services" "Manage Networks" "Manage NTP" "Convert to $other_sta_type" "Back")
+          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Convertir a $other_sta_type" "Atrás")
         fi
         select opt in "${options[@]}"; do
           case $opt in
-          "Configure Station Parameters")
+          "Configurar parámetros de la estación")
             configure_station
             break
             ;;
-          "Manage Unit Services")
+          "Configurar servicios")
             manage_services
             break
             ;;
-          "Manage Networks")
+          "Configurar redes")
             manage_networks
             break
             ;;
-          "Convert to $other_sta_type")
+          "Convertir a $other_sta_type")
             dist2dev
             break
             ;;
-          "Build Station Software")
+          "Compilar software de la estación")
             SEISREC-build
             break
             ;;
-          "Manage NTP")
+          "Configurar NTP")
             manage_ntp
             break
             ;;
-          "Back")
+          "Atrás")
             done="yes"
             break
             ;;
           *)
-            printf "invalid option %s\n" "$REPLY"
+            printf "Opción inválida %s.\n" "$REPLY"
             break
             ;;
           esac
@@ -1026,32 +1030,32 @@ while [ -z "$done" ]; do
     #-------------------------------------------------------------------------------------------------------------------------------
     # Station Info & Tests
     #-------------------------------------------------------------------------------------------------------------------------------
-  "Station Info & Tests")
+  "Información y pruebas de la estación")
     done=""
     while [ -z "$done" ]; do
-      print_title "STATION INFO - SEISREC_config.sh"
-      options=("Run Station Tests" "Detailed Software Info" "Performance Reports" "Back")
+      print_title "INFORMACIÓN Y PRUEBAS DE LA ESTACIÓN - SEISREC_config.sh"
+      options=("Ejecutar pruebas de la estación" "Información detallada del software" "Reporte de rendimiento" "Atrás")
       select opt in "${options[@]}"; do
         case $opt in
-        "Run Station Tests")
+        "Ejecutar pruebas de la estación")
           "$repodir/SEISREC-DIST/scripts/SEISREC-TEST.sh"
           any_key
           break
           ;;
-        "Detailed Software Info")
+        "Información detallada del software")
           get_software_info
           break
           ;;
-        "Performance Reports")
+        "Reporte de rendimiento")
           performance_report
           break
           ;;
-        "Back")
+        "Atrás")
           done="yes"
           break
           ;;
         *)
-          printf "invalid option %s\n" "$REPLY"
+          printf "Opción inválida %s.\n" "$REPLY"
           break
           ;;
         esac
@@ -1062,46 +1066,46 @@ while [ -z "$done" ]; do
     #-------------------------------------------------------------------------------------------------------------------------------
     # Software Setup & Update
     #-------------------------------------------------------------------------------------------------------------------------------
-  "Software Setup & Update")
+  "Configuración y actualización de software")
     done=""
     while [ -z "$done" ]; do
       continue=""
-      print_title "STATION SOFTWARE & UPDATE - SEISREC_config.sh"
+      print_title "CONFIGURACIÓN DE LA ESTACIÓN - SEISREC_config.sh"
       if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
-        printf "Station is not set up.\n"
+        printf "La estación no está configurada.\n"
         while [ -z "$continue" ]; do
-          if ! read -r -p "Proceed with station setup? [Yes/Skip] " continue; then
-            printf "Error reading STDIN! Aborting...\n"
+          if ! read -r -p "¿Proceder con la configuración de la estación? [S]i/[O]mitir " continue; then
+            printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
-          elif [[ "$continue" =~ [yY].* ]]; then
-            setup_station
           elif [[ "$continue" =~ [sS].* ]]; then
+            setup_station
+          elif [[ "$continue" =~ [oO].* ]]; then
             break
           else
             continue=""
           fi
         done
       fi
-      print_title "STATION SOFTWARE & UPDATE - SEISREC_config.sh"
+      print_title "CONFIGURACIÓN y ACTUALIZACIÓN DE SOFTWARE - SEISREC_config.sh"
 
-      options=("SEISREC version & update" "Station Setup" "Uninstall" "Back")
+      options=("Versión y actualización de SEISREC" "Configuración de la estación" "Desintalación" "Atrás")
       select opt in "${options[@]}"; do
         case $opt in
-        "SEISREC version & update")
+        "Versión y actualización de SEISREC")
           update_station_software
           break
           ;;
-        "Station Setup")
+        "Configuración de la estación")
           if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
-            printf "Station appears to be already set up.\n"
-            if ! read -r -p "Configure station from scratch? [Yes/No] " continue; then
-              printf "Error reading STDIN! Aborting...\n"
+            printf "Parece que la estación ya está configurada.\n"
+            if ! read -r -p "¿Desea reconfigurar estación desde el inicio? [S]i/[N]o " continue; then
+              printf "¡Error leyendo STDIN! Abortando ...\n"
               exit 1
-            elif [[ "$continue" =~ [yY].* ]]; then
-              if ! read -r -p "This will overwrite current station configuration! Are you sure? [Yes/No] " continue; then
-                printf "Error reading STDIN! Aborting...\n"
+            elif [[ "$continue" =~ [sS].* ]]; then
+              if ! read -r -p "Esta acción SOBREESCRIBIRÁ la configuración actual de la estación. ¿Desea continuar? [S]i/[N]o" continue; then
+                printf "¡Error leyendo STDIN! Abortando ...\n"
                 exit 1
-              elif [[ "$continue" =~ [yY].* ]]; then
+              elif [[ "$continue" =~ [sS].* ]]; then
                 clean_up "$repodir/SEISREC-DIST/parameter"
               elif [[ "$continue" =~ [nN].* ]]; then
                 break
@@ -1113,16 +1117,16 @@ while [ -z "$done" ]; do
           setup_station
           break
           ;;
-        "Uninstall")
+        "Desinstalación")
           uninstall_seisrec
           break
           ;;
-        "Back")
+        "Atrás")
           done="yes"
           break
           ;;
         *)
-          printf "invalid option %s\n" "$REPLY"
+          printf "Opción inválida %s.\n" "$REPLY"
           break
           ;;
         esac
@@ -1132,5 +1136,5 @@ while [ -z "$done" ]; do
     ;;
   esac
 done
-printf "Good bye!\n"
+printf "¡Hasta luego!.\n"
 exit 0
