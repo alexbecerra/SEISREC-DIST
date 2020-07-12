@@ -738,8 +738,7 @@ function manage_ntp() {
               any_key
             fi
             break
-          #TODO[3]: la opción [sS], ¿está bien aquí?
-          elif [[ "$continue" =~ [sS].* ]]; then
+          elif [[ "$continue" =~ [nN].* ]]; then
             break
           else
             continue=""
