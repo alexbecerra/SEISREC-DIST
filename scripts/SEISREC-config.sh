@@ -305,10 +305,10 @@ function update_station_software() {
             options=()
             for f in $(printf "%s" "$versionlist" | sed -e 's/$version\n//'); do
               options+=( "$f" )
-              #TODO[0]: ¿Falta agregar acá un options += ("Salir")?
-              #options+=( "Salir" )
             done
+            options+=( "Salir" )
             select opt in "${options[@]}"; do
+
               if [ -n "$debug" ]; then
                 printf "opt = %s" "$opt"
               fi
