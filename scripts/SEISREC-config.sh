@@ -1088,7 +1088,7 @@ while [ -z "$done" ]; do
       fi
       print_title "CONFIGURACIÓN y ACTUALIZACIÓN DE SOFTWARE - SEISREC_config.sh"
 
-      options=("Versión y actualización de SEISREC" "Configuración de la estación" "Desintalación" "Atrás")
+      options=("Versión y actualización de SEISREC" "Configuración de la estación" "Desinstalación" "Atrás")
       select opt in "${options[@]}"; do
         case $opt in
         "Versión y actualización de SEISREC")
