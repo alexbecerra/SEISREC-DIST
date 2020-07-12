@@ -939,15 +939,15 @@ while [ -z "$done" ]; do
   select opt in "${options[@]}"; do
     case $opt in
     "Opciones avanzadas")
-      choice="Advanced Options"
+      choice="Opciones avanzadas"
       break
       ;;
     "Información y pruebas de la estación")
-      choice="Station Info & Tests"
+      choice="Información y pruebas de la estación"
       break
       ;;
     "Configuración y actualización de software")
-      choice="Software Setup & Update"
+      choice="Configuración y actualización de software"
       break
       ;;
     "Salir")
