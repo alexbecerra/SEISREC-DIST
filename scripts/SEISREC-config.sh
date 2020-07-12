@@ -183,6 +183,7 @@ function update_station_software() {
               fi
 
               printf "Pulling changes from SEISREC-DIST remote...\n\n"
+              git fetch --tags
               git pull
 
               if [ "$sta_type" == "DEV" ]; then
@@ -193,6 +194,7 @@ function update_station_software() {
                   fi
 
                   printf "\nPulling changes from SEISREC-DEV remote...\n\n"
+                  git fetch --tags
                   git pull
                 else
                   printf "%s/SEISREC-DEV not found!\n" "$workdir"
@@ -232,6 +234,7 @@ function update_station_software() {
             exit 1
           elif [[ "$continue" =~ [yY].* ]]; then
             # Get and print list of tags to checkout
+            git fetch --tags
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
               printf "No versions found!\n"
@@ -294,6 +297,7 @@ function update_station_software() {
             exit 1
           elif [[ "$continue" =~ [yY].* ]]; then
             # Get and print list of tags to checkout
+            git fetch --tags
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
               printf "No versions found!\n"
