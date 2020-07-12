@@ -11,8 +11,8 @@ function print_help() {
   printf "    [-h]                  Muestra este mensaje de ayuda y termina.\n"
   printf "    [-d]                  Habilita los mensajes de debug.\n"
   printf "\nModos:\n"
-  printf "       DIST: Convierte a la version DISTRIBUCION \n"
-  printf "       DEV:  Convierte a la version DESARROLLO \n"
+  printf "       DIST: Convierte la estación a la versión DISTRIBUTION (DISTRIBUCIÓN).\n"
+  printf "       DEV:  Convierte la estación a la versión DEVELOPMENT (DESARROLLO).\n"
   exit 0
 }
 
@@ -26,11 +26,11 @@ function prompt_workdir() {
   local continue2
 
   printf "Directorio del repositorio no pudo ser encontrado automáticamente.\n"
-  printf "Desea ingresarlo de forma manual? [S]í/[N]o \n"
+  printf "¿Desea ingresarlo de forma manual? [S]i/[N]o \n"
   # Chance to exit without enterin repodir
   while [ -z "$done" ]; do
     if ! read -r continue; then
-      printf "Error reading STDIN! Aborting...\n"
+      printf "¡Error leyendo STDIN!. Abortando ...\n"
       exit 1
     elif [[ "$continue" =~ [sS].* ]]; then
       # if yes prompt for repodir
@@ -38,13 +38,13 @@ function prompt_workdir() {
       while [ -z "$answered" ]; do
       printf "Directorio donde se encuentra la carpeta SEISREC-DIST: \n"
       if ! read -r repodir; then
-        printf "Error reading STDIN! Aborting...\n"
+        printf "¡Error leyendo STDIN!. Abortando ...\n"
         exit 1
       fi
-      printf "Es \"%s\" correcto? [S]í/[N]o/[C]ancelar\n" "$repodir"
+      printf "¿Es \"%s\" correcto? [S]i, [N]o, [C]ancelar.\n" "$repodir"
         # Confirm input
         if ! read -r continue2; then
-          printf "Error reading STDIN! Aborting...\n"
+          printf "¡Error leyendo STDIN!. Abortando ...\n"
           exit 1
         elif [[ "$continue2" =~ [sS].* ]]; then
           answered="yes"
@@ -54,13 +54,14 @@ function prompt_workdir() {
         elif [[ "$continue2" =~ [cC].* ]]; then
           answered="no"
         else
-          printf "\n[S]í/[N]o ?"
+          #TODO[3] ¿Está bien esta nueva pregunta?
+          printf "\n[S]i, [N]o ?"
         fi
       done
     elif [[ "$continue" =~ [nN].* ]]; then
       done="no"
     else
-      printf "\n[S]í/[N]o ?"
+      printf "\n¿[S]i, [N]o?"
     fi
   done
   return 1
@@ -83,7 +84,7 @@ if [ -n "$repodir" ]; then
   source "$workdir/scripts/script_utils.sh"
 else
   if ! prompt_workdir; then
-    printf "Error obteniendo el directorio de trabajo. Abortando...\n"
+    printf "Error obteniendo el directorio de trabajo. Abortando ...\n"
     exit 1
   fi
 fi
@@ -94,7 +95,7 @@ fi
 
 # If im in the directory im going to delete then bail out
 if [ -n "$(pwd | grep SEISREC-DEV)" ]; then
-  printf "El directorio actual esta dentro de SEISREC-DEV!\n"
+  printf "¡El directorio actual está dentro del directorio SEISREC-DEV!.\n"
   currdir="$workdir"
 else
   currdir=$(pwd)
@@ -110,7 +111,7 @@ while getopts "dh" opt; do
     print_help
     ;;
   \?)
-    printf "Opcion invalida: -%s" "$OPTARG" 1>&2
+    printf "Opción inválida: -%s." "$OPTARG" 1>&2
     exit 1
     ;;
   esac
@@ -140,7 +141,7 @@ while [ -n "$1" ]; do
     break
     ;;
   \?)
-    printf "Argumento invalido: -%s" "$PARAM" 1>&2
+    printf "Argumento inválido: -%s". "$PARAM" 1>&2
     exit 1
     ;;
   esac
@@ -157,9 +158,9 @@ case $convert_to in
 # If converting to DIST, delete DEV directory safely
 "DIST")
   if [ -d "$workdir/SEISREC-DEV" ]; then
-    printf "El directorio DEV ya existe...\n"
+    printf "El directorio DEV ya existe ...\n"
     if ! cd "$workdir/SEISREC-DEV"; then
-      printf "Error tratando de acceder a ./SEISREC-DEV!\n"
+      printf "¡Error tratando de acceder a ./SEISREC-DEV!.\n"
       exit 1
     fi
     # check for repository name to be sure were deleting the correct directory
@@ -171,20 +172,20 @@ case $convert_to in
 
     # Notify if everything's in order, delete directory anyway
     if [ "$reponame" == "SEISREC-DEV" ]; then
-      printf "Se detecto el directorio SEISREC-DEV. Borrando...\n"
+      printf "Se detectó el directorio SEISREC-DEV. Removiendo ...\n"
     else
-      printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
+      printf "Se detectó el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Removiendo...\n"
     fi
 
     # Exit directory first
     if ! cd ..; then
-        printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
+        printf "¡Error tratando de salir de ./SEISREC-DEV!. Abortando ...\n"
         exit 1
       fi
-      printf "Removiendo SEISREC-DEV...\n"
+      printf "Removiendo SEISREC-DEV ...\n"
       # remove with sudo, as git prevents user deleting repository files
       if ! sudo rm -r "SEISREC-DEV"; then
-        printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
+        printf "¡Error al remover ./SEISREC-DEV!. Abortando ...\n"
         exit 1
     fi
   fi
@@ -193,9 +194,9 @@ case $convert_to in
 "DEV")
   # in converting to DEV, check if directory structure is broken, then clone.
   if [ -d "$workdir/SEISREC-DEV" ]; then
-    printf "Directorio DEV ya existe...\n"
+    printf "Directorio DEV ya existe ...\n"
     if ! cd "$workdir/SEISREC-DEV"; then
-      printf "Error tratando de acceder a ./SEISREC-DEV!\n"
+      printf "¡Error tratando de acceder a ./SEISREC-DEV!.\n"
       exit 1
     fi
     # check for repository name to be sure were deleting the correct directory
@@ -206,17 +207,17 @@ case $convert_to in
 
     # Check if SEISREC-DEV already present
     if [ "$reponame" == "SEISREC-DEV" ]; then
-      printf "La estacion ya esta convertida a DEV!. Saliendo...\n"
+      printf "¡La estación ya esta convertida a DEV!. Saliendo ...\n"
       exit 1 # Exit if there's any funny business with the filesystem
     else
       # If there's some error with the repository, delete directory and start fresh
-      printf "Se detecto el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Borrando...\n"
+      printf "Se detectó el directorio SEISREC-DEV, pero tiene el repositorio incorrecto. Removiendo ...\n"
       if ! cd ..; then
-        printf "Error tratando de salir de ./SEISREC-DEV!. Abortando...\n"
+        printf "¡Error tratando de salir de ./SEISREC-DEV!. Abortando ...\n"
         exit 1 # Exit if there's any funny business with the filesystem
       fi
       if ! sudo rm -r "SEISREC-DEV"; then
-        printf "Error al remover ./SEISREC-DEV!. Abortando...\n"
+        printf "¡Error al remover ./SEISREC-DEV!. Abortando ...\n"
         exit 1 # Exit if there's any funny business with the filesystem
       fi
     fi
@@ -224,20 +225,20 @@ case $convert_to in
   # move into SEISREC-DIST
   printf "Accediendo a %s\n" "$workdir"
   if ! cd "$workdir"; then
-    printf "Error tratando de acceder a SEISREC-DIST!\n"
+    printf "¡Error tratando de acceder a SEISREC-DIST!.\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
   # Clone Directory
-  printf "Clonando SEISREC-DEV...\n"
+  printf "Clonando SEISREC-DEV ...\n"
   if ! git clone https://github.com/alexbecerra/SEISREC-DEV.git; then
-    printf "Error clonando ./SEISREC-DEV!\n"
+    printf "¡Error clonando ./SEISREC-DEV!.\n"
     exit 1 # Exit if there's any funny business with the filesystem
   fi
 
   ;;
 \?)
-  printf "Argumento invalido: -%s" "$PARAM" 1>&2
+  printf "Argumento inválido: -%s" "$PARAM" 1>&2
   exit 1
   ;;
 esac
@@ -249,7 +250,7 @@ fi
 
 # move back out to original directory
 if ! cd "$currdir"; then
-  printf "Error volviendo a %s!\n" "$currdir"
+  printf "¡Error volviendo a %s!.\n" "$currdir"
   exit 1
 fi
 
