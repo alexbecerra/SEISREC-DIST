@@ -54,8 +54,7 @@ function prompt_workdir() {
         elif [[ "$continue2" =~ [cC].* ]]; then
           answered="no"
         else
-          #TODO[3] ¿Está bien esta nueva pregunta?
-          printf "\n[S]i, [N]o ?"
+          printf "\n[S]i, [N]o , [C]ancelar?"
         fi
       done
     elif [[ "$continue" =~ [nN].* ]]; then
