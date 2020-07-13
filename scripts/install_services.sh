@@ -281,9 +281,7 @@ if [ -n "$install" ]; then
       fi
     else
       # if already installed, notify and abort
-      # TODO[4]: No existe opcion -r (opcion deprecada?)
-      printf "¡%s ya instalado!. Use -r para removerlo. Abortando ...\n" "$f"
-      exit 1
+      printf "¡%s ya instalado!. Abortando ...\n" "$f"
     fi
   done
 
