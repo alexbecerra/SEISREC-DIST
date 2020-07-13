@@ -150,10 +150,12 @@ if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
     if [ -n "$debug" ]; then
-        # TODO[0]: ¿Que se quiere decir con esto?
-      printf "fileList is file!\n"
+      printf "fileList found!\n"
     fi
   else
+    if [ -n "$debug" ]; then
+      printf "fileList not found! Loading all services...\n"
+    fi
     services=$(ls "$repodir/SEISREC-DIST/services/")
   fi
 else
