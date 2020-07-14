@@ -28,32 +28,32 @@ file_max_qty=5
 file_path=/home/pi/
 
 [DESCRIPTIONS]
-sta_name=Nombre de la estacion
-sta_net=Nombre de la red a la cual pertenece la estacion
+sta_name=Nombre de la estación
+sta_net=Nombre de la red a la cual pertenece la estación
 sys_acc_core=Nucleo del procesador en el cual corre el proceso ADXL355
-acc_range=Rango del acelerometro ADXL355 en g
-acc_db_pass=Contraseña para la base de datos en la rutina del acelerometro
-adxl_extclk=Habilitar/Deshabilitar el reloj externo para el acelerometro ADXL355 [0 = desabilitado, 1 = habilitado]
-adxl_mode=Modo de toma de datos para el acelerometro ADXL355 [0 = Desde la memoria FIFO, 1 = Por interrupcion]
-adxl_sps=Tasa de muestreo interna, en Hz, del acelerometro ADXL355
-adxl_syncopt=ADXL355 Sync option
-gnss_freq=Frecuencia de la señal adicional del dispositivo GNSS en Hz
+acc_range=Rango del acelerómetro ADXL355 en g
+acc_db_pass=Contraseña para la base de datos en la rutina del acelerómetro
+adxl_extclk=Habilitar/Deshabilitar el reloj externo para el acelerómetro ADXL355 [0 = desabilitado, 1 = habilitado]
+adxl_mode=Modo de toma de datos para el acelerómetro ADXL355 [0 = Desde la memoria FIFO, 1 = Por interrupción]
+adxl_sps=Tasa de muestreo interna, en Hz, del acelerómetro ADXL355
+adxl_syncopt=pción de sincronización del integrado ADXL355
+gnss_freq=Frecuencia, en Hz, de la señal de sincronización proveniente del dispositivo GNSS
 rtc_snooze_h=Horas para el aplazamiento de la alarma
 rtc_snooze_m=Minutos para el aplazamiento de la alarma
 rtc_snooze_s=Segundos para el aplazamiento de la alarma
-rtc_sleep_s=Periodo de tiempo en que corre el aplazamiento de la alarma, debe ser inferior al periodo de aplazamiento.
-rtc_if=Fuente de tiempo para configurar alarma (1 es el RTC, -1 la hora del sistema, 0 ninguna)
-dyn_host=Nombre de host para el DNS dinamico
-dyn_int=Interfaz a usar para la conexion a Internet
-dyn_pass=Contraseña para la cuenta de DNS dinamico
+rtc_sleep_s=Periodo de tiempo en que corre el aplazamiento de la alarma. Debe ser inferior al periodo de aplazamiento.
+rtc_if=Fuente de tiempo para configurar la alarma [1 = RTC, -1 = Hora del sistema, 0 = Ninguna)
+dyn_host=Nombre de host para el DNS dinámico
+dyn_int=Interfaz a usar para la conexión a Internet [ppp0, wlan0, eth0]
+dyn_pass=Contraseña para la cuenta de DNS dinámico
 dyn_time=Tiempo de espera para chequear cambios de IP y actualizar el DNS dinámico
-dyn_user=Nombre de usuario para la cuenta de DNS dinamico
-file_db_host=Direccion IP de la base de datos local
+dyn_user=Nombre de usuario para la cuenta de DNS dinámico
+file_db_host=Dirección IP de la base de datos local
 file_db_name=Nombre de la base de datos local para transferencia a archivos
-file_db_pass=contraseña de la base de datos local
+file_db_pass=Contraseña de la base de datos local
 file_db_port=Puerto TCP de la base de datos local
-file_pipeline=Numero de lineas a transferir desde una base de datos a un archivo en una llamada a la base de datos
-file_max_qty=Numero maximo de archivos a mantener en el disco
+file_pipeline=Número de líneas a transferir desde una base de datos a un archivo en una única llamada
+file_max_qty=Número máximo de archivos a mantener en el disco
 file_path=Directorio en el cual se guardan los archivos
 
 [TAGS]
@@ -102,7 +102,7 @@ rtc_snooze_s=int[0-59]
 rtc_sleep_s=int[0-86400]
 rtc_if=int[1,0,-1]
 dyn_host=string
-dyn_int=string
+dyn_int=string[ppp0, wifi, eth0]
 dyn_pass=string
 dyn_time=int
 dyn_user=string
@@ -111,5 +111,5 @@ file_db_name=string
 file_db_pass=string
 file_db_port=int[0-9999]
 file_pipeline=int
-file_max_qty=int
+file_max_qty=int[1-7]
 file_path=string
