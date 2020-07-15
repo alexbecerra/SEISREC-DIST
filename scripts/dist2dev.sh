@@ -26,7 +26,7 @@ function prompt_workdir() {
   local continue2
 
   printf "Directorio del repositorio no pudo ser encontrado automáticamente.\n"
-  printf "¿Desea ingresarlo de forma manual? [S]i/[N]o \n"
+  printf "¿Desea ingresarlo de forma manual? [S]i/[N]o: \n"
   # Chance to exit without enterin repodir
   while [ -z "$done" ]; do
     if ! read -r continue; then
@@ -41,7 +41,7 @@ function prompt_workdir() {
         printf "¡Error leyendo STDIN!. Abortando ...\n"
         exit 1
       fi
-      printf "¿Es \"%s\" correcto? [S]i, [N]o, [C]ancelar.\n" "$repodir"
+      printf "¿Es \"%s\" correcto? [S]i, [N]o, [C]ancelar: \n" "$repodir"
         # Confirm input
         if ! read -r continue2; then
           printf "¡Error leyendo STDIN!. Abortando ...\n"
@@ -54,13 +54,13 @@ function prompt_workdir() {
         elif [[ "$continue2" =~ [cC].* ]]; then
           answered="no"
         else
-          printf "\n[S]i, [N]o , [C]ancelar?"
+          printf "\n[S]i, [N]o , [C]ancelar?: "
         fi
       done
     elif [[ "$continue" =~ [nN].* ]]; then
       done="no"
     else
-      printf "\n¿[S]i, [N]o?"
+      printf "\n¿[S]i, [N]o?: "
     fi
   done
   return 1
