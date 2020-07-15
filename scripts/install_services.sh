@@ -113,7 +113,7 @@ printf "install_services.sh - SEISREC utilidad de instalación de servicios\n"
 
 if [ -n "$noprompt" ]; then
 # Print warning, this should be optional
-printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [S]i/[N]o "
+printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [S]i/[N]o: "
 # Get answer
 answered=""
 while [ -z "$answered" ]; do
@@ -127,7 +127,7 @@ while [ -z "$answered" ]; do
     answered="no"
     break
   else
-    printf "\n¿Continuar? [S]i/[N]o "
+    printf "\n¿Continuar? [S]i/[N]o: "
   fi
 done
 
@@ -150,11 +150,11 @@ if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
     if [ -n "$debug" ]; then
-      printf "fileList found!\n"
+      printf "¡fileList encontrado!\n"
     fi
   else
     if [ -n "$debug" ]; then
-      printf "fileList not found! Loading all services...\n"
+      printf "¡No se encontró fileList!. Cargando todos los servicios ...\n"
     fi
     services=$(ls "$repodir/SEISREC-DIST/services/")
   fi
@@ -270,12 +270,12 @@ if [ -n "$install" ]; then
       if [ "$repodir" != "/home/pi" ]; then
         if [ -z "$(grep "=$repodir/SEISREC-DIST" "$repodir/SEISREC-DIST/services/$f")" ]; then
           if ! sed -i "s|/.*/SEISREC-DIST|$repodir/SEISREC-DIST|" "$repodir/SEISREC-DIST/services/$f"; then
-            printf "¡Error estableciendo la ruta de las unidades ejecutables en %s.\n!" "$f"
+            printf "¡Error estableciendo la ruta de las unidades ejecutables en %s!.\n" "$f"
           fi
         fi
       fi
 
-      printf "Installing %s...\n" "$f"
+      printf "Instalando %s...\n" "$f"
       # Create symlink to service in /etc/systemd/system/
       if ! sudo ln -s "$repodir/SEISREC-DIST/services/$f" "/etc/systemd/system/"; then
         printf "¡Error creando el enlace simbólico para %s!. Omitiendo ...\n" "$f"
