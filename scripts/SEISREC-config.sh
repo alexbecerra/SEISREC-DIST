@@ -172,7 +172,7 @@ function update_station_software() {
       # Manual update pulls most recent commit from remote
       print_title "Actualización manual"
         while [ -z "$continue" ]; do
-          if ! read -r -p "¿Actualizar estación? [S]i/[N]o. " continue; then
+          if ! read -r -p "¿Actualizar estación? [S]i/[N]o: " continue; then
             printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
@@ -227,7 +227,7 @@ function update_station_software() {
           fi
 
           printf "\n"
-          if ! read -r -p "¿Cambiar la versión del software DIST? [S]i/[N]o " continue; then
+          if ! read -r -p "¿Cambiar la versión del software DIST? [S]i/[N]o: " continue; then
             printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
@@ -289,7 +289,7 @@ function update_station_software() {
           fi
           printf "\n"
 
-          if ! read -r -p "¿Cambiar versión del software DEV? [S]i/[N]o " continue; then
+          if ! read -r -p "¿Cambiar versión del software DEV? [S]i/[N]o: " continue; then
             printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
@@ -621,7 +621,7 @@ function setup_station() {
   fi
 
   # Prompt for installing SEISREC-config utility
-  if ! read -r -p "¿Instalar SEISREC-config en el PATH del sistema? [S]i/[N]o" continue; then
+  if ! read -r -p "¿Instalar SEISREC-config en el PATH del sistema? [S]i/[N]o: " continue; then
     printf "¡Error leyendo STDIN!. Abortando ...\n"
     exit 1
   elif [[ "$continue" =~ [sS].* ]]; then
@@ -724,7 +724,7 @@ function manage_ntp() {
       "Cargar archivo de configuración de NTP desde la distribución")
         local ans
         while [ -z "$continue" ]; do
-          if ! read -r -p "Esta acción sobreescribirá COMPLETAMENTE el archivo ntp.conf existente. ¿Desea continuar? [S]i/[N]o" continue; then
+          if ! read -r -p "Esta acción sobreescribirá COMPLETAMENTE el archivo ntp.conf existente. ¿Desea continuar? [S]i/[N]o: " continue; then
             printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
@@ -853,7 +853,7 @@ function uninstall_seisrec() {
     opts+=(-d)
   fi
   while [ -z "$continue" ]; do
-    if ! read -r -p "Esta acción DESINSTALARÁ POR COMPLETO el software SEISREC. ¿Desea continuar? [S]i/[N]o " continue; then
+    if ! read -r -p "Esta acción DESINSTALARÁ POR COMPLETO el software SEISREC. ¿Desea continuar? [S]i/[N]o: " continue; then
       printf "¡Error leyendo STDIN!. Abortando ...\n"
       exit 1
     elif [[ "$continue" =~ [sS].* ]]; then
@@ -1073,7 +1073,7 @@ while [ -z "$done" ]; do
       if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
         printf "La estación no está configurada.\n"
         while [ -z "$continue" ]; do
-          if ! read -r -p "¿Proceder con la configuración de la estación? [S]i/[O]mitir " continue; then
+          if ! read -r -p "¿Proceder con la configuración de la estación? [S]i/[O]mitir: " continue; then
             printf "¡Error leyendo STDIN!. Abortando ...\n"
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
@@ -1097,11 +1097,11 @@ while [ -z "$done" ]; do
         "Configuración de la estación")
           if [ -f "$repodir/SEISREC-DIST/parameter" ]; then
             printf "Parece que la estación ya está configurada.\n"
-            if ! read -r -p "¿Desea reconfigurar estación desde el inicio? [S]i/[N]o " continue; then
+            if ! read -r -p "¿Desea reconfigurar estación desde el inicio? [S]i/[N]o: " continue; then
               printf "¡Error leyendo STDIN! Abortando ...\n"
               exit 1
             elif [[ "$continue" =~ [sS].* ]]; then
-              if ! read -r -p "Esta acción SOBREESCRIBIRÁ la configuración actual de la estación. ¿Desea continuar? [S]i/[N]o" continue; then
+              if ! read -r -p "Esta acción SOBREESCRIBIRÁ la configuración actual de la estación. ¿Desea continuar? [S]i/[N]o: " continue; then
                 printf "¡Error leyendo STDIN! Abortando ...\n"
                 exit 1
               elif [[ "$continue" =~ [sS].* ]]; then
