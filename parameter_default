@@ -9,12 +9,12 @@ adxl_mode=0
 adxl_sps=125
 adxl_syncopt=2
 gnss_freq=100
-gnss_if=0
+gnss_if=uart
 rtc_snooze_h=0
 rtc_snooze_m=12
 rtc_snooze_s=0
 rtc_sleep_s=600
-rtc_if=-1
+rtc_if=local
 dyn_host=null.dyndns.org
 dyn_int=ppp0
 dyn_pass=password
@@ -39,12 +39,12 @@ adxl_mode=Modo de toma de datos para el acelerómetro ADXL355 [0 = Desde la memo
 adxl_sps=Tasa de muestreo interna, en Hz, del acelerómetro ADXL355
 adxl_syncopt=pción de sincronización del integrado ADXL355
 gnss_freq=Frecuencia, en Hz, de la señal de sincronización proveniente del dispositivo GNSS
-gnss_if=Interfaz de comunicación con el sistema gnss [0 = UART, 1 = I2C]
+gnss_if=Interfaz de comunicación con el sistema gnss
 rtc_snooze_h=Horas para el aplazamiento de la alarma
 rtc_snooze_m=Minutos para el aplazamiento de la alarma
 rtc_snooze_s=Segundos para el aplazamiento de la alarma
 rtc_sleep_s=Periodo de tiempo en que corre el aplazamiento de la alarma. Debe ser inferior al periodo de aplazamiento.
-rtc_if=Fuente de tiempo para configurar la alarma [1 = RTC, -1 = Hora del sistema, 0 = Ninguna)
+rtc_if=Fuente de tiempo para configurar la alarma [RTC, Hora del sistema, 0 = Ninguna]
 dyn_host=Nombre de host para el DNS dinámico
 dyn_int=Interfaz a usar para la conexión a Internet [ppp0, wlan0, eth0]
 dyn_pass=Contraseña para la cuenta de DNS dinámico
@@ -99,12 +99,12 @@ adxl_mode=int[0,1]
 adxl_sps=float[4000.0,2000.0,1000.0,500.0,250.0,125.0,62.5,31.25,15.625,7.8125,3.90625]
 adxl_syncopt=int[0,1,2]
 gnss_freq=int
-gnss_if=int[0,1]
+gnss_if=string[uart,ddc]
 rtc_snooze_h=int[0-23]
 rtc_snooze_m=int[0-59]
 rtc_snooze_s=int[0-59]
 rtc_sleep_s=int[0-86400]
-rtc_if=int[1,0,-1]
+rtc_if=string[local,rtc]
 dyn_host=string
 dyn_int=string[ppp0,wlan0,eth0]
 dyn_pass=string
