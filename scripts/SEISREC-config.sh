@@ -615,7 +615,6 @@ function setup_station() {
     opts+=(-d)
   fi
   if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
-  #TODO[4]: Especificar problemas a correjir antes de reintentar
     printf "¡Error instalando servicios!. Por favor, corrija problemas antes de reintentar.\n"
     exit 1
   fi
