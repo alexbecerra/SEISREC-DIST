@@ -6,6 +6,8 @@ done=""
 sta_type="DIST"
 other_sta_type="DEV"
 
+# TODO: make space somewhere to add releases
+
 # Parse options first and foremost
 while getopts "dh" opt; do
   case ${opt} in
