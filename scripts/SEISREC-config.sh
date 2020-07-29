@@ -411,9 +411,10 @@ function manage_services() {
       opts+=(-d)
     fi
 
+    local name=""
     # Select action for services and run install_services.sh
     PS3='Seleccione: '
-    options=("Iniciar" "Detener" "Deshabilitar" "Limpiar" "Instalar" "Seleccionar servicios" "Atrás")
+    options=("Iniciar" "Detener" "Deshabilitar" "Limpiar" "Instalar" "Seleccionar servicios" "Habilitar modo debug" "Deshabilitar modo debug" "Atrás")
     select opt in "${options[@]}"; do
       case $opt in
       "Iniciar")
@@ -479,6 +480,30 @@ function manage_services() {
       "Seleccionar servicios")
         printf "%s" "$(ls $repodir/SEISREC-DIST/services | grep ".*.service")" >>"$workdir/available_services.tmp"
         select_several_menu "SELECCIONAR SERVICIOS - SEISREC-config.sh" "$workdir/available_services.tmp" "$workdir/selected_services_file.tmp"
+        break
+        ;;
+      "Habilitar modo debug")
+        for s in $list; do
+          name=$(printf "%s" "$s" | sed "s/.service//g")
+          if ! sed -i "s/$name/$name -d/" "$repodir/SEISREC-DIST/services/$s"; then
+              printf "Error al habilitar debug en %s! Aborting...\n" "$s"
+          fi
+        done
+        if ! sudo systemctl daemon-reload; then
+          printf "Error al volver a cargar los servicios modificados!\n"
+        fi
+        break
+        ;;
+      "Deshabilitar modo debug")
+        for s in $list; do
+          name=$(printf "%s" "$s" | sed "s/.service//g")
+          if ! sed -i "s/$name -d/$name/" "$repodir/SEISREC-DIST/services/$s"; then
+              printf "Error al deshabilitar debug en %s! Aborting...\n" "$s"
+          fi
+        done
+        if ! sudo systemctl daemon-reload; then
+          printf "Error al volver a cargar los servicios modificados!\n"
+        fi
         break
         ;;
       "Atrás")
