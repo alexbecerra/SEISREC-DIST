@@ -7,10 +7,6 @@ Type=notify
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=root
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_neom8 -f $gnss_freq -c -i $gnss_if
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=neom8
-
 
 [Install]
 WantedBy=multi-user.target

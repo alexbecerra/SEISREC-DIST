@@ -13,9 +13,6 @@ ExecStart=/home/pi/SEISREC-DIST/unit/unit_adxl355 -r $acc_range -s $adxl_sps -n 
 CPUAffinity=2
 CPUSchedulingPolicy=rr
 CPUSchedulingPriority=99
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=adxl355
 
 [Install]
 WantedBy=multi-user.target
