@@ -141,6 +141,11 @@ fi
 fi
 answered=""
 
+if ! sudo systemctl daemon-reload; then
+  printf "¡Error cargando los servicios! Abortando ...\n"
+  exit 1
+fi
+
 if [ -n "$debug" ]; then
   printf "fileList = %s\n" "$fileList"
 fi
@@ -288,7 +293,6 @@ if [ -n "$install" ]; then
   done
 
   if ! sudo systemctl daemon-reload; then
-
     printf "¡Error cargando los servicios! Abortando ...\n"
     exit 1
   fi
