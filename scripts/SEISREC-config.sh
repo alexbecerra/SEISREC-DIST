@@ -185,6 +185,9 @@ function update_station_software() {
               fi
 
               printf "Obteniendo cambios desde el repositorio remoto de SEISREC-DIST ...\n\n"
+              if [ $(git rev-parse --abbrev-ref --symbolic-full-name HEAD) == "HEAD" ]; then
+                  git checkout master
+              fi
               git pull
 
               if [ "$sta_type" == "DEV" ]; then
@@ -255,12 +258,14 @@ function update_station_software() {
               # Try checking out tag
               if [ "$opt" == "Salir" ]; then
                   break
-              elif ! "git checkout tags/$opt"; then
+              elif ! git checkout "tags/$opt"; then
                 printf "¡Error actualizando el software!.\n"
                 continue=''
                 any_key
                 break
               fi
+              any_key
+              break
             done
           elif [[ "$continue" =~ [nN].* ]]; then
             break
