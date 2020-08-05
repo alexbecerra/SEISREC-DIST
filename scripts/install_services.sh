@@ -103,7 +103,7 @@ unset PARAM
 
 if [ -z "$repodir" ]; then
   if [ -n "$debug" ]; then
-      printf "¡repodir vacío!.\n"
+    printf "¡repodir vacío!.\n"
   fi
   repodir="$HOME"
 fi
@@ -112,32 +112,32 @@ fi
 printf "install_services.sh - SEISREC utilidad de instalación de servicios\n"
 
 if [ -n "$noprompt" ]; then
-# Print warning, this should be optional
-printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [S]i/[N]o: "
-# Get answer
-answered=""
-while [ -z "$answered" ]; do
-  if ! read -r continue; then
-    printf "¡Error leyendo STDIN!. Abortando ...\n"
-    exit 1
-  elif [[ "$continue" =~ [sS].* ]]; then
-    answered="yes"
-    break
-  elif [[ "$continue" =~ [nN].* ]]; then
-    answered="no"
-    break
-  else
-    printf "\n¿Continuar? [S]i/[N]o: "
-  fi
-done
+  # Print warning, this should be optional
+  printf "Este script modificará los servicios activos de SEISREC. ¿Continuar? [S]i/[N]o: "
+  # Get answer
+  answered=""
+  while [ -z "$answered" ]; do
+    if ! read -r continue; then
+      printf "¡Error leyendo STDIN!. Abortando ...\n"
+      exit 1
+    elif [[ "$continue" =~ [sS].* ]]; then
+      answered="yes"
+      break
+    elif [[ "$continue" =~ [nN].* ]]; then
+      answered="no"
+      break
+    else
+      printf "\n¿Continuar? [S]i/[N]o: "
+    fi
+  done
 
-# Let the user know the script has started 100% for real now
-if [ "$answered" == "yes" ]; then
-  printf "Iniciando script ...\n"
-else
-  printf "Terminando script.\n"
-  exit 1
-fi
+  # Let the user know the script has started 100% for real now
+  if [ "$answered" == "yes" ]; then
+    printf "Iniciando script ...\n"
+  else
+    printf "Terminando script.\n"
+    exit 1
+  fi
 fi
 answered=""
 
@@ -172,40 +172,47 @@ if [ -n "$debug" ]; then
 fi
 
 justservices=$(printf "%s " "$services" | grep ".*.service")
-servicegraph=$(systemd-analyze blame)
-
-ordered_services=()
-for s in $servicegraph; do
-  for t in $justservices; do
-    if [ "$s" == "$t" ]; then
+if [ -f "$repodir/SEISREC-DIST/sysfiles/service_init_list" ]; then
+  servicegraph=$(cat "$repodir/SEISREC-DIST/sysfiles/service_init_list")
+  ordered_services=()
+  for s in $servicegraph; do
+    for t in $justservices; do
+      if [ "$s" == "$t" ]; then
         if [ -n "$debug" ]; then
           printf "t = %s\n" "$t"
         fi
-        ordered_services+=( "$t" )
-    fi
+        ordered_services+=("$t")
+      fi
+    done
   done
-done
 
-for t in $justservices; do
-  matched="no"
-  for s in $servicegraph; do
-    if [ "$s" == "$t" ]; then
-      matched="yes"
+  for t in $justservices; do
+    matched="no"
+    for s in $servicegraph; do
+      if [ "$s" == "$t" ]; then
+        matched="yes"
+      fi
+    done
+    if [ "$matched" == "no" ]; then
+      if [ -n "$debug" ]; then
+        printf "t = %s\n" "$t"
+      fi
+      ordered_services+=("$t")
     fi
   done
-  if [ "$matched" == "no" ]; then
-    if [ -n "$debug" ]; then
-      printf "t = %s\n" "$t"
-    fi
-    ordered_services+=( "$t" )
+
+  if [ -n "$debug" ]; then
+    printf "ordered_services = "
+    for f in "${ordered_services[@]}"; do
+      printf "%s " "$f"
+      printf "\n"
+    done
   fi
-done
 
-if [ -n "$debug" ]; then
-  printf "ordered_services = "
-  for f in "${ordered_services[@]}"; do
-  printf "%s " "$f"
-  printf "\n"
+else
+  ordered_services=()
+  for s in $justservices; do
+    ordered_services+=("$s")
   done
 fi
 
@@ -213,10 +220,10 @@ if [ -n "$startstop" ]; then
   tempstring=""
   case $startstop in
   "start")
-      tempstring="Iniciando"
+    tempstring="Iniciando"
     ;;
   "stop")
-      tempstring="Terminando"
+    tempstring="Terminando"
     ;;
   esac
   for s in "${ordered_services[@]}"; do
