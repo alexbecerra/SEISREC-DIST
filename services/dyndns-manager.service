@@ -9,6 +9,7 @@ RestartSec=600
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=root
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_dyndns-manager -i $dyn_int -host $dyn_host -u $dyn_user -p $dyn_pass -t $dyn_time
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
