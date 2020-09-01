@@ -12,7 +12,7 @@ other_sta_type="DEV"
 while getopts "dh" opt; do
   case ${opt} in
   d)
-    debug="yes" # Set debug as early as posible
+    debug="yes" # Set debug as early as possible
     ;;
   h)
     printf "Uso: SEISREC-config.sh [opciones]"
