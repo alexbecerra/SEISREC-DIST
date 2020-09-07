@@ -11,7 +11,7 @@ EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=pi
 Restart=always
 RestartSec=60
-ExecStart=/home/pi/SEISREC-DIST/unit/unit_ds3231sn -i $rtc_if -h $rtc_snooze_h -m $rtc_snooze_m
+ExecStart=/home/pi/SEISREC-DIST/unit/unit_ds3231sn -i $rtc_if -s $rtc_sleep_margin -m $rtc_snooze_m
 TimeoutStopSec=10
 
 [Install]
