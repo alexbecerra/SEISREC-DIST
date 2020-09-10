@@ -7,6 +7,7 @@ Type=notify
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=root
 ExecStart=/home/pi/SEISREC-DIST/unit/unit_neom8 -f $gnss_freq -c -i $gnss_if
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target
