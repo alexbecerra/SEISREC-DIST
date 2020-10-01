@@ -687,6 +687,10 @@ function setup_station() {
         printf "\n\nalias servcheck='sudo systemctl status neom8.service ; sudo systemctl status adxl355.service ; sudo systemctl status dyndns-manager.service ; sudo systemctl status db2file.service ; sudo systemctl status ds3231sn.service ; sudo systemctl status redis_6379_2.service ; sudo systemctl status ntp2.service'" >>~/.bashrc
       fi
     fi
+
+    printf "A continuación se reiniciará el sistema...\n"
+    any_key
+    "sudo reboot"
   fi
   any_key
 }
