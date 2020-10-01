@@ -34,9 +34,15 @@ shift $((OPTIND - 1))
 
 # Get working directory from source directory of running script
 if [ -z "$repodir" ]; then
-  repodir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-  # remove SEISREC-DIST to obtain directory where repo is located
-  repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
+  try_dist="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+  repodir=$(printf "%s" "$try_dist" | sed -e "s_/SEISREC-DIST.*__")
+  if [ "$try_dist" == "$repodir" ]; then
+    repodir=$(printf "%s" "$try_dist" | sed -e "s_/SEISREC-SERVER-DEV.*__")
+    repo="SEISREC-SERVER-DEV"
+  else
+    repo="SEISREC-DIST"
+  fi
+  export repo
 fi
 
 # if the directory is found, export variable for scripts that are called later
