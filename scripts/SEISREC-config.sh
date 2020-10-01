@@ -48,13 +48,14 @@ fi
 # if the directory is found, export variable for scripts that are called later
 if [ -n "$repodir" ]; then
   if [ -n "$debug" ]; then
-    printf "repodir = %s" "$repodir"
+    printf "repo = %s\n" "$repo"
+    printf "repodir = %s\n" "$repodir"
   fi
   export repodir
   workdir="$repodir/SEISREC-DIST"
   # workdir variable declared for convenience
   if [ -n "$debug" ]; then
-    printf "workdir = %s" "$workdir"
+    printf "workdir = %s\n" "$workdir"
   fi
 
   # Sourcing script_utils.sh for utility bash functions
