@@ -34,21 +34,28 @@ shift $((OPTIND - 1))
 
 # Get working directory from source directory of running script
 if [ -z "$repodir" ]; then
-  repodir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-  # remove SEISREC-DIST to obtain directory where repo is located
-  repodir=$(printf "%s" "$repodir" | sed -e "s/\/SEISREC-DIST.*//")
+  try_dist="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+  repodir=$(printf "%s" "$try_dist" | sed -e "s_/SEISREC-DIST.*__")
+  if [ "$try_dist" == "$repodir" ]; then
+    repodir=$(printf "%s" "$try_dist" | sed -e "s_/SEISREC-SERVER-DEV.*__")
+    repo="SEISREC-SERVER-DEV"
+  else
+    repo="SEISREC-DIST"
+  fi
+  export repo
 fi
 
 # if the directory is found, export variable for scripts that are called later
 if [ -n "$repodir" ]; then
   if [ -n "$debug" ]; then
-    printf "repodir = %s" "$repodir"
+    printf "repo = %s\n" "$repo"
+    printf "repodir = %s\n" "$repodir"
   fi
   export repodir
   workdir="$repodir/SEISREC-DIST"
   # workdir variable declared for convenience
   if [ -n "$debug" ]; then
-    printf "workdir = %s" "$workdir"
+    printf "workdir = %s\n" "$workdir"
   fi
 
   # Sourcing script_utils.sh for utility bash functions
@@ -687,6 +694,10 @@ function setup_station() {
         printf "\n\nalias servcheck='sudo systemctl status neom8.service ; sudo systemctl status adxl355.service ; sudo systemctl status dyndns-manager.service ; sudo systemctl status db2file.service ; sudo systemctl status ds3231sn.service ; sudo systemctl status redis_6379_2.service ; sudo systemctl status ntp2.service'" >>~/.bashrc
       fi
     fi
+
+    printf "A continuación se reiniciará el sistema...\n"
+    any_key
+    "sudo reboot"
   fi
   any_key
 }
