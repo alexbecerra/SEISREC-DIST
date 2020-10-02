@@ -697,7 +697,7 @@ function setup_station() {
 
     printf "A continuación se reiniciará el sistema...\n"
     any_key
-    "sudo reboot"
+    sudo reboot
   fi
   any_key
 }
