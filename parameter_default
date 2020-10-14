@@ -22,7 +22,7 @@ dyn_user=user
 file_db_host=127.0.0.1
 file_db_name=LOCALBUF
 file_pipeline=500
-file_max_qty=5
+file_max_qty=4
 file_path=/home/pi/
 
 [DESCRIPTIONS]
