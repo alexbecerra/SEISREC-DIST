@@ -1013,7 +1013,7 @@ while [ -z "$done" ]; do
   #-------------------------------------------------------------------------------------------------------------------------------
   # Advanced Options
   #-------------------------------------------------------------------------------------------------------------------------------}
-  # TODO: Add gps monitoring & network state
+  # TODO: Add gps network state
   "Opciones avanzadas")
     done=""
     if [ ! -f "$repodir/SEISREC-DIST/parameter" ]; then
@@ -1025,9 +1025,9 @@ while [ -z "$done" ]; do
 
         print_title "CONFIGURACION DE SOFTWARE DE LA ESTACION - SEISREC_config.sh"
         if [ "$sta_type" == "DEV" ]; then
-          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Convertir a $other_sta_type" "Compilar software de la estación" "Atrás")
+          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Estado GPS" "Convertir a $other_sta_type" "Compilar software de la estación" "Atrás")
         else
-          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Convertir a $other_sta_type" "Atrás")
+          options=("Configurar parámetros de la estación" "Configurar servicios" "Configurar redes" "Configurar NTP" "Estado GPS" "Convertir a $other_sta_type" "Atrás")
         fi
         select opt in "${options[@]}"; do
           case $opt in
@@ -1053,6 +1053,12 @@ while [ -z "$done" ]; do
             ;;
           "Configurar NTP")
             manage_ntp
+            break
+            ;;
+          "Estado GPS")
+            if ! watch -n 1 ntpq -c peer -c as -c rl; then
+              any_key
+            fi
             break
             ;;
           "Atrás")
