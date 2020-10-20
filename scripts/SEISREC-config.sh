@@ -1056,9 +1056,7 @@ while [ -z "$done" ]; do
             break
             ;;
           "Estado GPS")
-            if ! watch -n 1 ntpq -c peer -c as -c rl; then
-              any_key
-            fi
+            watch -n 1 ntpq -c peer -c as -c rl
             break
             ;;
           "Atrás")
