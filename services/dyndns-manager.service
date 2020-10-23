@@ -8,7 +8,7 @@ Restart=on-failure
 RestartSec=600
 EnvironmentFile=/home/pi/SEISREC-DIST/parameter
 User=root
-ExecStart=/home/pi/SEISREC-DIST/unit/unit_dyndns-manager -i $dyn_int -host $dyn_host -u $dyn_user -p $dyn_pass -t $dyn_time -vpn $dyn_vpn
+ExecStart=/home/pi/SEISREC-DIST/unit/unit_dyndns-manager -i $dyn_int -host $dyn_host -u $dyn_user -p $dyn_pass -t $dyn_time -vpn $dyn_vpn -sta $sta_name
 TimeoutStopSec=10
 
 [Install]
