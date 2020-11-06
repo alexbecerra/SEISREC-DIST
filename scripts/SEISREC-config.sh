@@ -308,6 +308,11 @@ function update_station_software() {
             exit 1
           elif [[ "$continue" =~ [sS].* ]]; then
             # Get and print list of tags to checkout
+            # But first, delete all local tags and get the new list
+            # TODO: Check this code
+            # https://stackoverflow.com/questions/1841341/remove-local-git-tags-that-are-no-longer-on-the-remote-repository
+            # git tag -l | xargs git tag -d
+            # git fetch --tags
             versionlist=$(git tag -l)
             if [ -z "$versionlist" ]; then
               printf "¡No se encontraron versiones!.\n"
