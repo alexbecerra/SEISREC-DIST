@@ -979,17 +979,17 @@ check_sta_type
 #=================================================================================================================================
 print_title "MENÚ PRINCIPAL - SEISREC_config"
 
-message=$(/etc/update-motd.d/01-eew)
-echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
-echo "$message"
-echo ""
-echo ""
+#message=$(/etc/update-motd.d/01-eew)
+#echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
+#echo "$message"
+#echo ""
+#echo ""
 
-disco=$(df -h)
-echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
-echo "$disco"
-echo ""
-echo ""
+#disco=$(df -h)
+#echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
+#echo "$disco"
+#echo ""
+#echo ""
 
 while [ -z "$done" ]; do
 
@@ -1015,7 +1015,6 @@ while [ -z "$done" ]; do
       ;;
     *)
       printf "Opción inválida %s.\n" "$REPLY"
-      print_title
       break
       ;;
     esac
