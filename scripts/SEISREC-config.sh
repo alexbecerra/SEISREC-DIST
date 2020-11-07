@@ -982,10 +982,12 @@ print_title "MENÚ PRINCIPAL - SEISREC_config"
 message=$(/etc/update-motd.d/01-eew)
 echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
 echo "$message"
+echo "\n\n"
 
 disco=$(df -h)
 echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
 echo "$disco"
+echo "\n\n"
 
 while [ -z "$done" ]; do
 
