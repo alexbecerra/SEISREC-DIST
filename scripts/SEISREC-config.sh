@@ -979,20 +979,21 @@ check_sta_type
 #=================================================================================================================================
 print_title "MENÚ PRINCIPAL - SEISREC_config"
 
-#message=$(/etc/update-motd.d/01-eew)
-#echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
-#echo "$message"
-#echo ""
-#echo ""
+message=$(/etc/update-motd.d/01-eew)
+echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
+echo "$message"
+echo ""
+echo ""
 
-#disco=$(df -h)
-#echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
-#echo "$disco"
-#echo ""
-#echo ""
+disco=$(df -h)
+echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
+echo "$disco"
+echo ""
+echo ""
 
 while [ -z "$done" ]; do
 
+  choice=""
   PS3='Seleccione: '
   options=("Configuración y actualización de software" "Información y pruebas de la estación" "Opciones avanzadas" "Salir")
   select opt in "${options[@]}"; do
@@ -1019,6 +1020,8 @@ while [ -z "$done" ]; do
       ;;
     esac
   done
+
+  print_title
 
   if [ -n "$debug" ]; then
     printf "choice = %s\n" "$choice"
