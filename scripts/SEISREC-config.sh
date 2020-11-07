@@ -1015,6 +1015,7 @@ while [ -z "$done" ]; do
       ;;
     *)
       printf "Opción inválida %s.\n" "$REPLY"
+      print_title
       break
       ;;
     esac
