@@ -979,11 +979,11 @@ check_sta_type
 #=================================================================================================================================
 print_title "MENÚ PRINCIPAL - SEISREC_config"
 
-message = $(/etc/update-motd.d/01-eew)
+message=$(/etc/update-motd.d/01-eew)
 echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
 echo "$message"
 
-disco = $(df -h)
+disco=$(df -h)
 echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
 echo "$disco"
 
