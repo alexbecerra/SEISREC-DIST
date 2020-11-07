@@ -977,21 +977,22 @@ check_sta_type
 #=================================================================================================================================
 # CLEAN UP FUNCTION
 #=================================================================================================================================
-print_title "MENÚ PRINCIPAL - SEISREC_config"
-
-message=$(/etc/update-motd.d/01-eew)
-echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
-echo "$message"
-echo ""
-echo ""
-
-disco=$(df -h)
-echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
-echo "$disco"
-echo ""
-echo ""
 
 while [ -z "$done" ]; do
+
+  print_title "MENÚ PRINCIPAL - SEISREC_config"
+
+  message=$(/etc/update-motd.d/01-eew)
+  echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
+  echo "$message"
+  echo ""
+  echo ""
+
+  disco=$(df -h)
+  echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
+  echo "$disco"
+  echo ""
+  echo ""
 
   choice=""
   PS3='Seleccione: '
@@ -1020,8 +1021,6 @@ while [ -z "$done" ]; do
       ;;
     esac
   done
-
-  print_title
 
   if [ -n "$debug" ]; then
     printf "choice = %s\n" "$choice"
