@@ -977,9 +977,18 @@ check_sta_type
 #=================================================================================================================================
 # CLEAN UP FUNCTION
 #=================================================================================================================================
+print_title "MENÚ PRINCIPAL - SEISREC_config"
+
+message = $(/etc/update-motd.d/01-eew)
+echo "=== INFORMACION DE LA IMAGEN DEL SISTEMA ==="
+echo "$message"
+
+disco = $(df -h)
+echo "=== INFORMACION DEL DISCO DEL SISTEMA ==="
+echo "$disco"
 
 while [ -z "$done" ]; do
-  print_title "MENÚ PRINCIPAL - SEISREC_config"
+
   PS3='Seleccione: '
   options=("Configuración y actualización de software" "Información y pruebas de la estación" "Opciones avanzadas" "Salir")
   select opt in "${options[@]}"; do
