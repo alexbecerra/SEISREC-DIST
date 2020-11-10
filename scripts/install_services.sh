@@ -37,6 +37,9 @@ while getopts ":hfdn" opt; do
     ;;
   f)
     fileList="$OPTARG"
+    if [ -n "$debug" ]; then
+      printf "fileList = %s \n" "$fileList"
+    fi
     ;;
   d)
     debug="yes"
