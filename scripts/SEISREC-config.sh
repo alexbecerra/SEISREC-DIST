@@ -426,7 +426,7 @@ function manage_services() {
     if [ -n "$debug" ]; then
       opts+=("-d")
     fi
-    opts+=("-f" "\"$workdir/selected_services_file.tmp\"")
+    opts+=("-f \"$workdir/selected_services_file.tmp\"")
 
     local name=""
     # Select action for services and run install_services.sh
