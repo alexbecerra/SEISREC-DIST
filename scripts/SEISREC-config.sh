@@ -442,7 +442,9 @@ function manage_services() {
           printf "%s " "${opts[@]}"
           printf "\n"
         fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
+        if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+          printf "Error al modificar servicios!\n"
+        fi
         any_key
         break
         ;;
@@ -454,7 +456,9 @@ function manage_services() {
           printf "%s " "${opts[@]}"
           printf "\n"
         fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
+        if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+          printf "Error al modificar servicios!\n"
+        fi
         any_key
         break
         ;;
@@ -466,7 +470,9 @@ function manage_services() {
           printf "%s " "${opts[@]}"
           printf "\n"
         fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
+        if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+          printf "Error al modificar servicios!\n"
+        fi
         any_key
         break
         ;;
@@ -478,7 +484,9 @@ function manage_services() {
           printf "%s " "${opts[@]}"
           printf "\n"
         fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
+        if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+          printf "Error al modificar servicios!\n"
+        fi
         any_key
         break
         ;;
@@ -490,7 +498,9 @@ function manage_services() {
           printf "%s " "${opts[@]}"
           printf "\n"
         fi
-        "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"
+        if ! "$repodir/SEISREC-DIST/scripts/install_services.sh" "${opts[@]}"; then
+          printf "Error al modificar servicios!\n"
+        fi
         any_key
         break
         ;;
