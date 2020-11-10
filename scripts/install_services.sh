@@ -30,7 +30,7 @@ function print_help() {
   printf "  INSTALL: Detiene y deshabilita los servicios. Remueve todos los enlaces simbólicos. Instala y rehabilita los servicios.\n"
   exit 0
 }
-while getopts ":hfdn" opt; do
+while getopts ":hf:dn" opt; do
   case ${opt} in
   h)
     print_help
