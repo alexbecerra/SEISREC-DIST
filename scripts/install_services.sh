@@ -40,6 +40,9 @@ while getopts ":hfdn" opt; do
     ;;
   d)
     debug="yes"
+    if [ -n "$debug" ]; then
+      printf "DEBUG ON! \n"
+    fi
     ;;
   n)
     noprompt="yes"
@@ -149,12 +152,14 @@ fi
 if [ -n "$debug" ]; then
   printf "fileList = %s\n" "$fileList"
 fi
+
 # List all services & timers in the services directory
 printf "Obteniendo lista de servicios ...\n"
 if [ -n "$fileList" ]; then
   if [ -f "$fileList" ]; then
     services=$(cat "$fileList")
     if [ -n "$debug" ]; then
+      printf "services = %s" "$services"
       printf "¡fileList encontrado!\n"
     fi
   else
