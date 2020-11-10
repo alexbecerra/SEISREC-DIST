@@ -436,7 +436,7 @@ function manage_services() {
       case $opt in
       "Iniciar")
         choice="Start"
-        opts+=("$choice")
+        opts+=("${choice,,}")
         if [ -n "$debug" ]; then
           printf "opts = "
           printf "%s " "${opts[@]}"
