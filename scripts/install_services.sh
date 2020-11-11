@@ -320,12 +320,12 @@ if [ -n "$install" ]; then
     fi
   done
 
-  for f in "${ordered_services[@]}"; do
-    if ! sudo systemctl start "$f"; then
-      printf "¡Error iniciando %s!. Omitiendo ...\n" "$f"
-      continue
-    fi
-  done
+  #for f in "${ordered_services[@]}"; do
+  #  if ! sudo systemctl start "$f"; then
+  #    printf "¡Error iniciando %s!. Omitiendo ...\n" "$f"
+  #    continue
+  #  fi
+  #done
 
 fi
 
